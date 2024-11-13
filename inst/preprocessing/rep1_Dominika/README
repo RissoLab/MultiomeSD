@@ -1,0 +1,1 @@
+in order to extract the fastq files with cellranger mkfastq command we had to change the lane into the GEX sample sheets from * to 1 

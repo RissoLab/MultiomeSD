@@ -1,0 +1,4 @@
+fastqs,sample,library_type
+/mnt/tebe/drighelli/multiome_2022/rep_3/ATAC_S3/outs/HM3CFDRXY/ATAC_S3_rep3/,ATAC_S3_rep3,Chromatin Accessibility
+/mnt/tebe/drighelli/multiome_2022/rep_3/ATAC_L2_S3/outs/HNNVVDRXY/ATAC_L2_S3_rep3,ATAC_L2_S3_rep3,Chromatin Accessibility
+/mnt/tebe/drighelli/multiome_2022/rep_3/GEX_S3/outs/HVT75DSX2/,GEX_S3_rep3,Gene Expression
