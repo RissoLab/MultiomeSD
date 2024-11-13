@@ -1,0 +1,19 @@
+---
+title: "Cell Type Annotation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cell Type Annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MultiomeSD)
+```
