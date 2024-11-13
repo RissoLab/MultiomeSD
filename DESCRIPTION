@@ -1,0 +1,13 @@
+Package: MultiomeSD
+Title: Package to reproduce the analysis of our paper
+Version: 0.0.0.9000
+Authors@R: 
+    c(person("Dario", "Righelli", email = "dario.righelli@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+      person("Davide", "Risso", email = "risso.davide@gmail.com", role = "aut",
+           comment = c(ORCID = "0000-0001-8508-5012"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
