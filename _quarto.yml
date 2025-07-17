@@ -1,0 +1,28 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Multiome Sleep Deprivation"
+  open-graph:
+     locale:
+       en_US
+     site-name:
+       "Multiome Sleep"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+
+format:
+  html:
+    favicon: mouse.ico
+    theme: cosmo
+    toc: true
+    toc_float: true
+    code-fold: true
+
+
+editor: visual
+
