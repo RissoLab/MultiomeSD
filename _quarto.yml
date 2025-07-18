@@ -12,8 +12,8 @@ website:
   navbar:
     left:
       - text: "Home"
-        href: index.qmd
-        text: "Vignettes"
+        href: index.html
+      - text: "Vignettes"
         menu:
         - text: "05 DEGs Wild Type"
           href: vignettes/v05_DE.html
@@ -23,7 +23,7 @@ website:
           href: vignettes/v07_DARs.html
         - text: "09 DEGs Shank3 DeltaC CA1-do"
           href: vignettes/v09_DE_S3_CA1Do.html
-      - about.qmd
+      - about.html
 
 format:
   html:
