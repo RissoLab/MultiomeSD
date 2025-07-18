@@ -13,6 +13,12 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: v05_DE.qmd
+        text: DEGsWT
+      - href: v06_DE_CA1Do.qmd
+        text: DEGsWTCA1Do
+      - href: v07_DARs.qmd
+        text: DARsWT_CA1Do
       - about.qmd
 
 format:

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Dario Righelli">
-<meta name="dcterms.date" content="2025-07-17">
+<meta name="dcterms.date" content="2025-07-18">
 
 <title>Multiome Sleep Deprivation - DEGs for All Cell Types on WT Genotype</title>
 <style>
@@ -137,6 +137,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link active" href="./v05_DE.html" rel="" target="" aria-current="page">
+ <span class="menu-text">DEGsWT</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./v06_DE_CA1Do.html" rel="" target="">
+ <span class="menu-text">DEGsWTCA1Do</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./v07_DARs.html" rel="" target="">
+ <span class="menu-text">DARsWT_CA1Do</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="./about.html" rel="" target="">
  <span class="menu-text">About</span></a>
   </li>  
@@ -197,7 +209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 17, 2025</p>
+      <p class="date">July 18, 2025</p>
     </div>
   </div>
   
@@ -210,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo=</span><span class="cn">TRUE</span>, <span class="at">warning=</span><span class="cn">FALSE</span>, <span class="at">message=</span><span class="cn">FALSE</span>, <span class="at">include=</span><span class="cn">TRUE</span>,<span class="at">cache=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo=</span><span class="cn">TRUE</span>, <span class="at">warning=</span><span class="cn">FALSE</span>, <span class="at">message=</span><span class="cn">FALSE</span>, <span class="at">include=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="loading-libraries" class="level1">
@@ -226,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>The color palette used for plotting (<code>subcluster.color</code>) is loaded from a pre-saved <code>.RData</code> file and assigned to <code>palette</code>.</li>
 </ul>
 <p>Some libraries and scripts are commented out, likely because they are either not currently needed or replaced by custom implementations.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-2_e46e39678dfc7599210f4705ed9976e6">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
@@ -253,7 +265,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>These plots are arranged side-by-side and labeled with the sample name using <code>ggpubr</code>.</li>
 </ul>
 <p>This step is useful for visually inspecting clustering patterns and checking label separability across conditions.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-3_66419f49d0015211ebf4b7d228518d17">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS"</span>)</span>
@@ -331,7 +343,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Library size normalization and log-normalization are performed.</li>
 <li>Finally, we compute and plot MDS and PCA embeddings to assess clustering across cell types and conditions.</li>
 </ul>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-4_b2028f2a659775849dd7fb9cbefa0a6c">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS"</span>) <span class="co"># pseudobulk</span></span>
@@ -397,7 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Genomic start and end positions (<code>TENxStart</code>, <code>TENxEnd</code>)</li>
 </ul>
 <p>These annotations are matched using a reference file containing information on duplicated gene features (<code>features_duplicates.tsv</code>). This mapping enables downstream integration with genomic coordinates and facilitates better interpretation of differentially expressed genes.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-5_88fea762b84f18a8010b6a1c8a3dc17a">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>feat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"~/Downloads/multiome_data/reference/features_duplicates.tsv"</span>, <span class="at">sep=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
@@ -422,7 +434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>We generate side-by-side plots of the two reductions (MDS and PCA) for each label, with a common legend and a title showing the cell type name.</li>
 </ul>
 <p>This helps visualize whether the sleep deprivation (<code>SD</code>) and control (<code>HC</code>) conditions lead to visible shifts in expression space within each cell type.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-6_1c0d87c424be1d41f277193ec08107bd">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lbls <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiomewt<span class="sc">$</span>labels)</span>
@@ -457,7 +469,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ul>
 <p>This step ensures that downstream differential expression analysis is robust to technical variability.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-7_26a0998e1832e89faf50c9e5ae911aa0">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lbls <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiomewt<span class="sc">$</span>labels)</span>
@@ -511,7 +523,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li>Finally, for each cell type, the same set of plots is printed twice vertically using <code>ggarrange</code> with <code>nrow=2</code> (may be for layout testing or optional repetition).</li>
 </ul>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-8_26c6a36e63af584d925ed107ec300a0c">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>normpl <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(scelist), <span class="cf">function</span>(i)</span>
@@ -599,7 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Flags significantly differentially expressed genes (<code>FDR &lt; 0.05</code>) with a <code>sign</code> column.</li>
 <li>(Commented out) An optional block to save the resulting DEG tables for each cell type as <code>.tsv</code></li>
 </ul>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-9_896b6afe929f1f55c8799b65275e5fe2">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
@@ -638,7 +650,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 - the number of nuclei (<code>Nuclei</code>),<br>
 - the number of DEGs (<code>DEGs</code>),<br>
 - and the label (<code>Label</code>) for each cell type. - A scatter plot is created: - <strong>X-axis:</strong> log-transformed number of nuclei. - <strong>Y-axis:</strong> log-transformed number of DEGs. - Labels are annotated using <code>geom_text_repel()</code> for readability. - A quadratic regression line is fitted (<code>y ~ poly(x, 2)</code>) to highlight any non-linear trends. - The results are visualized both as a <code>ggplot</code> and as an interactive data table using <code>DT::datatable()</code>.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-10_f070c370244a2d08c9a646b6e57feaa3">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
@@ -683,7 +695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>A polynomial trend line (<code>y ~ poly(x, 2)</code>) is added to model the relationship.</li>
 <li>The corresponding data is displayed in an interactive table using <code>DT::datatable</code></li>
 </ul>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-11_dc1ba92c8e7c28a9f78547dc7ffec972">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tab1 <span class="ot">&lt;-</span> tab[tab<span class="sc">$</span>Nuclei<span class="sc">&gt;</span><span class="dv">100</span>,]</span>
@@ -717,7 +729,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="compare-degs-vs-nuclei-in-neuronal-types-100-nuclei">Compare DEGs vs Nuclei in Neuronal Types (&gt;100 Nuclei)</h2>
 <p>This analysis focuses specifically on <strong>neuronal populations</strong> that are well-sampled (i.e., having more than 100 nuclei). By excluding non-neuronal cells, the relationship between sample size and DEG count is analyzed within a more functionally homogeneous group.</p>
 <p>Steps performed: - Filter <code>tab</code> to retain only rows where the number of nuclei exceeds 100. - Further subset to include only neuronal cell types, based on the <code>superclass</code> annotation in the original <code>multiome</code> dataset. - Create a scatter plot showing the log-transformed number of nuclei vs.&nbsp;log-transformed number of DEGs. - Annotate cell types with <code>geom_text_repel</code> for clarity. - Add a quadratic regression line to highlight overall trends. - Present results both graphically and as an interactive table.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-12_c183fa791cf9df24abb89be6cb6d94cd">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tab2 <span class="ot">&lt;-</span> tab[tab<span class="sc">$</span>Nuclei<span class="sc">&gt;</span><span class="dv">100</span>,]</span>
@@ -759,7 +771,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Normalize each subclass and compute MDS (Multidimensional Scaling).</li>
 <li>Generate separate MDS plots for each superclass subset.</li>
 </ul>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-13_fce378a639984f339e5533a55f48a15f">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS"</span>) <span class="co"># pseudobulk</span></span>
@@ -838,7 +850,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sessioninfo" class="level1">
 <h1>SessionInfo</h1>
 <p>This final chunk prints the current R session information, which includes details about the R version, loaded packages, and the environment. This is useful for reproducibility and debugging.</p>
-<div class="cell" data-hash="v05_DE_cache/html/unnamed-chunk-14_9cf63f85cc7573bd48a0ef4008064990">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
