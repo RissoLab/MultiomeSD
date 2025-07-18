@@ -11,14 +11,18 @@ website:
        "Multiome Sleep"
   navbar:
     left:
-      - href: index.qmd
-        text: Home
-      - href: v05_DE.qmd
-        text: DEGsWT
-      - href: v06_DE_CA1Do.qmd
-        text: DEGsWTCA1Do
-      - href: v07_DARs.qmd
-        text: DARsWT_CA1Do
+      - text: "Home"
+        href: index.qmd
+        text: "Vignettes"
+        menu:
+        - text: "05 DEGs Wild Type"
+          href: vignettes/v05_DE.html
+        - text: "06 DEGs Wild Type CA1-do"
+          href: vignettes/v06_DE_CA1Do.qmd
+        - text: "07 DARs Wild Type CA1-do"
+          href: vignettes/v07_DARs.qmd
+        - text: "09 DEGs Shank3 DeltaC CA1-do"
+          href: vignettes/v09_DE_S3_CA1Do.qmd
       - about.qmd
 
 format:

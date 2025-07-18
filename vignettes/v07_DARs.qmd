@@ -397,7 +397,7 @@ mwtctcntsSE <- DEScan2::countFinalRegions(mwtctunique, readsFilePath=bamdir,
 We now load DEScan2-generated count matrices for condition-specific peaks ("HC" and "SD") and merged peaks, reshaping each dataset to a consistent format for analysis. For each dataset, PCA plots are generated based on raw (not normalized) counts to visualize sample clustering and assess variability related to experimental conditions. Finally, all datasets are combined into a single summarized experiment object, and a joint PCA plot is created to compare global patterns across all peak sets, providing an overview of data structure before further normalization and differential analysis.
 
 ```{r reading_descan2_mrgdconds}
-source("R/utils.R")
+source("../R/utils.R")
 library(darioscripts)
 library(ggpubr)
 mwtctcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_wtctcntsSE_2023.rds")

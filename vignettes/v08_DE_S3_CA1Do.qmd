@@ -19,7 +19,7 @@ library(RUVSeq)
 library(darioscripts)
 library(DT)
 library(ggpubr)
-source("R/luciavolcano.R")
+source("../R/luciavolcano.R")
 library(muscat)
 library(biomaRt)
 ```
@@ -57,8 +57,6 @@ scepseudo <- cbind(scelistpseudo[[1]], scelistpseudo[[2]], scelistpseudo[[3]],
 saveRDS(scepseudo, file="~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS")
 
 ```
-
-
 
 # Loading and annotating pseudo-bulk data for differential analysis
 
@@ -119,7 +117,6 @@ multiome$condition[multiome$condition=="CTRL"] <- "HC"
 
 ```
 
-
 # Annotating genes with reference metadata
 
 In this code chunk, we enrich the pseudo-bulk dataset with **gene-level annotations** using an external reference table. The steps performed are:
@@ -177,7 +174,6 @@ plotPCAs(log1p(counts(ca1do)),
     scale_shape_manual(values = 16:17) + 
     theme_bw() + theme(legend.position = "none")
 ```
-
 
 # Data subsetting, upper-quartile normalization, and PCA visualization
 
@@ -256,7 +252,6 @@ reslist <- lapply(reslist, function(r)
     return(r) 
 })
 ```
-
 
 # Plotting results and summarizing DEGs
 

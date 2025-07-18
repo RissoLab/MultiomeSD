@@ -31,7 +31,7 @@ library(darioscripts)
 library(DT)
 library(ggpubr)
 library(ggrepel)
-source("R/utils.R")
+source("../R/utils.R")
 load("~/Downloads/multiome_data/data/MultiomeAllenColorLabel.RData")
 palette <- subcluster.color
 ```
