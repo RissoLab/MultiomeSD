@@ -4,7 +4,7 @@
 
 # from qwebsite
 CURRENT_BRANCH=$(git branch --show-current)
-cp -r _site ../tmp_site
+cp -r _site/* ../tmp_site
 touch ../tmp_site/.nojekyll
 
 if ! OUTPUT=$(git checkout gh-pages 2>&1); then
@@ -13,6 +13,8 @@ if ! OUTPUT=$(git checkout gh-pages 2>&1); then
   exit 1
 fi
 
+rm -r *
+
 cp -r ../tmp_site/* .
 
 git add .
@@ -20,3 +22,4 @@ git commit -m "Aggiorna sito da $(date)"
 git push origin gh-pages
 
 git checkout "$CURRENT_BRANCH"
+
