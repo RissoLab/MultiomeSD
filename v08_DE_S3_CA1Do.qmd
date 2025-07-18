@@ -1,14 +1,18 @@
 ---
-title: "Differential Expression Wild Type for CA1-do"
+title: "Differential Expression of Shank3 DeltaC of CA1-do"
 author: "Dario Righelli"
 date: "`r Sys.Date()`"
 editor_options: 
-  chunk_output_type: console
+    chunk_output_type: console
 ---
+
+```{r}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, include=TRUE,cache=FALSE)
+```
 
 # Loading required libraries
 
-```{r, message=FALSE, warning=FALSE}
+```{r}
 library(scater)
 library(edgeR)
 library(RUVSeq)
@@ -18,7 +22,6 @@ library(ggpubr)
 source("R/luciavolcano.R")
 library(muscat)
 library(biomaRt)
-
 ```
 
 # Pseudo-bulk data construction for differential analysis
@@ -46,13 +49,16 @@ scelistpseudo <- lapply(scelist, function(sce)
     scea
 })
 
-scepseudo <- cbind(scelistpseudo[[1]], scelistpseudo[[2]],scelistpseudo[[3]],scelistpseudo[[4]],
-                   scelistpseudo[[5]],scelistpseudo[[6]],scelistpseudo[[7]],scelistpseudo[[8]],
-                   scelistpseudo[[9]],scelistpseudo[[10]],scelistpseudo[[11]],scelistpseudo[[12]])
+scepseudo <- cbind(scelistpseudo[[1]], scelistpseudo[[2]], scelistpseudo[[3]],
+                   scelistpseudo[[4]], scelistpseudo[[5]], scelistpseudo[[6]],
+                   scelistpseudo[[7]], scelistpseudo[[8]], scelistpseudo[[9]],
+                   scelistpseudo[[10]], scelistpseudo[[11]], scelistpseudo[[12]])
 
 saveRDS(scepseudo, file="~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS")
 
 ```
+
+
 
 # Loading and annotating pseudo-bulk data for differential analysis
 
@@ -69,7 +75,7 @@ In this code chunk, we load the previously computed **pseudo-bulk gene expressio
     -   Known **positive control genes** are loaded from an external file and flagged in the dataset (`posctl`).
     -   Their presence in the dataset is also recorded in a `kept` column.
 4.  **Filtering samples:**
-    -   The dataset is restricted to samples from the **wild-type (WT)** genotype only.
+    -   The dataset is restricted to samples from the **Shank3 DeltaC (S3)** genotype only.
 
 ```{r}
 
@@ -80,10 +86,10 @@ multiome$gcondition <- paste(multiome$genotype, multiome$condition, sep="_")
 
 multiome$superclass <- "Non Neuronal"
 
-multiome$superclass[multiome$label %in% 
-        c("CA1-do","CA1-ProS", "CA1", "CA2", "CA3", "SUB-ProS", "DG")] <- "Neuronal - Glutamatergic"
-multiome$superclass[multiome$label %in% 
-        c("Lamp5", "Sncg", "Vip", "Serpinf1", "Ntng1", "Pvalb", "Sst", "Sst-Chodl")] <- "Neuronal - Gabaergic"
+multiome$superclass[multiome$label %in% c("CA1-do","CA1-ProS", "CA2", "CA3", "SUB-ProS", "DG")] <- "Neuronal - Glutamatergic"
+multiome$superclass[multiome$label %in% c("Lamp5", "Sncg", "Vip", "Serpinf1",
+                                          "Ntng1", "Pvalb", "Sst", "Sst-Chodl")] <-
+    "Neuronal - Gabaergic"
 
 
 nc <- readRDS("~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS")
@@ -108,10 +114,11 @@ rowData(multiome)$posctl[rownames(multiome) %in% newps$Gene_Name] <- TRUE
 
 newpshits$kept <- FALSE
 newpshits$kept[which(newpshits$Gene_Name %in% rownames(multiome))] <- TRUE
-multiome <- multiome[,multiome$genotype=="WT"]
+multiome <- multiome[,multiome$genotype=="S3"]
 multiome$condition[multiome$condition=="CTRL"] <- "HC"
 
 ```
+
 
 # Annotating genes with reference metadata
 
@@ -132,6 +139,7 @@ In this code chunk, we enrich the pseudo-bulk dataset with **gene-level annotati
 This metadata is useful for downstream analysis and interpretation of differential expression results.
 
 ```{r}
+
 feat <- read.table("~/Downloads/multiome_data/reference/features_duplicates.tsv", sep="\t", header=TRUE)
 rn <- rownames(rowData(multiome)) 
 idx <- which(rn %in% feat$symbol)
@@ -141,7 +149,6 @@ rowData(multiome)$TENxEnsembl[idx] <- feat$ensembl[idx1]
 rowData(multiome)$TENxChr[idx] <- feat$chr[idx1]
 rowData(multiome)$TENxStart[idx] <- feat$start[idx1]
 rowData(multiome)$TENxEnd[idx] <- feat$end[idx1]
-
 ```
 
 # Exploratory analysis of raw (non-normalized) data
@@ -159,36 +166,36 @@ This step provides a visual assessment of variability in the raw data and sets u
 
 ```{r}
 ca1do <- multiome[,multiome$label=="CA1-do"]
+plot.dir <- "~/Downloads/multiome_data/plots/"
+
 plotPCAs(log1p(counts(ca1do)),
          colData=colData(ca1do),
          shapeBy="condition",
          colorBy="condition", cowplot=TRUE, prefix="log(raw-counts) CA1-do",
          returnOnly=TRUE, size=3) +
-        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
-    theme_bw()
-
-colData(ca1do) <- colData(ca1do)[,-which(colnames(colData(ca1do))=="sizeFactor")]
-ca1do <- logNormCounts(ca1do)
+        scale_color_manual(values=c("red", "black")) +
+    scale_shape_manual(values = 16:17) + 
+    theme_bw() + theme(legend.position = "none")
 ```
+
 
 # Data subsetting, upper-quartile normalization, and PCA visualization
 
 First, we apply upper-quartile normalization to account for sequencing depth differences across samples. After normalization, we perform a PCA on the log-transformed normalized counts to visualize how samples cluster by their condition, which helps assess batch effects or biological differences.
 
 ```{r}
-ca1do <- multiome[, multiome$labels == "CA1-do"]
-uq <- EDASeq::betweenLaneNormalization(counts(ca1do), which = "upper")
+ca1do <- multiome[,multiome$labels=="CA1-do"]
+
+uq <- EDASeq::betweenLaneNormalization(counts(ca1do), which="upper")
+
 plotPCAs(log1p(uq),
-         colData = colData(ca1do),
-         shapeBy = "condition",
-         colorBy = "condition",
-         cowplot = TRUE,
-         prefix = "WT log(UQ)",
-         returnOnly = TRUE,
-         size = 3) +
-  scale_color_manual(values = c("red", "black")) +
-  scale_shape_manual(values = 16:17) +
-  theme_bw()
+         colData=colData(ca1do),
+         shapeBy="condition",
+         colorBy="condition", cowplot=TRUE, prefix="log(UQ)",
+         returnOnly=TRUE, size=3) +
+        scale_color_manual(values=c("red", "black")) + 
+        scale_shape_manual(values = 16:17) + 
+    theme_bw()
 ```
 
 # RUVs normalization and PCA visualization
@@ -199,27 +206,20 @@ To remove unwanted variation not captured by the condition (e.g., batch effects)
 grp <- makeGroups(ca1do$condition)
 rownames(grp) <- unique(ca1do$condition)
 
-k <- 3
-ruvs <- RUVs(x = round(as.matrix(uq)),
-             cIdx = rownames(ca1do)[rowData(ca1do)$negctl],
-             k = k,
-             scIdx = grp,
-             round = TRUE)
-
+k=3
+ruvs <- RUVs(x=round(as.matrix(uq)), cIdx=rownames(ca1do)[rowData(ca1do)$negctl],
+             k=k, scIdx=grp, round=TRUE)
 assays(ca1do)$uqruvsk3 <- ruvs$normalizedCounts
 assays(ca1do)$loguqruvsk3 <- log1p(ruvs$normalizedCounts)
 
 plotPCAs(log1p(ruvs$normalizedCounts),
-         colData = colData(ca1do),
-         shapeBy = "condition",
-         colorBy = "condition",
-         cowplot = TRUE,
-         prefix = paste0("WT log(UQ+RUVsk", k, ")"),
-         returnOnly = TRUE,
-         size = 3) +
-  scale_color_manual(values = c("red", "black")) +
-  scale_shape_manual(values = 16:17) +
-  theme_bw()
+         colData=colData(ca1do),
+         shapeBy="condition",
+         colorBy="condition", cowplot=TRUE, prefix=paste0("WT log(UQ+RUVsk",k,")"),
+         returnOnly=TRUE, size=3) +
+        scale_color_manual(values=c("red", "black")) + 
+    scale_shape_manual(values = 16:17) + 
+    theme_bw()
 ```
 
 # Add RUVs factors to sample metadata and filter genes
@@ -227,17 +227,13 @@ plotPCAs(log1p(ruvs$normalizedCounts),
 We append the unwanted variation factors estimated by RUVs to the sample metadata (`colData`). Next, we prepare for differential expression by creating an `EdgeR` DGEList object and calculating normalization factors. We then filter out genes with low expression, keeping only those with sufficient counts across conditions to ensure robust differential testing.
 
 ```{r}
-# Add estimated unwanted variation factors to sample metadata
-colData(ca1do) <- cbind.DataFrame(colData(ca1do), ruvs$W, returnOnly = TRUE)
+colData(ca1do) <- cbind.DataFrame(colData(ca1do), ruvs$W, returnOnly=TRUE)
 
-# Create DGEList for EdgeR analysis and calculate normalization factors
-y <- DGEList(counts(ca1do), samples = colData(ca1do))
-y1 <- calcNormFactors(y, method = "upperquartile")
-
-# Filter out lowly expressed genes to improve statistical power
-keep <- filterByExpr(y, group = ca1do$condition, min.count = 5, min.total.count = 0)
-keep.genes <- data.frame(keep[keep == "TRUE"])
-ca1do <- ca1do[rownames(keep.genes), ]
+y <- DGEList(counts(ca1do), samples=colData(ca1do))
+y1 <- calcNormFactors(y, method="upperquartile")
+keep <- filterByExpr(y, group=ca1do$condition, min.count=5, min.total.count=0)
+keep.genes <- data.frame(keep[keep=="TRUE"])
+ca1do <- ca1do[rownames(keep.genes),]
 ```
 
 # Differential expression analysis with EdgeR and result annotation
@@ -245,24 +241,22 @@ ca1do <- ca1do[rownames(keep.genes), ]
 We perform differential expression analysis using `EdgeR`, specifying contrasts of interest and incorporating the unwanted variation factors as covariates. After obtaining results, we annotate the differential expression results with gene symbols and Ensembl IDs for interpretability.
 
 ```{r}
-# Run differential expression analysis with EdgeR using condition contrasts and RUVs factors
 cntrs <- c("SD - HC")
-reslist <- applyEdgeR(counts = counts(ca1do),
-                      colData = colData(ca1do),
-                      factors = "condition",
-                      wnames = colnames(ruvs$W),
-                      contrasts = cntrs,
-                      p.threshold = 1,
-                      edgeroffs = log(y1$samples$lib.size * y1$samples$norm.factors))
+reslist <- applyEdgeR(counts=counts(ca1do), colData=colData(ca1do),
+                      factors="condition", wnames=colnames(ruvs$W),
+                      contrasts=cntrs, p.threshold=1,
+                      edgeroffs=log(y1$samples$lib.size*y1$samples$norm.factors))
 
-# Annotate DE results with gene symbols and Ensembl IDs
-newpshitsl <- newpshits[, c(2, 1)]
-reslist <- lapply(reslist, function(r) {
-  r$gene <- rownames(r)
-  r$ensembl <- rowData(ca1do)$TENxEnsembl[match(r$gene, rownames(rowData(ca1do)))]
-  return(r)
+
+newpshitsl <- newpshits[,c(2,1)]
+reslist <- lapply(reslist, function(r)
+{ 
+    r$gene <- rownames(r)
+    r$ensembl <- rowData(ca1do)$TENxEnsembl[match(r$gene, rownames(rowData(ca1do)))]
+    return(r) 
 })
 ```
+
 
 # Plotting results and summarizing DEGs
 
@@ -271,47 +265,37 @@ We visualize the differential expression results with volcano plots highlighting
 Then, we add logical flags to indicate which genes are significantly differentially expressed and which correspond to positive control genes. Finally, we attach the full differential expression results back to the dataset’s row metadata for further use or export.
 
 ```{r}
-# Volcano plot to visualize DEGs and positive control genes
-luciaVolcanoPlot1(reslist[[1]],
-                  positive.controls.df = newpshitsl,
-                  prefix = paste0(names(reslist)[1]),
-                  threshold = 0.05) + theme_bw()
+luciaVolcanoPlot1(reslist[[1]], positive.controls.df=newpshitsl,
+                      prefix=paste0(names(reslist)[1]), threshold=0.05) + theme_bw()
+PlotHistPvalPlot(reslist[[1]], prefix.plot=names(reslist)[1],
+                     show.plot.flag=FALSE) + theme_bw() + ggtitle("SD-HC P-Value Histogram")
 
-# Histogram of p-values to check distribution of significance
-PlotHistPvalPlot(reslist[[1]],
-                 prefix.plot = names(reslist)[1],
-                 show.plot.flag = FALSE) + theme_bw() +
-  ggtitle("SD-HC P-Value Histogram")
+DEGsk3 <- unlist(lapply(reslist, function(r){sum(r$FDR < 0.05)}))
 
-# Summarize number of significant DEGs
-DEGsk3 <- unlist(lapply(reslist, function(r) sum(r$FDR < 0.05)))
-
-# Count positive controls detected among significant DEGs
-pcDEGsk3 <- unlist(lapply(reslist, function(r) {
-  r <- r[r$FDR < 0.05, ]
-  sum(tolower(rownames(r)) %in% tolower(newpshits$Gene_Name))
+pcDEGsk3 <- unlist(lapply(reslist, function(r)
+{
+    r <- r[r$FDR<0.05,]
+    sum(tolower(rownames(r)) %in% tolower(newpshits$Gene_Name))
 }))
 
-# Count negative controls detected among significant DEGs
-ncr3d <- unlist(lapply(reslist, function(r) {
-  r <- r[r$FDR < 0.05, ]
-  sum(tolower(rownames(r)) %in% tolower(nc$symbol))
+
+ncr3d <- unlist(lapply(reslist, function(r)
+{
+    r <- r[r$FDR<0.05,]
+    sum(tolower(rownames(r)) %in% tolower(nc$symbol))
 }))
 
-# Flag significant DEGs and mark positive control genes
-reslist <- lapply(reslist, function(r) {
-  r$sign <- FALSE
-  r$sign[r$FDR < 0.05] <- TRUE
-  r$poscont <- FALSE
-  r$poscont[tolower(rownames(r)) %in% tolower(newpshits$Gene_Name)] <- TRUE
-  r
+reslist <- lapply(seq_along(reslist), function(i){
+    r <- reslist[[i]]
+    r$sign <- FALSE
+    r$sign[r$FDR<0.05] <- TRUE
+    r$poscont <- FALSE
+    r$poscont[tolower(rownames(r)) %in% tolower(newpshits$Gene_Name)] <- TRUE
+    r
 })
-
-# Attach DE results to the dataset's rowData metadata
 r3rsuq <- reslist[[1]]
-ca1do <- ca1do[match(rownames(r3rsuq), rownames(ca1do)), ]
+ca1do <- ca1do[match(rownames(r3rsuq),rownames(ca1do)),]
 rowData(ca1do)$edger <- r3rsuq
-
 ```
 
 # Session Info

@@ -9,7 +9,7 @@
 <meta name="author" content="Dario Righelli">
 <meta name="dcterms.date" content="2025-07-18">
 
-<title>Multiome Sleep Deprivation - Differential Expression WT</title>
+<title>Multiome Sleep Deprivation - Differential Expression Wild Type for CA1-do</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -97,7 +97,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<meta property="og:title" content="Multiome Sleep Deprivation - Differential Expression WT">
+<meta property="og:title" content="Multiome Sleep Deprivation - Differential Expression Wild Type for CA1-do">
 <meta property="og:description" content="">
 <meta property="og:image" content="v06_DE_CA1Do_files/figure-html/unnamed-chunk-5-1.png">
 <meta property="og:site-name" content="Multiome Sleep">
@@ -159,10 +159,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#loading-required-libraries" id="toc-loading-required-libraries" class="nav-link active" data-scroll-target="#loading-required-libraries">Loading required libraries</a></li>
   <li><a href="#pseudo-bulk-data-construction-for-differential-analysis" id="toc-pseudo-bulk-data-construction-for-differential-analysis" class="nav-link" data-scroll-target="#pseudo-bulk-data-construction-for-differential-analysis">Pseudo-bulk data construction for differential analysis</a></li>
-  <li><a href="#loading-and-annotating-pseudo-bulk-data-for-differential-analysis" id="toc-loading-and-annotating-pseudo-bulk-data-for-differential-analysis" class="nav-link" data-scroll-target="#loading-and-annotating-pseudo-bulk-data-for-differential-analysis">Loading and annotating pseudo-bulk data for differential analysis</a>
-  <ul class="collapse">
+  <li><a href="#loading-and-annotating-pseudo-bulk-data-for-differential-analysis" id="toc-loading-and-annotating-pseudo-bulk-data-for-differential-analysis" class="nav-link" data-scroll-target="#loading-and-annotating-pseudo-bulk-data-for-differential-analysis">Loading and annotating pseudo-bulk data for differential analysis</a></li>
   <li><a href="#annotating-genes-with-reference-metadata" id="toc-annotating-genes-with-reference-metadata" class="nav-link" data-scroll-target="#annotating-genes-with-reference-metadata">Annotating genes with reference metadata</a></li>
-  </ul></li>
   <li><a href="#exploratory-analysis-of-raw-non-normalized-data" id="toc-exploratory-analysis-of-raw-non-normalized-data" class="nav-link" data-scroll-target="#exploratory-analysis-of-raw-non-normalized-data">Exploratory analysis of raw (non-normalized) data</a></li>
   <li><a href="#data-subsetting-upper-quartile-normalization-and-pca-visualization" id="toc-data-subsetting-upper-quartile-normalization-and-pca-visualization" class="nav-link" data-scroll-target="#data-subsetting-upper-quartile-normalization-and-pca-visualization">Data subsetting, upper-quartile normalization, and PCA visualization</a></li>
   <li><a href="#ruvs-normalization-and-pca-visualization" id="toc-ruvs-normalization-and-pca-visualization" class="nav-link" data-scroll-target="#ruvs-normalization-and-pca-visualization">RUVs normalization and PCA visualization</a></li>
@@ -178,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Differential Expression WT</h1>
+<h1 class="title">Differential Expression Wild Type for CA1-do</h1>
 </div>
 
 
@@ -280,7 +278,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Filtering samples:</strong>
 <ul>
 <li>The dataset is restricted to samples from the <strong>wild-type (WT)</strong> genotype only.</li>
-<li>The condition label <code>"CTRL"</code> is renamed to <code>"HC"</code> for clarity or consistency.</li>
 </ul></li>
 </ol>
 <div class="cell">
@@ -338,8 +335,9 @@ found</code></pre>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>condition[multiome<span class="sc">$</span>condition<span class="sc">==</span><span class="st">"CTRL"</span>] <span class="ot">&lt;-</span> <span class="st">"HC"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="annotating-genes-with-reference-metadata" class="level3">
-<h3 class="anchored" data-anchor-id="annotating-genes-with-reference-metadata">Annotating genes with reference metadata</h3>
+</section>
+<section id="annotating-genes-with-reference-metadata" class="level1">
+<h1>Annotating genes with reference metadata</h1>
 <p>In this code chunk, we enrich the pseudo-bulk dataset with <strong>gene-level annotations</strong> using an external reference table. The steps performed are:</p>
 <ol type="1">
 <li><p>A reference table (<code>features_duplicates.tsv</code>) containing gene metadata (such as gene symbols, Ensembl IDs, chromosome locations, and genomic coordinates) is loaded.</p></li>
@@ -368,7 +366,6 @@ found</code></pre>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>TENxEnd[idx] <span class="ot">&lt;-</span> feat<span class="sc">$</span>end[idx1]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section>
 </section>
 <section id="exploratory-analysis-of-raw-non-normalized-data" class="level1">
 <h1>Exploratory analysis of raw (non-normalized) data</h1>
