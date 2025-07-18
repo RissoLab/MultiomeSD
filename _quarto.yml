@@ -25,6 +25,10 @@ website:
           href: vignettes/v08_DE_S3.html
         - text: "09 DEGs Shank3 DeltaC CA1-do"
           href: vignettes/v09_DE_S3_CA1Do.html
+        - text: "11 MOFA+ ATAC+RNA Analysis"
+          href: vignettes/v11_MOFA_RNA_ATAC.html
+        - text: "12 MOFA+ RNA Analysis"
+          href: vignettes/v12_MOFA_RNA.html
 
 format:
   html:

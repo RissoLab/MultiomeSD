@@ -1,5 +1,5 @@
 ---
-title: "10x-Multiome Sleep Analysis"
+title: "10x-Multiome Sleep Deprivation Analysis"
 author: "Dario Righelli"
 date: "`r Sys.Date()`"
 editor_options: 
