@@ -13,7 +13,7 @@ website:
     left:
       - text: "Home"
         href: index.html
-      - text: "Vignettes"
+      - text: "Articles"
         menu:
         - text: "05 DEGs Wild Type"
           href: vignettes/v05_DE.html
@@ -23,8 +23,6 @@ website:
           href: vignettes/v07_DARs.html
         - text: "09 DEGs Shank3 DeltaC CA1-do"
           href: vignettes/v09_DE_S3_CA1Do.html
-      - text: "About"
-        href: about.html
 
 format:
   html:

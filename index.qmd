@@ -1,11 +1,78 @@
 ---
-title: "qwebsite"
+title: "10x-Multiome Sleep Analysis"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options: 
+    chunk_output_type: console
 ---
 
-This is a Quarto website.
+# About this repository
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+This repository is part of the paper ...
 
-```{r}
-1 + 1
-```
+Authors are:
+
+# Introduction
+
+Here we provide the code and insights to reproduce the entire analysis
+of the 10x-Genomics Multiome dataset specifically performed to test sleep 
+deprivation effect on brain.
+
+The experimental design it's on mouse specie and consists of two genotypes 
+Wild Types and Shank3 DeltaC Knock Out. Each genotype has two different
+conditions Sleep Deprived and Home Cage Controls, each of three different
+biological replicates, for a total of 12 samples.
+
+Brain Samples have been collected for each individual and 10x-Genomics Multiome
+library preparation has been performed to obtain single nuclei ATAC and 
+Gene Expression.
+
+This analysis is aimed to investigate global effects of sleep deprivation (SD) on 
+the brain with a focus on the CA1 dorsal section, which, in our analysis,
+resulted to be the most affected brain area by this condition.
+
+# About this website
+
+This repository shares all the code developed for the analysis of the 
+"" paper.
+
+At the link https://rissolab.github.io/MultiomeSD/, 
+in the Articles section, it is possible to retrieve all the reports for 
+reproducing the entire analysis.
+
+In some cases, because some of the steps are time demanding the code is reported, 
+but not live executed.
+
+# Docker 
+
+Together with the website in the github repository, we share a Docker file
+that can be used to reproduce the entire analysis with the exact same R package
+versions used for the analysis.
+
+In detail, the Docker is build on the Docker image of Bioconductor release version 3.18,
+and extended with the needed packages.
+
+A set of specifically developed packages (on github) is needed and provided for 
+the analysis:
+- AllenInstituteBrainData: a package based on the Allen Institute Mouse Brain Data.
+It provides the annotation for the whole Mouse brain as realeased in 2020.
+
+- TENxMultiomeTools: a package for the Quality Control of 10x-Genomics multiome 
+data.
+
+## Running the docker
+
+Main steps for running the docker:
+
+1. Download the Dockerfile present at this [link](https://github.com/RissoLab/MultiomeSD/Dockerfile).
+2. In a terminal, place yourself in the same folder where the Dockerfile is present.
+3. Compile it with the `docker build -t multiome_sleep`. Once completed, check the list of dockers with 
+ the `docker images` command.
+4. Run the docker with `docker run multiome_sleep`.
+5. Once running, navigate to http://localhost:8787/ in your browser and login with username rstudio and password bioc.
+
+
+
+
+
+
