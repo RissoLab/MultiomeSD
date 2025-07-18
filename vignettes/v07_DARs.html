@@ -9,7 +9,7 @@
 <meta name="author" content="Dario Righelli">
 <meta name="dcterms.date" content="2025-07-18">
 
-<title>Multiome Sleep Deprivation - Differential Accessible Regions</title>
+<title>10x-Multiome Sleep Deprivation Analysis - Differential Accessible Regions</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,10 +108,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
 
 
-<meta property="og:title" content="Multiome Sleep Deprivation - Differential Accessible Regions">
+<meta property="og:title" content="10x-Multiome Sleep Deprivation Analysis - Differential Accessible Regions">
 <meta property="og:description" content="">
 <meta property="og:image" content="v07_DARs_files/figure-html/exploring_peaks-1.png">
-<meta property="og:site-name" content="Multiome Sleep">
+<meta property="og:site-name" content="10x-Multiome Sleep Deprivation Analysis">
 <meta property="og:locale" content="en_US">
 </head>
 
@@ -123,7 +123,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Multiome Sleep Deprivation</span>
+    <span class="navbar-title">10x-Multiome Sleep Deprivation Analysis</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -137,10 +137,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-vignettes" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
- <span class="menu-text">Vignettes</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-articles" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Articles</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-vignettes">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
  <span class="dropdown-text">05 DEGs Wild Type</span></a>
@@ -154,13 +154,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">07 DARs Wild Type CA1-do</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../vignettes/v08_DE_S3.html" rel="" target="">
+ <span class="dropdown-text">06 DEGs Shank3</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/v09_DE_S3_CA1Do.html" rel="" target="">
  <span class="dropdown-text">09 DEGs Shank3 DeltaC CA1-do</span></a>
   </li>  
     </ul>
   </li>
-  <li class="dropdown-header">
- <span class="menu-text">about.html</span></li>
 </ul>
             <div class="quarto-navbar-tools ms-auto">
 </div>
@@ -594,17 +596,17 @@ colData names(1): readsFiles</code></pre>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">downstream=</span><span class="dv">3000</span>, <span class="at">type=</span><span class="st">"start_site"</span>, <span class="at">by=</span><span class="st">"gene"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&gt;&gt; preparing start_site regions by gene... 2025-07-18 12:37:20 PM
-&gt;&gt; preparing tag matrix...  2025-07-18 12:37:20 PM 
-&gt;&gt; preparing start_site regions by gene... 2025-07-18 12:37:27 PM
-&gt;&gt; preparing tag matrix...  2025-07-18 12:37:27 PM </code></pre>
+<pre><code>&gt;&gt; preparing start_site regions by gene... 2025-07-18 04:37:30 PM
+&gt;&gt; preparing tag matrix...  2025-07-18 04:37:30 PM 
+&gt;&gt; preparing start_site regions by gene... 2025-07-18 04:37:37 PM
+&gt;&gt; preparing tag matrix...  2025-07-18 04:37:37 PM </code></pre>
 </div>
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAvgProf</span>(tagMatrixList, <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3000</span>, <span class="dv">3000</span>)) <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="fu">names</span>(colors)[<span class="dv">1</span>], <span class="fu">names</span>(colors)[<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&gt;&gt; plotting figure...            2025-07-18 12:37:32 PM </code></pre>
+<pre><code>&gt;&gt; plotting figure...            2025-07-18 04:37:41 PM </code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="v07_DARs_files/figure-html/avgprof-1.png" class="img-fluid" width="672"></p>
@@ -770,13 +772,13 @@ colData names(1): readsFiles</code></pre>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>rranno <span class="ot">&lt;-</span> <span class="fu">annotatePeak</span>(<span class="fu">rowRanges</span>(mallSE), <span class="at">tssRegion=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3000</span>, <span class="dv">3000</span>), <span class="at">TxDb=</span>TxDb.Mmusculus.UCSC.mm10.knownGene, <span class="at">annoDb=</span><span class="st">"org.Mm.eg.db"</span>)<span class="sc">@</span>anno</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&gt;&gt; preparing features information...         2025-07-18 12:38:19 PM 
-&gt;&gt; identifying nearest features...       2025-07-18 12:38:19 PM 
-&gt;&gt; calculating distance from peak to TSS...  2025-07-18 12:38:20 PM 
-&gt;&gt; assigning genomic annotation...       2025-07-18 12:38:20 PM 
-&gt;&gt; adding gene annotation...             2025-07-18 12:38:25 PM 
-&gt;&gt; assigning chromosome lengths          2025-07-18 12:38:26 PM 
-&gt;&gt; done...                   2025-07-18 12:38:26 PM </code></pre>
+<pre><code>&gt;&gt; preparing features information...         2025-07-18 04:38:28 PM 
+&gt;&gt; identifying nearest features...       2025-07-18 04:38:28 PM 
+&gt;&gt; calculating distance from peak to TSS...  2025-07-18 04:38:28 PM 
+&gt;&gt; assigning genomic annotation...       2025-07-18 04:38:28 PM 
+&gt;&gt; adding gene annotation...             2025-07-18 04:38:34 PM 
+&gt;&gt; assigning chromosome lengths          2025-07-18 04:38:35 PM 
+&gt;&gt; done...                   2025-07-18 04:38:35 PM </code></pre>
 </div>
 <details>
 <summary>Code</summary>

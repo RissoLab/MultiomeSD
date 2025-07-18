@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Dario Righelli">
+<meta name="dcterms.date" content="2025-07-18">
 
-<title>Multiome Sleep Deprivation - Multi-Omic Factor Analysis</title>
+<title>10x-Multiome Sleep Deprivation Analysis - Multi-Omic Factor Analysis (MOFA+) RNA</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -61,8 +63,8 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<meta property="og:title" content="Multiome Sleep Deprivation - Multi-Omic Factor Analysis">
-<meta property="og:site-name" content="Multiome Sleep">
+<meta property="og:title" content="10x-Multiome Sleep Deprivation Analysis - Multi-Omic Factor Analysis (MOFA+) RNA">
+<meta property="og:site-name" content="10x-Multiome Sleep Deprivation Analysis">
 <meta property="og:locale" content="en_US">
 </head>
 
@@ -74,7 +76,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Multiome Sleep Deprivation</span>
+    <span class="navbar-title">10x-Multiome Sleep Deprivation Analysis</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -88,10 +90,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-vignettes" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
- <span class="menu-text">Vignettes</span>
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-articles" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Articles</span>
     </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-vignettes">    
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
  <span class="dropdown-text">05 DEGs Wild Type</span></a>
@@ -105,13 +107,15 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">07 DARs Wild Type CA1-do</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="../vignettes/v08_DE_S3.html" rel="" target="">
+ <span class="dropdown-text">06 DEGs Shank3</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/v09_DE_S3_CA1Do.html" rel="" target="">
  <span class="dropdown-text">09 DEGs Shank3 DeltaC CA1-do</span></a>
   </li>  
     </ul>
   </li>
-  <li class="dropdown-header">
- <span class="menu-text">about.html</span></li>
 </ul>
             <div class="quarto-navbar-tools ms-auto">
 </div>
@@ -131,14 +135,26 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Multi-Omic Factor Analysis</h1>
+<h1 class="title">Multi-Omic Factor Analysis (MOFA+) RNA</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dario Righelli </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 18, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -146,6 +162,163 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<!-- # utils -->
+<!-- ```{r} -->
+<!-- getTopWeightsMOFA2 <- function(model, factor, nfeatures=20, scale=TRUE, abs=FALSE) -->
+<!-- { -->
+<!--     library(dplyr) -->
+<!--     abs=TRUE -->
+<!--     W <- get_weights(model, factors = factor, as.data.frame=TRUE) -->
+<!--     if (scale) W$value <- W$value/max(abs(W$value)) -->
+<!--     W <- W[W$value != 0, ] -->
+<!--     W$sign <- ifelse(W$value > 0, "+", "-") -->
+<!--     if (abs) W$value <- abs(W$value) -->
+<!--     W <- W[with(W, order(-abs(value))), ] -->
+<!--     W <- as.data.frame(top_n(group_by(W, factor), n = nfeatures, -->
+<!--                              wt = value)) -->
+<!--     W$feature_id <- W$feature -->
+<!--     W$feature_id <- factor(W$feature_id, levels = rev(unique(W$feature_id))) -->
+<!--     return(W) -->
+<!-- } -->
+<!-- ``` -->
+<!-- # Loading Libraries -->
+<!-- ```{r, message=FALSE} -->
+<!-- library(MOFA2) -->
+<!-- library(MultiAssayExperiment) -->
+<!-- library(scater) -->
+<!-- library(scran) -->
+<!-- library(Matrix) -->
+<!-- library(dplyr) -->
+<!-- ``` -->
+<!-- # preprocessing data -->
+<!-- ## preprocessing RNA -->
+<!-- ```{r} -->
+<!-- set.seed(999) -->
+<!-- scelistrna <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS") -->
+<!-- scelistrnawt <- scelistrna[-grep("S3", names(scelistrna))] -->
+<!-- mornawt <- do.call(cbind,scelistrnawt) -->
+<!-- mornawtca1do <- mornawt[,mornawt$labels=="CA1-do"] -->
+<!-- hvg <- getTopHVGs(mornawtca1do, n=1000) -->
+<!-- mornawtca1dohvg <- mornawtca1do[hvg,] -->
+<!-- mornawtca1dohvg$sample.id <- gsub("WT", "HC", mornawtca1dohvg$sample.id) -->
+<!-- colnames(mornawtca1dohvg) <- paste0(mornawtca1dohvg$sample.id, "_", colnames(mornawtca1dohvg)) -->
+<!-- mornawtca1dohvg$condition <- gsub("CTRL", "HC", mornawtca1dohvg$condition) -->
+<!-- ``` -->
+<!-- # Preparing mofa object -->
+<!-- we create a MultiAssayExperiment and then a MOFA object without groups -->
+<!-- ```{r, warning=FALSE} -->
+<!-- explistwt <- list("RNA"=mornawtca1dohvg) -->
+<!-- (mae <- MultiAssayExperiment(experiments=explistwt)) -->
+<!-- sampleMap(mae)$condition <- unlist(lapply(strsplit(as.character(sampleMap(mae)$colname), "_"), function(x) {x[2]})) -->
+<!-- sampleMap(mae)$rep <- unlist(lapply(strsplit(as.character(sampleMap(mae)$colname), "_"), function(x) {x[1]})) -->
+<!-- rep <- unlist(lapply(strsplit(unique(unlist(colnames(mae))),"_"), function(x) {x[1]})) -->
+<!-- cond <- unlist(lapply(strsplit(unique(unlist(colnames(mae))),"_"), function(x) {x[2]})) -->
+<!-- cd <- data.frame(cell=unique(unlist(colnames(mae))), replicate=rep, condition=cond, rep_cond=paste(rep, cond, sep="_")) -->
+<!-- rownames(cd) <- cd$cell -->
+<!-- colData(mae) <- DataFrame(cd) -->
+<!-- mofa <- create_mofa_from_MultiAssayExperiment(mae)#, groups = "replicate") -->
+<!-- data_opts <- get_default_data_options(mofa) -->
+<!-- data_opts$scale_views <- TRUE -->
+<!-- data_opts$scale_groups <- TRUE -->
+<!-- model_opts <- get_default_model_options(mofa) -->
+<!-- model_opts$num_factors <- 10 -->
+<!-- train_opts <- get_default_training_options(mofa) -->
+<!-- MOFAobject <- prepare_mofa( -->
+<!--   object = mofa, -->
+<!--   data_options = data_opts, -->
+<!--   model_options = model_opts, -->
+<!--   training_options = train_opts -->
+<!-- ) -->
+<!-- plot_data_overview(MOFAobject) -->
+<!-- ``` -->
+<!-- # Training MOFA -->
+<!-- We train a model based on the previous object. -->
+<!-- ```{r, message=FALSE, results='hide'} -->
+<!-- outfile = file.path("./model_RNA.hdf5") -->
+<!-- MOFAobject.trained <- run_mofa(MOFAobject, outfile, use_basilisk=TRUE) -->
+<!-- model <- MOFAobject.trained -->
+<!-- sm <- samples_metadata(model) -->
+<!-- cd$sample <- cd$cell -->
+<!-- sm$cell <- sm$sample -->
+<!-- newcm <- merge(sm, cd, by.x="sample", by.y="sample") -->
+<!-- samples_metadata(model) <- newcm -->
+<!-- ``` -->
+<!-- Plotting the factors to understand if there are some catching the data -->
+<!-- variability between the conditions -->
+<!-- ```{r, message=FALSE} -->
+<!-- plot_factors(model, -->
+<!--              factors = 1:10, -->
+<!--              color_by = "condition" -->
+<!-- ) -->
+<!-- ``` -->
+<!-- We notice that factor 3 and 4 catch the differences between the conditions -->
+<!-- ```{r} -->
+<!-- plot_factors(model, -->
+<!--              factors = c(3:4), -->
+<!--              color_by = "condition" -->
+<!-- ) -->
+<!-- ``` -->
+<!-- Inspecting the genes contributing to the explained variability by the factors -->
+<!-- ```{r} -->
+<!-- plot_weights(model, -->
+<!--          factor = c(3), -->
+<!--          nfeatures = 20,     # Number of features to highlight -->
+<!--          scale = TRUE,          # Scale weights from -1 to 1 -->
+<!--          abs = FALSE             # Take the absolute value? -->
+<!-- ) -->
+<!-- plot_weights(model, -->
+<!--          factor = c(4), -->
+<!--          nfeatures = 20,     # Number of features to highlight -->
+<!--          scale = TRUE,          # Scale weights from -1 to 1 -->
+<!--          abs = FALSE             # Take the absolute value? -->
+<!-- ) -->
+<!-- ``` -->
+<!-- Plotting top 10 genes for each factor -->
+<!-- ```{r} -->
+<!-- plot_top_weights(model, -->
+<!--            factors = c(3), -->
+<!--            nfeatures = 20,     # Number of features to highlight -->
+<!--            scale = TRUE,          # Scale weights from -1 to 1 -->
+<!--            abs = FALSE             # Take the absolute value? -->
+<!-- ) -->
+<!-- plot_top_weights(model, -->
+<!--            factors = c(4), -->
+<!--            nfeatures = 20,     # Number of features to highlight -->
+<!--            scale = TRUE,          # Scale weights from -1 to 1 -->
+<!--            abs = FALSE             # Take the absolute value? -->
+<!-- ) -->
+
+<!-- # write.table(x = W, file="top_100_MOFA_RNA_Factors34.tsv", row.names = FALSE, quote=FALSE, sep = "\t") -->
+<!-- for(f in c(1:10)) -->
+<!-- { -->
+<!--     W <- getTopWeightsMOFA2(model, factor = f, nfeatures = 100) -->
+<!--     fc <- paste0("Factor", f) -->
+
+<!--     write.table(x = W[W$factor==fc,], file=paste0("top_100_MOFA_RNA_",fc, ".tsv"), row.names = FALSE, quote=FALSE, sep = "\t") -->
+<!-- } -->
+<!-- ``` -->
+<!-- Computing and inspecting the tSNE based on the first 5 MOFA factors -->
+<!-- ```{r} -->
+<!-- set.seed(999) -->
+<!-- model <- run_tsne(model, factors = 1:5)#, perplexity=100) -->
+<!-- tsne <- model@dim_red$TSNE -->
+<!-- rownames(tsne) <- tsne$sample -->
+<!-- tsne <- as.matrix(tsne[,-1]) -->
+<!-- cd <- model@samples_metadata -->
+<!-- sce <- SingleCellExperiment( -->
+<!--   assays = list(),  # Inserisci qui eventuali matrici di espressione, se disponibili -->
+<!--   colData = cd -->
+<!-- ) -->
+<!-- # Aggiungi la riduzione dimensionale TSNE all'oggetto SCE -->
+<!-- reducedDims(sce)$TSNE <- tsne -->
+<!-- library(scater) -->
+<!-- plotTSNE(sce, colour_by="condition") + -->
+<!--   scale_color_manual(name="Condition", values = c("HC" = "#F8766D", "SD" = "#00BFC4")) -->
+<!-- ``` -->
+<!-- # Session Info -->
+<!-- ```{r} -->
+<!-- sessionInfo() -->
+<!-- ``` -->
 
 
 
