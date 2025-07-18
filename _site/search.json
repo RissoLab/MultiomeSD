@@ -60,7 +60,7 @@
     "href": "vignettes/v08_DE_S3.html",
     "title": "DEGs for All Cell Types on S3 Genotype",
     "section": "",
-    "text": "Code\nknitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, include=TRUE,cache=TRUE)"
+    "text": "Code\nknitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, include=TRUE,cache=FALSE)"
   },
   {
     "objectID": "vignettes/v08_DE_S3.html#compare-degs-and-nuclei-count-all-cell-types",

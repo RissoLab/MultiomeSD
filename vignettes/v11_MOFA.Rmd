@@ -206,7 +206,7 @@ plotTSNE(sce, colour_by="condition") +
   scale_color_manual(name="Condition", values = c("HC" = "#F8766D", "SD" = "#00BFC4"))
 ```
 
-# Session Info 
+# Session Info
 
 ```{r}
 sessionInfo()

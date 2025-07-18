@@ -233,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo=</span><span class="cn">TRUE</span>, <span class="at">warning=</span><span class="cn">FALSE</span>, <span class="at">message=</span><span class="cn">FALSE</span>, <span class="at">include=</span><span class="cn">TRUE</span>,<span class="at">cache=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo=</span><span class="cn">TRUE</span>, <span class="at">warning=</span><span class="cn">FALSE</span>, <span class="at">message=</span><span class="cn">FALSE</span>, <span class="at">include=</span><span class="cn">TRUE</span>,<span class="at">cache=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="loading-libraries" class="level1">
@@ -249,7 +249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>The color palette used for plotting (<code>subcluster.color</code>) is loaded from a pre-saved <code>.RData</code> file and assigned to <code>palette</code>.</li>
 </ul>
 <p>Some libraries and scripts are commented out, likely because they are either not currently needed or replaced by custom implementations.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-2_0421b7975fd863018dc64bbbd792be20">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
@@ -276,7 +276,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>These plots are arranged side-by-side and labeled with the sample name using <code>ggpubr</code>.</li>
 </ul>
 <p>This step is useful for visually inspecting clustering patterns and checking label separability across conditions.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-3_0f7e6b332f24f12db395239bd8821479">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS"</span>)</span>
@@ -352,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Library size normalization and log-normalization are performed.</li>
 <li>Finally, we compute and plot MDS and PCA embeddings to assess clustering across cell types and conditions.</li>
 </ul>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-4_a99813abdd089381841c4104db6b3fe3">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS"</span>) <span class="co"># pseudobulk</span></span>
@@ -416,7 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Genomic start and end positions (<code>TENxStart</code>, <code>TENxEnd</code>)</li>
 </ul>
 <p>These annotations are matched using a reference file containing information on duplicated gene features (<code>features_duplicates.tsv</code>). This mapping enables downstream integration with genomic coordinates and facilitates better interpretation of differentially expressed genes.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-5_1f380154c5f86c8b10775f7f72168a6c">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>feat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"~/Downloads/multiome_data/reference/features_duplicates.tsv"</span>, <span class="at">sep=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
@@ -441,7 +441,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>We generate side-by-side plots of the two reductions (MDS and PCA) for each label, with a common legend and a title showing the cell type name.</li>
 </ul>
 <p>This helps visualize whether the sleep deprivation (<code>SD</code>) and control (<code>HC</code>) conditions lead to visible shifts in expression space within each cell type.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-6_58560cd0b20090e1fc2ad399e0a21c0a">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lbls <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiomes3<span class="sc">$</span>labels)</span>
@@ -477,7 +477,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ul>
 <p>This step ensures that downstream differential expression analysis is robust to technical variability.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-7_30d4f50eee2336c5ebf6770442662a27">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lbls <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiomes3<span class="sc">$</span>labels)</span>
@@ -534,7 +534,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li>Finally, for each cell type, the same set of plots is printed twice vertically using <code>ggarrange</code> with <code>nrow=2</code> (may be for layout testing or optional repetition).</li>
 </ul>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-8_c52120ee8e4a625d6613b3981b8ff7fb">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>normpl <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(scelist), <span class="cf">function</span>(i)</span>
@@ -619,7 +619,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Flags significantly differentially expressed genes (<code>FDR &lt; 0.05</code>) with a <code>sign</code> column.</li>
 <li>(Commented out) An optional block to save the resulting DEG tables for each cell type as <code>.tsv</code></li>
 </ul>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-9_91c2e30729b14234f559830ea6d05de8">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
@@ -666,7 +666,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 - the number of nuclei (<code>Nuclei</code>),<br>
 - the number of DEGs (<code>DEGs</code>),<br>
 - and the label (<code>Label</code>) for each cell type. - A scatter plot is created: - <strong>X-axis:</strong> log-transformed number of nuclei. - <strong>Y-axis:</strong> log-transformed number of DEGs. - Labels are annotated using <code>geom_text_repel()</code> for readability. - A quadratic regression line is fitted (<code>y ~ poly(x, 2)</code>) to highlight any non-linear trends. - The results are visualized both as a <code>ggplot</code> and as an interactive data table using <code>DT::datatable()</code>.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-10_ee741486b8c716cc9512fd7e69e7cc65">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
@@ -723,7 +723,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>A polynomial trend line (<code>y ~ poly(x, 2)</code>) is added to model the relationship.</li>
 <li>The corresponding data is displayed in an interactive table using <code>DT::datatable</code></li>
 </ul>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-11_1ef6ed9b2acfcf22339a75153e7957d0">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> tab[tab<span class="sc">$</span>Nuclei<span class="sc">&gt;</span><span class="dv">100</span>,]</span>
@@ -761,7 +761,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="compare-degs-vs-nuclei-in-neuronal-types-100-nuclei">Compare DEGs vs Nuclei in Neuronal Types (&gt;100 Nuclei)</h2>
 <p>This analysis focuses specifically on <strong>neuronal populations</strong> that are well-sampled (i.e., having more than 100 nuclei). By excluding non-neuronal cells, the relationship between sample size and DEG count is analyzed within a more functionally homogeneous group.</p>
 <p>Steps performed: - Filter <code>tab</code> to retain only rows where the number of nuclei exceeds 100. - Further subset to include only neuronal cell types, based on the <code>superclass</code> annotation in the original <code>multiome</code> dataset. - Create a scatter plot showing the log-transformed number of nuclei vs.&nbsp;log-transformed number of DEGs. - Annotate cell types with <code>geom_text_repel</code> for clarity. - Add a quadratic regression line to highlight overall trends. - Present results both graphically and as an interactive table.</p>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-12_38f103dd917b884424cd29510ce85bfc">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tab2 <span class="ot">&lt;-</span> tab[tab<span class="sc">$</span>Nuclei<span class="sc">&gt;</span><span class="dv">100</span>,]</span>
@@ -810,7 +810,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Normalize each subclass and compute MDS (Multidimensional Scaling).</li>
 <li>Generate separate MDS plots for each superclass subset.</li>
 </ul>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-13_2fd93f131cb7b268b35880174b72a9b7">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS"</span>) <span class="co"># pseudobulk</span></span>
@@ -899,7 +899,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="session-info" class="level1">
 <h1>Session Info</h1>
-<div class="cell" data-hash="v08_DE_S3_cache/html/unnamed-chunk-14_6d6616f093bfa0d36d64349b1fad58ad">
+<div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -951,84 +951,86 @@ loaded via a namespace (and not attached):
   [7] tools_4.3.3               backports_1.4.1          
   [9] utf8_1.2.4                R6_2.5.1                 
  [11] HDF5Array_1.30.1          mgcv_1.9-1               
- [13] lazyeval_0.2.2            rhdf5filters_1.14.1      
- [15] withr_3.0.0               prettyunits_1.2.0        
- [17] gridExtra_2.3             preprocessCore_1.64.0    
- [19] cli_3.6.2                 formatR_1.14             
- [21] TSP_1.2-4                 sass_0.4.9               
- [23] labeling_0.4.3            genefilter_1.84.0        
- [25] R.utils_2.12.3            rstudioapi_0.16.0        
- [27] RSQLite_2.3.6             howmany_0.3-1            
- [29] generics_0.1.3            BiocIO_1.12.0            
- [31] hwriter_1.3.2.1           crosstalk_1.2.1          
- [33] car_3.1-2                 dplyr_1.1.4              
- [35] dendextend_1.17.1         Matrix_1.6-5             
- [37] interp_1.1-6              ggbeeswarm_0.7.2         
- [39] fansi_1.0.6               abind_1.4-5              
- [41] R.methodsS3_1.8.2         lifecycle_1.0.4          
- [43] yaml_2.3.8                carData_3.0-5            
- [45] rhdf5_2.46.1              SparseArray_1.2.4        
- [47] BiocFileCache_2.10.2      grid_4.3.3               
- [49] blob_1.2.4                clusterExperiment_2.22.0 
- [51] crayon_1.5.2              lattice_0.22-6           
- [53] beachmat_2.18.1           cowplot_1.1.3            
- [55] GenomicFeatures_1.54.4    annotate_1.80.0          
- [57] KEGGREST_1.42.0           pillar_1.9.0             
- [59] knitr_1.46                rjson_0.2.21             
- [61] codetools_0.2-20          glue_1.7.0               
- [63] RNeXML_2.4.11             data.table_1.15.4        
- [65] vctrs_0.6.5               png_0.1-8                
- [67] org.Mm.eg.db_3.18.0       locfdr_1.1-8             
- [69] gtable_0.3.5              kernlab_0.9-32           
- [71] assertthat_0.2.1          cachem_1.0.8             
- [73] aroma.light_3.32.0        xfun_0.43                
- [75] S4Arrays_1.2.1            phylobase_0.8.12         
- [77] survival_3.5-8            pheatmap_1.0.12          
- [79] seriation_1.5.5           iterators_1.0.14         
- [81] NOISeq_2.46.0             statmod_1.5.0            
- [83] nlme_3.1-164              bit64_4.0.5              
- [85] progress_1.2.3            filelock_1.0.3           
- [87] bslib_0.7.0               irlba_2.3.5.1            
- [89] vipor_0.4.7               colorspace_2.1-0         
- [91] DBI_1.2.2                 ade4_1.7-22              
- [93] tidyselect_1.2.1          bit_4.0.5                
- [95] compiler_4.3.3            curl_5.2.1               
- [97] BiocNeighbors_1.20.2      xml2_1.3.6               
- [99] DelayedArray_0.28.0       plotly_4.10.4            
-[101] rtracklayer_1.62.0        scales_1.3.0             
-[103] NMF_0.27                  rappdirs_0.3.3           
-[105] stringr_1.5.1             digest_0.6.35            
-[107] rmarkdown_2.26            ca_0.71.1                
-[109] htmltools_0.5.8.1         pkgconfig_2.0.3          
-[111] jpeg_0.1-10               sparseMatrixStats_1.14.0 
-[113] dbplyr_2.5.0              fastmap_1.1.1            
-[115] rlang_1.1.3               htmlwidgets_1.6.4        
-[117] DelayedMatrixStats_1.24.0 jquerylib_0.1.4          
-[119] farver_2.1.1              jsonlite_1.8.8           
-[121] R.oo_1.26.0               BiocSingular_1.18.0      
-[123] RCurl_1.98-1.14           magrittr_2.0.3           
-[125] GenomeInfoDbData_1.2.11   Rhdf5lib_1.24.2          
-[127] munsell_0.5.1             Rcpp_1.0.12              
-[129] ape_5.8                   viridis_0.6.5            
-[131] stringi_1.8.3             zlibbioc_1.48.2          
-[133] MASS_7.3-60.0.1           plyr_1.8.9               
-[135] parallel_4.3.3            deldir_2.0-4             
-[137] rncl_0.8.7                splines_4.3.3            
-[139] hms_1.1.3                 locfit_1.5-9.9           
-[141] uuid_1.2-0                ggsignif_0.6.4           
-[143] rngtools_1.5.2            softImpute_1.4-1         
-[145] reshape2_1.4.4            biomaRt_2.58.2           
-[147] ScaledMatrix_1.10.0       XML_3.99-0.16.1          
-[149] evaluate_0.23             latticeExtra_0.6-30      
-[151] foreach_1.5.2             tidyr_1.3.1              
-[153] purrr_1.0.2               heatmaply_1.5.0          
-[155] gridBase_0.4-7            rsvd_1.0.5               
-[157] broom_1.0.5               xtable_1.8-4             
-[159] restfulr_0.0.15           rstatix_0.7.2            
-[161] viridisLite_0.4.2         tibble_3.2.1             
-[163] memoise_2.0.1             beeswarm_0.4.0           
-[165] AnnotationDbi_1.64.1      registry_0.5-1           
-[167] writexl_1.5.0             cluster_2.1.6            </code></pre>
+ [13] lazyeval_0.2.2            uwot_0.2.2               
+ [15] rhdf5filters_1.14.1       withr_3.0.0              
+ [17] prettyunits_1.2.0         gridExtra_2.3            
+ [19] preprocessCore_1.64.0     cli_3.6.2                
+ [21] formatR_1.14              TSP_1.2-4                
+ [23] sass_0.4.9                labeling_0.4.3           
+ [25] genefilter_1.84.0         R.utils_2.12.3           
+ [27] rstudioapi_0.16.0         RSQLite_2.3.6            
+ [29] howmany_0.3-1             FNN_1.1.4                
+ [31] generics_0.1.3            BiocIO_1.12.0            
+ [33] hwriter_1.3.2.1           crosstalk_1.2.1          
+ [35] car_3.1-2                 dplyr_1.1.4              
+ [37] dendextend_1.17.1         Matrix_1.6-5             
+ [39] interp_1.1-6              ggbeeswarm_0.7.2         
+ [41] fansi_1.0.6               abind_1.4-5              
+ [43] R.methodsS3_1.8.2         lifecycle_1.0.4          
+ [45] yaml_2.3.8                carData_3.0-5            
+ [47] rhdf5_2.46.1              SparseArray_1.2.4        
+ [49] BiocFileCache_2.10.2      Rtsne_0.17               
+ [51] grid_4.3.3                blob_1.2.4               
+ [53] clusterExperiment_2.22.0  crayon_1.5.2             
+ [55] lattice_0.22-6            beachmat_2.18.1          
+ [57] cowplot_1.1.3             GenomicFeatures_1.54.4   
+ [59] annotate_1.80.0           KEGGREST_1.42.0          
+ [61] pillar_1.9.0              knitr_1.46               
+ [63] rjson_0.2.21              codetools_0.2-20         
+ [65] glue_1.7.0                RNeXML_2.4.11            
+ [67] data.table_1.15.4         vctrs_0.6.5              
+ [69] png_0.1-8                 org.Mm.eg.db_3.18.0      
+ [71] locfdr_1.1-8              gtable_0.3.5             
+ [73] kernlab_0.9-32            assertthat_0.2.1         
+ [75] cachem_1.0.8              aroma.light_3.32.0       
+ [77] xfun_0.43                 S4Arrays_1.2.1           
+ [79] phylobase_0.8.12          survival_3.5-8           
+ [81] pheatmap_1.0.12           seriation_1.5.5          
+ [83] iterators_1.0.14          NOISeq_2.46.0            
+ [85] statmod_1.5.0             nlme_3.1-164             
+ [87] bit64_4.0.5               progress_1.2.3           
+ [89] filelock_1.0.3            bslib_0.7.0              
+ [91] irlba_2.3.5.1             vipor_0.4.7              
+ [93] colorspace_2.1-0          DBI_1.2.2                
+ [95] ade4_1.7-22               tidyselect_1.2.1         
+ [97] bit_4.0.5                 compiler_4.3.3           
+ [99] curl_5.2.1                BiocNeighbors_1.20.2     
+[101] xml2_1.3.6                DelayedArray_0.28.0      
+[103] plotly_4.10.4             rtracklayer_1.62.0       
+[105] scales_1.3.0              NMF_0.27                 
+[107] rappdirs_0.3.3            stringr_1.5.1            
+[109] digest_0.6.35             rmarkdown_2.26           
+[111] ca_0.71.1                 htmltools_0.5.8.1        
+[113] pkgconfig_2.0.3           jpeg_0.1-10              
+[115] sparseMatrixStats_1.14.0  dbplyr_2.5.0             
+[117] fastmap_1.1.1             rlang_1.1.3              
+[119] htmlwidgets_1.6.4         DelayedMatrixStats_1.24.0
+[121] jquerylib_0.1.4           farver_2.1.1             
+[123] jsonlite_1.8.8            R.oo_1.26.0              
+[125] BiocSingular_1.18.0       RCurl_1.98-1.14          
+[127] magrittr_2.0.3            GenomeInfoDbData_1.2.11  
+[129] Rhdf5lib_1.24.2           munsell_0.5.1            
+[131] Rcpp_1.0.12               ape_5.8                  
+[133] viridis_0.6.5             stringi_1.8.3            
+[135] zlibbioc_1.48.2           MASS_7.3-60.0.1          
+[137] plyr_1.8.9                parallel_4.3.3           
+[139] deldir_2.0-4              rncl_0.8.7               
+[141] splines_4.3.3             hms_1.1.3                
+[143] locfit_1.5-9.9            uuid_1.2-0               
+[145] ggsignif_0.6.4            rngtools_1.5.2           
+[147] softImpute_1.4-1          reshape2_1.4.4           
+[149] biomaRt_2.58.2            ScaledMatrix_1.10.0      
+[151] XML_3.99-0.16.1           evaluate_0.23            
+[153] latticeExtra_0.6-30       foreach_1.5.2            
+[155] tidyr_1.3.1               purrr_1.0.2              
+[157] heatmaply_1.5.0           gridBase_0.4-7           
+[159] rsvd_1.0.5                broom_1.0.5              
+[161] xtable_1.8-4              restfulr_0.0.15          
+[163] rstatix_0.7.2             viridisLite_0.4.2        
+[165] tibble_3.2.1              memoise_2.0.1            
+[167] beeswarm_0.4.0            AnnotationDbi_1.64.1     
+[169] registry_0.5-1            writexl_1.5.0            
+[171] cluster_2.1.6            </code></pre>
 </div>
 </div>
 

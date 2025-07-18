@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Dario Righelli">
+<meta name="dcterms.date" content="2025-07-18">
 
 <title>10x-Multiome Sleep Deprivation Analysis - Multi-Omic Factor Analysis (MOFA+) RNA</title>
 <style>
@@ -140,7 +142,19 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dario Righelli </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 18, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -148,17 +162,6 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<!-- title: "MOFA+ RNA" -->
-<!-- author: "Dario Righelli" -->
-<!-- date: "2025-07-18" -->
-<!-- output:  -->
-<!--     html_document: -->
-<!--         code_folding: hide -->
-<!--         toc: true -->
-<!--         toc_float: true -->
-<!-- editor_options:  -->
-<!--   chunk_output_type: console -->
-<!-- --- -->
 <!-- ```{r setup, include=FALSE} -->
 <!-- knitr::opts_chunk$set(echo = TRUE, message = FALSE) -->
 <!-- ``` -->
@@ -181,7 +184,7 @@ ul.task-list li input[type="checkbox"] {
 <!--     return(W) -->
 <!-- } -->
 <!-- ``` -->
-<!-- # Loading Libraries  -->
+<!-- # Loading Libraries -->
 <!-- ```{r, message=FALSE} -->
 <!-- library(MOFA2) -->
 <!-- library(MultiAssayExperiment) -->
@@ -189,13 +192,12 @@ ul.task-list li input[type="checkbox"] {
 <!-- library(scran) -->
 <!-- library(Matrix) -->
 <!-- library(dplyr) -->
-<!-- setwd("/mnt/tebe/drighelli/multiome_2022/preprocess_multiome/multiome_sleep_July_23") -->
 <!-- ``` -->
 <!-- # preprocessing data -->
 <!-- ## preprocessing RNA -->
 <!-- ```{r} -->
 <!-- set.seed(999) -->
-<!-- scelistrna <- readRDS("scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS") -->
+<!-- scelistrna <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS") -->
 <!-- scelistrnawt <- scelistrna[-grep("S3", names(scelistrna))] -->
 <!-- mornawt <- do.call(cbind,scelistrnawt) -->
 <!-- mornawtca1do <- mornawt[,mornawt$labels=="CA1-do"] -->
@@ -204,10 +206,6 @@ ul.task-list li input[type="checkbox"] {
 <!-- mornawtca1dohvg$sample.id <- gsub("WT", "HC", mornawtca1dohvg$sample.id) -->
 <!-- colnames(mornawtca1dohvg) <- paste0(mornawtca1dohvg$sample.id, "_", colnames(mornawtca1dohvg)) -->
 <!-- mornawtca1dohvg$condition <- gsub("CTRL", "HC", mornawtca1dohvg$condition) -->
-<!-- # colData(mornawtca1dohvg) -->
-<!-- # explist <- list("HC"=mornawtca1dohvg[,mornawtca1dohvg$condition=="HC"], "SD"=mornawtca1dohvg[,mornawtca1dohvg$condition=="SD"]) -->
-<!-- # explistwt <- list("WT"=mornawtca1dohvg) -->
-<!-- # (mae <- MultiAssayExperiment(experiments=explistwt)) -->
 <!-- ``` -->
 <!-- # Preparing mofa object -->
 <!-- we create a MultiAssayExperiment and then a MOFA object without groups -->
@@ -248,7 +246,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- newcm <- merge(sm, cd, by.x="sample", by.y="sample") -->
 <!-- samples_metadata(model) <- newcm -->
 <!-- ``` -->
-<!-- Plotting the factors to understand if there are some catching the data  -->
+<!-- Plotting the factors to understand if there are some catching the data -->
 <!-- variability between the conditions -->
 <!-- ```{r, message=FALSE} -->
 <!-- plot_factors(model, -->
@@ -306,12 +304,6 @@ ul.task-list li input[type="checkbox"] {
 <!-- ```{r} -->
 <!-- set.seed(999) -->
 <!-- model <- run_tsne(model, factors = 1:5)#, perplexity=100) -->
-<!-- #  -->
-<!-- # plot_dimred(model, -->
-<!-- #             method = "TSNE",  # method can be either "TSNE" or "UMAP" -->
-<!-- #             color_by = "condition", -->
-<!-- #             dot_size = 2 -->
-<!-- # ) -->
 <!-- tsne <- model@dim_red$TSNE -->
 <!-- rownames(tsne) <- tsne$sample -->
 <!-- tsne <- as.matrix(tsne[,-1]) -->
@@ -326,6 +318,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- plotTSNE(sce, colour_by="condition") + -->
 <!--   scale_color_manual(name="Condition", values = c("HC" = "#F8766D", "SD" = "#00BFC4")) -->
 <!-- ``` -->
+<!-- # Session Info  -->
 <!-- ```{r} -->
 <!-- sessionInfo() -->
 <!-- ``` -->
