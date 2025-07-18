@@ -18,17 +18,17 @@ website:
         - text: "05 DEGs Wild Type"
           href: vignettes/v05_DE.html
         - text: "06 DEGs Wild Type CA1-do"
-          href: vignettes/v06_DE_CA1Do.qmd
+          href: vignettes/v06_DE_CA1Do.html
         - text: "07 DARs Wild Type CA1-do"
-          href: vignettes/v07_DARs.qmd
+          href: vignettes/v07_DARs.html
         - text: "09 DEGs Shank3 DeltaC CA1-do"
-          href: vignettes/v09_DE_S3_CA1Do.qmd
+          href: vignettes/v09_DE_S3_CA1Do.html
       - about.qmd
 
 format:
   html:
     favicon: mouse.ico
-    theme: cosmo
+    theme: spacelab
     toc: true
     toc_float: true
     code-fold: true
