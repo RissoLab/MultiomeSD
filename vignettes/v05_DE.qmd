@@ -79,7 +79,6 @@ In this section, we load pseudobulk gene expression data and perform key preproc
 -   Each sample is annotated with a `superclass` label: either "Non Neuronal", "Neuronal - Glutamatergic", or "Neuronal - Gabaergic" based on known cell types.
 -   We load a list of known **negative control genes** (used later in RUV normalization) and assign a subset as a test set (10% of them).
 -   Similarly, **positive control genes** are loaded and flagged.
--   Sample condition "CTRL" is renamed to "HC" for consistency.
 -   We then restrict the data to only **wild-type (WT)** samples and remove cell types not detected in **all samples** (fewer than 6 replicates).
 -   Library size normalization and log-normalization are performed.
 -   Finally, we compute and plot MDS and PCA embeddings to assess clustering across cell types and conditions.

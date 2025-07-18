@@ -69,10 +69,17 @@ Main steps for running the docker:
 3. Compile it with the `docker build -t multiome_sleep`. Once completed, check the list of dockers with 
  the `docker images` command.
 4. Run the docker with `docker run multiome_sleep`.
-5. Once running, navigate to http://localhost:8787/ in your browser and login with username rstudio and password bioc.
+5. Once running, navigate to http://localhost:8787/ in your browser and login with username `rstudio` and password `bioc`.
 
 
+# Data Availability
 
+Sequencing data have been deposited in NCBI’s Gene Expression Omnibus (GEO) under the accession number ####. 
+Processed data can be found at #####.
+
+# Acknowledgements
+
+This work was supported by 
 
 
 

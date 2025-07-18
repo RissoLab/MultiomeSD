@@ -3,12 +3,12 @@ project:
   output-dir: _site
 
 website:
-  title: "Multiome Sleep Deprivation"
+  title: "10x-Multiome Sleep Deprivation Analysis"
   open-graph:
      locale:
        en_US
      site-name:
-       "Multiome Sleep"
+       "10x-Multiome Sleep Deprivation Analysis"
   navbar:
     left:
       - text: "Home"
@@ -21,13 +21,14 @@ website:
           href: vignettes/v06_DE_CA1Do.html
         - text: "07 DARs Wild Type CA1-do"
           href: vignettes/v07_DARs.html
+        - text: "06 DEGs Shank3"
+          href: vignettes/v08_DE_S3.html
         - text: "09 DEGs Shank3 DeltaC CA1-do"
           href: vignettes/v09_DE_S3_CA1Do.html
 
 format:
   html:
-    favicon: mouse.ico
-    theme: spacelab
+    theme: cosmo
     toc: true
     toc_float: true
     code-fold: true
