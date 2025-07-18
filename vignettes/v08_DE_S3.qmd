@@ -5,11 +5,10 @@ date: "`r Sys.Date()`"
 editor_options: 
     chunk_output_type: console
 ---
-    
-```{r}
-knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, include=TRUE,cache=TRUE)
-```
 
+```{r}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, include=TRUE,cache=FALSE)
+```
 
 # Loading libraries
 
@@ -49,7 +48,6 @@ This chunk performs dimensionality reduction and visualization for wild-type (WT
 -   These plots are arranged side-by-side and labeled with the sample name using `ggpubr`.
 
 This step is useful for visually inspecting clustering patterns and checking label separability across conditions.
-
 
 ```{r}
 scelist <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
@@ -149,7 +147,6 @@ rowData(multiomes3)$TENxStart[idx] <- feat$start[idx1]
 rowData(multiomes3)$TENxEnd[idx] <- feat$end[idx1]
 ```
 
-
 # Dimensionality Reduction for Each Cell Type
 
 In this section, we explore the variation between experimental conditions (`HC` and `SD`) at the **single cell type level**.
@@ -160,7 +157,6 @@ In this section, we explore the variation between experimental conditions (`HC` 
 -   We generate side-by-side plots of the two reductions (MDS and PCA) for each label, with a common legend and a title showing the cell type name.
 
 This helps visualize whether the sleep deprivation (`SD`) and control (`HC`) conditions lead to visible shifts in expression space within each cell type.
-
 
 ```{r}
 
@@ -179,7 +175,6 @@ bnormpl <- lapply(lbls, function(l)
 })
 names(bnormpl) <- lbls
 ```
-
 
 # Normalization Using Upper Quartile + RUVs (per Cell Type)
 
@@ -365,7 +360,6 @@ datatable(tab)
 p1
 ```
 
-
 ## Compare DEGs and Nuclei (Filtered: \>100 Nuclei)
 
 This analysis filters out low-abundance cell types, retaining only those with **more than 100 detected nuclei**. This threshold helps focus on well-sampled populations, where differential expression analysis is statistically more reliable.
@@ -425,7 +419,6 @@ p1 <- ggplot(tab2, aes(x = log(Nuclei), y = log(DEGs), color=Label)) +
 datatable(tab2)
 p1
 ```
-
 
 ## MDS Plots of Superclasses
 
