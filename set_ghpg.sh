@@ -5,7 +5,7 @@
 # from qwebsite
 CURRENT_BRANCH=$(git branch --show-current)
 cp -r _site ../tmp_site
-touch ../.nojekyll
+touch ../tmp_site/.nojekyll
 
 if ! OUTPUT=$(git checkout gh-pages 2>&1); then
   echo "ERROR: git checkout gh-pages failed"
