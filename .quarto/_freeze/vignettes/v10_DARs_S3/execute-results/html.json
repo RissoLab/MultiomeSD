@@ -1,0 +1,14 @@
+{
+  "hash": "4cf993e387cbf8eefdc4b632cda37fd9",
+  "result": {
+    "markdown": "---\ntitle: \"Differentially Accessible Regions of Shank3 DeltaC\"\noutput: rmarkdown::html_vignette\nvignette: >\n  %\\VignetteIndexEntry{Differentially Accessible Regions of Shank3 DeltaC}\n  %\\VignetteEngine{knitr::rmarkdown}\n  %\\VignetteEncoding{UTF-8}\n---\n\n\n\n::: {.cell}\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
