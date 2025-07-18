@@ -1,0 +1,68 @@
+{
+  "vignettes/v05_DE.Rmd": {
+    "v05_DE.html": "8e15cf87"
+  },
+  "vignettes/v08_DE_S3.Rmd": {
+    "v08_DE_S3.html": "143fb904"
+  },
+  "vignettes/v03_CellType.Rmd": {
+    "v03_CellType.html": "19efb4f8"
+  },
+  "vignettes/v04_Doublets.Rmd": {
+    "v04_Doublets.html": "2f7d38a5"
+  },
+  "vignettes/v07_DARs.Rmd": {
+    "v07_DARs.html": "95252dae"
+  },
+  "vignettes/v09_DARs_S3.Rmd": {
+    "v09_DARs_S3.html": "b151d5c5"
+  },
+  "vignettes/v10_Integration.Rmd": {
+    "v10_Integration.html": "51982a80"
+  },
+  "vignettes/v11_MOFA.Rmd": {
+    "v11_MOFA.html": "09281a64"
+  },
+  "vignettes/v02_QC.Rmd": {
+    "v02_QC.html": "1d32a4e2"
+  },
+  "vignettes/v01_Data_loading.Rmd": {
+    "v01_Data_loading.html": "8207263b"
+  },
+  "vignettes/v06_DE_CA1Do.Rmd": {
+    "v06_DE_CA1Do.html": "32c2928f"
+  },
+  "LICENSE.md": {
+    "LICENSE.html": "f13158ec"
+  },
+  "index.qmd": {
+    "index.html": "694ff85b"
+  },
+  "about.qmd": {
+    "about.html": "070dd626"
+  },
+  "v06_DE_CA1Do.qmd": {
+    "v06_DE_CA1Do.html": "addf11c0"
+  },
+  "v05_DE.qmd": {
+    "v05_DE.html": "3dd02ffe"
+  },
+  "v07_DARs.qmd": {
+    "v07_DARs.html": "f10280c0"
+  },
+  "v08_DE_S3_CA1Do.qmd": {
+    "v08_DE_S3_CA1Do.html": "97520761"
+  },
+  "vignettes/v05_DE.qmd": {
+    "v05_DE.html": "faf4464e"
+  },
+  "vignettes/v06_DE_CA1Do.qmd": {
+    "v06_DE_CA1Do.html": "a14deca8"
+  },
+  "vignettes/v07_DARs.qmd": {
+    "v07_DARs.html": "67f89c19"
+  },
+  "vignettes/v08_DE_S3_CA1Do.qmd": {
+    "v08_DE_S3_CA1Do.html": "62c39bdf"
+  }
+}

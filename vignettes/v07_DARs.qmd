@@ -1,0 +1,645 @@
+---
+title: "Differential Accessible Regions"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+# Generate and Process BAM Files for Cell-Type Specific Signal Tracks
+
+This code performs a full pipeline for extracting, sorting, indexing, and generating coverage tracks (bigWig files) from BAM files associated with single-cell multiome data, focusing on a specific cell type ("CA1-do"). Here's a unified explanation of what it does:
+
+1.  It lists all BAM files in the current directory and subdirectories, filtering to keep only those paths that include "outs" (likely 10x Genomics output folders).
+
+2.  It loads a previously saved list of `SingleCellExperiment` objects (`scelist`), each likely corresponding to a different sample, and loads the `TENxMultiomeTools` package.
+
+3.  For each `sce` object in `scelist`, it calls `createBamCt` to extract reads specific to the cell type `"CA1-do"` using the `"labels"` column to define cell identities. The function saves new BAM files (cell-type specific) in `2023/bams`, using the sample identifier (`sce$Sample`) to locate the original BAMs and determine output structure. The commented code above it suggests this step can be generalized to all cell types.
+
+4.  After generating these BAM files, it sorts them using `samtools sort` with 10 threads, saving the output with a `_sorted.bam` suffix.
+
+5.  It then indexes the sorted BAM files using `samtools index` with 10 threads.
+
+6.  Finally, for each sorted BAM, it generates a normalized coverage track in bigWig format using `bamCoverage`, labeling it as "GEX" or "ATAC" depending on whether the BAM filename includes "GEX". Normalization is done using CPM (counts per million), and the results are saved under `2023/bw/`.
+
+This pipeline is tailored for preparing cell type–specific signal tracks for genome browser visualization or downstream analysis.
+
+**Note:** This code chunk is not evaluated in the document to save time. We directly begin from the pre-annotated dataset, which includes the information described above.
+
+```{r bam_ct, eval=FALSE}
+bams <- list.files(".", pattern="*bam$", recursive=TRUE, full.names=TRUE)
+bams <- bams[grep("outs",bams)]
+#@risso1:/mnt/tebe/drighelli/multiome_2022/preprocess_multiome/2023
+scelist <- readRDS("2023/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
+library(TENxMultiomeTools)
+
+lapply(scelist, function(sce){
+    # lapply(unique(sce$labels), function(ct){
+    #     createBamCt(sce, cellType=ct, cellTypesCol="labels", 
+    #         bamdir=unique(sce$Sample), outdir=paste0("2023/bams/", basename(unique(sce$Sample)), ncores=10)
+    # })
+    createBamCt(sce, cellType="CA1-do", cellTypesCol="labels",
+        bamdir=unique(sce$Sample), outdir="2023/bams", ncores=10)
+})
+bams <- list.files("2023/bams", pattern="*.bam$", recursive=TRUE, full.names=TRUE)
+lapply(bams, function(bam)
+{
+    cmd <- paste0("samtools sort -@ 10 ", bam," -o ", gsub(".bam$", "", bam), "_sorted.bam")
+    print(cmd)
+    system(cmd)
+})
+bamss <- list.files("2023/bams", pattern="*_sorted.bam$", recursive=TRUE, full.names=TRUE)
+lapply(bamss, function(bam)
+{
+    cmd <- paste0("samtools index -b ", bam, " -@ 10 ")
+    print(cmd)
+    system(cmd)
+})
+
+## creating bigwigs
+bams <- list.files("2023/bams", pattern="*sorted.bam$", recursive=TRUE, full.names=TRUE)
+void <- lapply(bams, function(bam)
+{
+    prefix <- ifelse( length(grep("GEX", bam)) != 0, "GEX", "ATAC" )
+    cmd <- paste0("bamCoverage --normalizeUsing CPM -b ", bam,
+                " -o 2023/bw/", prefix, "_", gsub(".bam", ".bw", basename(bam)), " -p ",
+                10)
+    message(cmd)
+    system(cmd)
+})
+```
+
+# Peak Calling on ATAC BAM Files Using MACS2
+
+This code chunk calls MACS2 on sorted ATAC-seq BAM files to identify broad peaks from multiome data. Unlike the typical 10x Cell Ranger peak calling on single-cell matrices—which can produce less reliable peaks due to sparse data and noise—running MACS2 on bulk-level BAMs provides more trustworthy and robust peak detection. Calling broad peaks is particularly suited for ATAC-seq data because accessible chromatin regions often span wider genomic areas rather than sharp narrow peaks, capturing regulatory elements like enhancers and promoters more effectively. The code loops through each BAM file, runs MACS2 with custom parameters (--nomodel, fixed extension size, and shift).
+
+**Note:** This code chunk is not evaluated in the document to save time. We directly begin from the pre-annotated dataset, which includes the information described above.
+
+```{r macs2, eval=FALSE}
+bamfiles <- list.files("2023/bams", pattern="*_sorted.bam$", full.names=TRUE)
+bamfiles <- bamfiles[grep("ATAC", bamfiles)]
+outdir <- "2023/MACS2_peaks"
+additional.params <- "--nomodel "
+extsize <- 200
+shift  <- -(extsize/2)
+for(file in bamfiles)
+{
+    cmd <- paste0("macs2 callpeak --treatment ", file, 
+                " --name ", basename(file), 
+                " --outdir ", outdir, 
+                " --format BAM --gsize mm ", 
+                additional.params,
+                " --extsize ", extsize,
+                " --shift ", shift,
+                " --broad")
+                
+    print(cmd)
+    system(cmd)
+}
+
+pf <- list.files("2023/MACS2_peaks", pattern=".broadPeak", full.names=TRUE)
+pfwt <- pf[grep("WT|_SD_", pf)]
+
+lapply(pfwt, function(f){system(paste0("mv ", f, " 2023/MACS2_peaks/WT/", basename(f)))})
+
+```
+
+# Detecting Final Consensus Regions from MACS2 Peaks with DEScan2
+
+Consensus regions are important because they represent genomic intervals consistently detected across samples within a condition, enabling reliable and comparable quantification. This ensures that downstream analyses, like normalization and differential testing, are performed on a robust, unified set of regions, improving biological interpretation and reducing noise.
+
+This chunk processes **MACS2 broad peaks** from ATAC-seq data to identify **condition-specific consensus regions** using `DEScan2::finalRegions`. It:
+
+-   Imports `.broadPeak` files from the "WT" condition.
+
+-   Groups them by sample name (those matching `_SD$` and `WT`).
+
+-   Calls `finalRegions()` for each condition-specific group with:
+
+    -   No z-score thresholding,
+    -   `minCarriers = 1` (regions kept if present in at least one sample),
+    -   Based on MACS2’s `score` column.
+
+```{r descan2_conds, eval=FALSE}
+#######################
+## on MACS2 peaks
+#######################
+bpeaks <- list.files("2023/peaks/MACS2_peaks/WT", pattern=".broadPeak$", full.names=TRUE)
+library(rtracklayer)
+grl<- lapply(bpeaks, import, format="broadPeak")
+names(grl) <- gsub("_CA1-do_sorted.bam_peaks.broadPeak", "", basename(bpeaks))
+
+library(DEScan2)
+ccs <- c("_SD$","WT")
+rrlistcond <- lapply(ccs, function(c)
+{
+    finalRegions(GRangesList(grl[grep(c, names(grl))]), 
+            zThreshold=0, minCarriers=1, saveFlag=FALSE, 
+            scorecolname="score", verbose=TRUE) 
+})
+
+names(rrlistcond) <- c("WT_SD", "WT_CTRL")
+```
+
+# Counting Reads in Final Regions with DEScan2
+
+This chunk organizes WT ATAC-seq BAM files, counts reads over consensus peak regions using DEScan2, and annotates the resulting data with sample and experimental metadata, enabling downstream normalization and differential expression analyses on pseudo-bulk data.
+
+1.  **Moves BAM files**:
+
+    -   Filters and moves only **WT ATAC-seq** BAM files and their indices (`.bai`) into a dedicated folder (`2023/bams/ATAC_WT`).
+    -   Skips files `7` and `8` (likely replicates or bad samples).
+
+2.  **Counts reads in DEScan2 final regions**:
+
+    -   For each set of condition-specific consensus regions (`rrlistcond`), it uses `countFinalRegions()` to compute **read counts** from the BAMs in `ATAC_WT`.
+
+3.  **Creates `SummarizedExperiment` objects** with rich metadata:
+
+    -   Assigns:
+        -   `Sample`, `Replicate`, `Condition`, `Genotype`, `CellType`, and a composite `gcondition`.
+    -   Extracts metadata from filenames via regex parsing.
+    -   Normalizes condition labels (e.g., `"SD"` vs `"CTRL"`) and updates genotypes based on sample IDs (`"S3"` is assumed to be KO).
+
+```{r descan2_conds1, eval=FALSE}
+bamswt <- list.files("2023/bams", pattern="*sorted.bam$", recursive=TRUE, full.names=TRUE)
+bamswt <- bamswt[grep(pattern="ATAC", x=bamswt)]
+bamswt <- bamswt[grep(pattern="WT|_SD_", x=bamswt)]
+bamswt <- bamswt[-c(7,8)]
+lapply(bamswt, function(b){
+    system(paste0("mv ", b, " 2023/bams/ATAC_WT/", basename(b)))
+    })
+
+lapply(bamswt, function(b){
+    system(paste0("mv ", b, ".bai 2023/bams/ATAC_WT/", basename(b),".bai"))
+    })
+
+bamdir <- "2023/bams/ATAC_WT"
+secondlist <- lapply(rrlistcond, function(finalrr)
+{
+    countFinalRegions(finalrr, readsFilePath=bamdir, 
+                        fileType="bam", minCarriers=1)
+})
+
+selist <- lapply(secondlist, function(se)
+{
+    names(assays(se)) <-"counts"
+    se$Sample <- gsub("_CA1-do.bam", "", basename(se$readsFiles))
+    rc <- strsplit(basename(se$readsFiles), "_")
+    se$condition <- unlist(lapply(rc, function(c) c[2]))
+    se$replicate <- unlist(lapply(rc, function(r) r[1]))
+    se$cellType <- "CA1-do"
+    se$genotype <- "WT"
+    se$genotype[grep("S3", se$condition)] <- "KO"
+    sd <- grep("SD", se$condition)
+    se$condition <- "CTRL"
+    se$condition[sd] <- "SD"
+    se$gcondition <- paste(se$genotype, se$condition, sep="_")
+    colnames(se) <- se$Sample
+    se
+})
+```
+
+# Loading Control Gene Sets and MACS2 Peak Data
+
+This chunk loads negative and positive control gene sets used for downstream analyses, imports necessary annotation libraries, and reads in previously processed MACS2 peak data for two conditions ("WT_SD" and "WT_HC"). The loaded controls will help in evaluating the specificity and validity of the results, while the color palette setup is for consistent plotting aesthetics.
+
+```{r reading_controls}
+
+nc <- readRDS("~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS")
+pc <- read.table("~/Downloads/multiome_data/ctrls/111022_Positive_Controls_from_BMC_Genomics_AddFile2.txt", header=TRUE)
+# library(biomaRt)
+# 
+# mart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+library(ChIPpeakAnno)
+# mm10anno <- getAnnotation(mart)
+
+## MACS2 Peaks
+macsseclist <- readRDS("~/Downloads/multiome_data/results/sleepmo_atac_selist_318_2023_MACS2_DEScan2.rds")
+names(macsseclist) <- c("WT_SD", "WT_HC")
+colors <- palette.colors(palette = "Okabe-Ito") #colorblinded palette
+```
+
+# Exploring the Number of Consensus Peaks Across Samples
+
+This chunk analyzes and visualizes how many consensus peaks are detected in MACS2-DEScan2 processed data as the minimum number of samples (“carriers”) required to call a peak varies (from 1 to 3). For each condition (SD and HC), it calculates the number of peaks present in at least `k` samples and plots these counts to assess peak reproducibility across replicates. The resulting plots help to understand peak robustness and guide downstream filtering thresholds.
+
+```{r exploring_peaks}
+library(ggplot2)
+library(ggpubr)
+library(SummarizedExperiment)
+kdflist <- lapply(macsseclist, function(se)
+{
+    kk <- vector()
+    for( k in c(0:2)) 
+    {
+        kk[k+1] <- dim(se[mcols(rowRanges(se))$`k-carriers`>k,])[1]
+    }
+    
+    kdf <- data.frame(k=c(1:3), peaks=kk)
+    kdf
+})
+
+gglist <- list()
+titl <- c("SD", "HC")
+for(i in seq_along(kdflist))
+{
+    kdf <- kdflist[[i]]
+    gglist[[i]] <- ggplot(data=kdf, aes(x=k, y=peaks)) + 
+        ylab("peaks") + 
+        xlab("samples") +
+        # xlim(1, 12)+
+        #ylim(-100,30000)+
+        # geom_smooth(se=FALSE) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(0, 3, by = 1)) +
+        scale_y_continuous(breaks = seq(0, 100000, by = 3000))+ 
+        ggtitle(titl[i]) + theme_bw()
+}
+annotate_figure(ggarrange(plotlist=gglist), top="WT MACS2 DEScan2 Peaks")
+```
+
+# Filtering and Extracting Robust Consensus Peaks Based on Sample Carriers
+
+This chunk inspects the distribution of the number of samples (“carriers”) supporting each peak across conditions. It then filters peaks to retain only those present in more than one sample (`k-carriers > 1`), creating a refined list of robust consensus peaks. Finally, it extracts the corresponding peak ranges and associated metadata for further analysis or export.
+
+```{r carriers}
+
+lapply(macsseclist, function(se){table(rowRanges(se)$`k-carriers`)})
+
+nms <- names(macsseclist)
+mselist <- lapply(seq_along(macsseclist), function(i)
+{
+    se <- macsseclist[[i]]
+    se <- se[mcols(rowRanges(se))$`k-carriers`>1,]
+    se
+})
+names(mselist) <- nms
+mselist
+
+
+mrrplist <- lapply(mselist, function(se)
+{   
+    rrp <- rowRanges(se)
+    mcols(rrp) <- mcols(rrp)[,c(1:3)]
+    rrp
+})
+
+```
+
+# Preparing Promoter Regions for Peak Distribution Analysis
+
+This chunk loads mouse genome annotation data and defines promoter regions as ±3 kb around transcription start sites (TSS). These promoter regions will be used later to analyze the distribution of peaks relative to gene TSS, which helps understand the genomic context of the detected peaks.
+
+```{r tss_distr}
+library(TxDb.Mmusculus.UCSC.mm10.knownGene)
+txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
+library(ChIPseeker)
+promoter <- getPromoters(TxDb=txdb, upstream=3000, downstream=3000)
+
+```
+
+# Plotting Average Peak Profiles Around Promoters
+
+We now computes tag matrices representing peak signal enrichment around promoter regions (±3 kb from TSS) for each condition. It then plots the average peak profiles, allowing comparison of chromatin accessibility patterns near gene start sites across conditions, which is important for understanding regulatory differences.
+
+```{r avgprof}
+tagMatrixList <- lapply(mrrplist, getTagMatrix, windows=promoter, upstream=3000, 
+                downstream=3000, type="start_site", by="gene")
+plotAvgProf(tagMatrixList, xlim=c(-3000, 3000)) + scale_color_manual(values=c(names(colors)[1], names(colors)[2]))
+```
+
+# Intersection and Visualization of Condition-Specific and Shared Peaks
+
+Performs an intersection analysis of consensus peaks between the "SD" and "HC" conditions using `ChIPpeakAnno`. It identifies unique and shared peaks across conditions, annotates them accordingly, and visualizes overlaps with a Venn diagram. This helps highlight condition-specific and common regulatory regions.
+
+```{r venn_conds, cache=FALSE, results='hide'}
+library(ChIPpeakAnno)
+mwtsd <- mrrplist[[1]]
+mwtct <- mrrplist[[2]]
+mol <- findOverlapsOfPeaks(mwtsd, mwtct)
+mwtsdunique <- mol$uniquePeaks[grep("wtsd", names(mol$uniquePeaks)),]
+mwtsdunique$details <- "SD"
+mwtctunique <- mol$uniquePeaks[grep("wtct", names(mol$uniquePeaks)),]
+mwtctunique$details <- "CT"
+mmrgd <- mol$mergedPeaks
+mmrgd1 <- mmrgd
+mcols(mmrgd1) <- NULL
+mmrgd1$details <- "merged"
+library(ChIPseeker)
+a <- makeVennDiagram(mol, NameOfPeaks=c("SD", "HC"), by="region",
+    fill=c("#BCD2EE", "#ffffe0"), # circle fill color
+    col=c(colors[1], colors[1]), #circle border color
+    cat.col=c(colors[1], colors[1]))
+allpeaks <- sort(c(mwtsdunique, mwtctunique, mmrgd1))
+```
+
+# Annotation of Peaks Relative to Genomic Features
+
+Annotates the merged consensus peaks by mapping them to genomic features using the mouse genome annotation. It classifies peaks based on their location relative to promoters (defined as 2 kb upstream to 500 bp downstream of TSS) and downstream gene regions (up to 2 kb), providing insight into the functional genomic context of these peaks.
+
+## HC-SD Common Peaks
+
+```{r merged_anno}
+out <- genomicElementDistribution(mmrgd, 
+       TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
+       promoterRegion=c(upstream=2000, downstream=500),
+       geneDownstream=c(upstream=0, downstream=2000)) ## chipseeker
+```
+
+## SD Unique Peaks
+
+```{r sd_anno}
+a<-genomicElementDistribution(mwtsdunique, 
+       TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
+       promoterRegion=c(upstream=2000, downstream=500),
+       geneDownstream=c(upstream=0, downstream=2000))
+
+```
+
+## HC Unique Peaks
+
+```{r ct_anno}
+b<-genomicElementDistribution(mwtctunique, 
+       TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
+       promoterRegion=c(upstream=2000, downstream=500),
+       geneDownstream=c(upstream=0, downstream=2000))
+```
+
+# Generating Count Matrices for Differential Accessibility Analysis Using DEScan2
+
+Counts reads overlapping merged and condition-specific peak sets using DEScan2’s countFinalRegions on WT ATAC BAM files. This produces count matrices needed for downstream differential accessibility analysis (DARs) across all peaks and condition-unique peaks.
+
+```{r descan2_mrg_conds, eval=FALSE}
+indir <- "2023/peaks"
+mmrgd <- readRDS(file.path(indir,"bioc318_MACS2_bro_merged_WT_SDCT_peaks_2023.rds"))
+mmrgd$`k-carriers` <- 3
+bamdir <- "2023/bams/ATAC_WT"
+mmrgdcntsSE <- DEScan2::countFinalRegions(mmrgd, readsFilePath=bamdir, 
+                        fileType="bam", minCarriers=2)
+
+
+mwtsdunique <- readRDS(file.path(indir,"bioc318_MACS2_bro_WT_SD_unique_peaks_2023.rds"))
+mwtsdcntsSE <- DEScan2::countFinalRegions(mwtsdunique, readsFilePath=bamdir, 
+                        fileType="bam", minCarriers=2)
+mwtctunique <- readRDS(file.path(indir,"bioc318_MACS2_bro_WT_CT_unique_peaks_2023.rds"))
+mwtctcntsSE <- DEScan2::countFinalRegions(mwtctunique, readsFilePath=bamdir, 
+                        fileType="bam", minCarriers=2)
+```
+
+# PCA Visualization of Raw Counts Across Condition-Specific and Merged Peak Sets
+
+We now load DEScan2-generated count matrices for condition-specific peaks ("HC" and "SD") and merged peaks, reshaping each dataset to a consistent format for analysis. For each dataset, PCA plots are generated based on raw (not normalized) counts to visualize sample clustering and assess variability related to experimental conditions. Finally, all datasets are combined into a single summarized experiment object, and a joint PCA plot is created to compare global patterns across all peak sets, providing an overview of data structure before further normalization and differential analysis.
+
+```{r reading_descan2_mrgdconds}
+source("../R/utils.R")
+library(darioscripts)
+library(ggpubr)
+mwtctcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_wtctcntsSE_2023.rds")
+mwtctcntsSE <- reshapeSEDEscan2(mwtctcntsSE, details="CT")
+mwtctcntsSE$condition[mwtctcntsSE$condition=="CTRL"] <- "HC"
+mpcct <- plotPCAs(assay(mwtctcntsSE), colData=colData(mwtctcntsSE), shapeBy="condition", colorBy="condition", prefix="HC peaks", returnOnly=TRUE)  +
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()# + theme(legend.position = "none")
+
+
+mwtsdcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_wtsdcntsSE_2023.rds")
+mwtsdcntsSE <- reshapeSEDEscan2(mwtsdcntsSE, details="SD")
+mwtsdcntsSE$condition[mwtsdcntsSE$condition=="CTRL"] <- "HC"
+mpcsd <- plotPCAs(assay(mwtsdcntsSE), colData=colData(mwtsdcntsSE), shapeBy="condition", colorBy="condition", prefix="SD peaks", returnOnly=TRUE) +
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+
+mmrgdcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_mrgdcntsSE_2023.rds")
+mmrgdcntsSE <- reshapeSEDEscan2(mmrgdcntsSE, details="merged")
+mmrgdcntsSE$condition[mmrgdcntsSE$condition=="CTRL"] <- "HC"
+mpcmg <- plotPCAs(assay(mmrgdcntsSE), colData=colData(mmrgdcntsSE), shapeBy="condition", colorBy="condition", prefix="Merged peaks", returnOnly=TRUE) + scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+
+
+mallSE <- rbind(mmrgdcntsSE, mwtsdcntsSE, mwtctcntsSE)
+
+mpcall <- plotPCAs(assay(mallSE), colData=colData(mallSE), shapeBy="condition", 
+            colorBy="condition", prefix="All Peaks", returnOnly=TRUE)+ scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+
+peaksdf <- as.data.frame(rowRanges(mallSE))
+annotate_figure(ggarrange(plotlist=list(mpcct, mpcsd, mpcmg, mpcall), common.legend=TRUE), top="Not Normalized peaks")
+```
+
+# Annotation and PCA of Negative and Positive Control Peaks
+
+Annotates peaks in the combined dataset (mallSE) with genomic features using known gene annotations and gene ontology databases. It identifies peaks overlapping negative control genes (nc) and positive control genes (pc), labeling them accordingly. The code then splits negative control peaks into training and testing sets for validation purposes. PCA plots are generated separately for negative control peaks, positive control peaks, and all peaks, allowing visualization of how these control sets cluster and behave across conditions. The combined plots facilitate assessment of data quality and control peak behavior in the dataset.
+
+```{r contrs_anno}
+
+rranno <- annotatePeak(rowRanges(mallSE), tssRegion=c(-3000, 3000), TxDb=TxDb.Mmusculus.UCSC.mm10.knownGene, annoDb="org.Mm.eg.db")@anno
+
+## NC
+rrannonc <- rranno[which(rranno$ENSEMBL %in% nc$ensembl_id),]
+ncpeaks <- rownames(mallSE)[which(rownames(mallSE) %in% names(rrannonc))]
+
+set.seed(100)
+idxs <- sample(seq_along(ncpeaks), round((length(ncpeaks)[1]*10)/100))
+ncpeakstest <- ncpeaks[idxs]
+ncpeaksruv <- ncpeaks[-idxs]
+
+rowRanges(mallSE)$negCtl <- FALSE
+rowRanges(mallSE)$negCtl[which(rownames(mallSE) %in% ncpeaks)] <- TRUE
+
+## PC
+rrannopc <- rranno[which(rranno$ENSEMBL %in% pc$Ensembl_ID),]
+pcpeaks <- rownames(mallSE)[which(rownames(mallSE) %in% names(rrannopc))]
+rowRanges(mallSE)$posCtl <- FALSE
+rowRanges(mallSE)$posCtl[which(rownames(mallSE) %in% pcpeaks)] <- TRUE
+
+ncpca <- plotPCAs(assay(mallSE[rowRanges(mallSE)$negCtl,]), colData=colData(mallSE[rowRanges(mallSE)$negCtl,]), shapeBy="condition", colorBy="condition", prefix="Negative Control Peaks", returnOnly=TRUE)+ scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+
+pcpca <- plotPCAs(assay(mallSE[rowRanges(mallSE)$posCtl,]), colData=colData(mallSE[rowRanges(mallSE)$posCtl,]), shapeBy="condition", colorBy="condition", prefix="Positive Control Peaks", returnOnly=TRUE)+ scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+
+ggarrange(plotlist=list(mpcall, ncpca, pcpca), common.legend=TRUE)
+
+```
+
+# Reconciliation and Completion of Peak Annotations in the Combined Dataset
+
+This code aligns and reconciles peak annotations between the combined peak set (`mallSE`) and previously obtained annotations (`rranno`). It separates peaks that lack annotations (`notanno`) from those with existing annotations, ensuring metadata columns are consistent across both groups by adding missing columns with `NA` values where needed. Then, it merges the annotated and non-annotated peaks back together, preserving the original order to match the combined dataset. Finally, it updates the row ranges of the combined dataset (`mallSE`) with this completed and harmonized annotation data.
+
+```{r mrgd_peaks_anno}
+mallserr <- rowRanges(mallSE)
+rrannobkup <- rranno
+notanno <- mallserr[which(!names(mallserr) %in% names(rranno))]
+anno <- rranno[which(names(rranno) %in% names(mallserr))]
+mallanno <- mallserr[which(names(mallserr) %in% names(rranno))]
+rranno <- rranno[which(names(rranno) %in% names(mallanno))] 
+rranno$negCtl <- mallanno$negCtl
+rranno$posCtl <- mallanno$posCtl
+elementMetadata(rranno) <- elementMetadata(rranno)[,c(1:6, 18,19, 7:17)]
+newcols <- colnames(elementMetadata(rranno))[
+    which(
+        !colnames(elementMetadata(rranno)) %in% colnames(elementMetadata(notanno)))
+    ]
+ddf <- as.data.frame(elementMetadata(notanno))
+for(c in newcols)
+{
+    ddf[[c]] <- NA
+}
+
+elementMetadata(notanno) <- DataFrame(ddf)
+annotatedrr <- c(rranno, notanno)
+annotatedrr <- annotatedrr[match(rownames(mallSE), names(annotatedrr)),]
+mallSEs <- mallSE
+rowRanges(mallSE) <- annotatedrr
+```
+
+# Differential Accessibility Analysis with RUV Normalization Using Controls
+
+This chunk performs differential accessibility region (DAR) analysis on combined peak data (`mallSE`) using the RUVSeq package to remove unwanted variation, leveraging negative control peaks.
+
+-   It first visualizes PCA of raw peak counts by condition.
+-   Then, it defines sample groups and applies RUVs normalization with k=3 factors, using a set of negative control peaks (`ncpeaksruv`).
+-   PCA is plotted again to visualize effects of normalization.
+-   The RUV factors (W matrix) are added to the sample metadata, and normalized counts stored.
+-   EdgeR is applied with these factors included as covariates to identify DARs contrasting "SD" vs "HC" conditions.
+-   The code counts significant DARs and intersects them with known negative and positive control peaks to assess results.
+-   Finally, it reformats differential test results with genomic coordinates for downstream export or visualization.
+
+```{r dars}
+library(RUVSeq)
+
+plotPCAs(log1p(assay(mallSE)), colData=colData(mallSE), shapeBy="condition", colorBy="condition", prefix="WT Not Norm", returnOnly=TRUE, size=3)+scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+
+grp <- makeGroups(mallSE$condition)
+
+ruvk3 <- RUVs(x=assay(mallSE), cIdx=ncpeaksruv, k=3, scIdx=grp)
+
+(pcr3nc <- plotPCAs(log1p(ruvk3$normalizedCounts), colData=colData(mallSE), shapeBy="condition", colorBy="condition", prefix="ATAC RUVsK3 NC", returnOnly=TRUE, size=3)+scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw())
+
+
+colData(mallSE) <- cbind.DataFrame(colData(mallSE), ruvk3$W)
+assays(mallSE)$RUVsk3 <- ruvk3$normalizedCounts
+resk3wnc <- applyEdgeR(assay(mallSE), colData=colData(mallSE), factors="condition",
+                    wnames=colnames(ruvk3$W), contrasts="SD - HC")
+rk3darswnc <- sum(resk3wnc$`SD - CTRL`$FDR < 0.05)
+rk3darsncwnc <- sum(rownames(resk3wnc$`SD - CTRL`[resk3wnc$`SD - CTRL`$FDR < 0.05,]) %in% ncpeakstest)
+rk3darspcwnc <- sum(rownames(resk3wnc$`SD - CTRL`[resk3wnc$`SD - CTRL`$FDR < 0.05,]) %in% pcpeaks)
+resk3wr <- resk3wnc$`SD - HC`
+seqnames <- unlist(lapply(strsplit(rownames(resk3wr), ":"), function(x) x[1]))
+startend <- unlist(lapply(strsplit(rownames(resk3wr), ":"), function(x) x[2]))
+start <- as.numeric(unlist(lapply(strsplit(startend, "-"), function(x) x[1])))
+end <- as.numeric(unlist(lapply(strsplit(startend, "-"), function(x) x[2])))
+resk3wr$chr <- seqnames
+resk3wr$start <- start
+resk3wr$end <- end
+resk3wr <- resk3wr[,c(8:10,1:7)]
+```
+
+# Distribution of Differentially Accessible Regions (DARs) Across Genomic Elements
+
+This code extracts DARs from the combined peak dataset (`mallSE`), filters them to standard chromosomes only, and then uses `genomicElementDistribution` to summarize their genomic annotation. Specifically, it calculates how DARs are distributed among genomic features such as promoters (defined here as 2 kb upstream to 500 bp downstream of transcription start sites) and downstream gene regions (up to 2 kb). This helps understand the genomic context where accessibility changes occur.
+
+```{r}
+darsregions <- rowRanges(mallSE)[rowRanges(mallSE)$DARs,]
+darsregions <- keepStandardChromosomes(darsregions)
+p <- genomicElementDistribution(darsregions, 
+       TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
+       promoterRegion=c(upstream=2000, downstream=500),
+       geneDownstream=c(upstream=0, downstream=2000))
+```
+
+# Annotation and Cross-Comparison of DARs with DEGs
+
+We now can annotate DARs in the `mallSE` SummarizedExperiment object by adding differential accessibility results (`edgeR`) and integrate previously identified differentially expressed genes (DEGs) data. We mark peaks associated with DARs and DEGs, then summarize overlaps and counts through interactive tables. The chunk further categorizes DARs and DEGs by direction of change (up/down regulation) and generates subsets where DARs and DEGs are concordant or discordant in their fold changes. This comprehensive annotation helps explore the relationship between chromatin accessibility and gene expression changes.
+
+```{r dars_anno}
+mallSE <- mallSE[match( rownames(resk3wr), rownames(mallSE)),]
+elementMetadata(rowRanges(mallSE))$edgeR <- resk3wr
+
+dars <- mallSE[rowRanges(mallSE)$edgeR$FDR < 0.05,]
+degs <- as.data.frame(readxl::read_excel("~/Downloads/multiome_data/results/DEGs_WT_UQRUVsK3_2023.xlsx"))
+degss <- degs[degs$sign,]
+rowRanges(mallSE)$DEGs <- FALSE 
+rowRanges(mallSE)$DEGs[which(tolower(rowRanges(mallSE)$SYMBOL) %in% tolower(degss$gene))] <- TRUE
+rowRanges(mallSE)$DARs <- FALSE
+rowRanges(mallSE)$DARs[rowRanges(mallSE)$edgeR$FDR < 0.05] <- TRUE
+
+rrmsedddf <- as.data.frame(rowRanges(mallSE))
+
+cols <- c(1:5, 8, 25, 26, 11:24, 30:38)
+rrmsedddf <- rrmsedddf[,cols]
+library(DT)
+datatable(data.frame(tot_peaks=dim(mallSE)[1],
+                     peaks_anno=(dim(mallSE)[1] - sum(is.na(rowRanges(mallSE)$SYMBOL))),
+                     tot_dars=sum(rowRanges(mallSE)$DARs), 
+                     dars_anno=length(rowRanges(dars)$SYMBOL),
+                     peaks_degs=sum(rowRanges(mallSE)$DEGs),
+                     dars_degs=sum(rowRanges(mallSE)$DEGs & rowRanges(mallSE)$DARs)
+                     ))
+
+darsdeg <- datatable(data.frame(tot_peaks=dim(mallSE)[1],
+                     peaks_anno=(dim(mallSE)[1] - sum(is.na(rowRanges(mallSE)$SYMBOL))),
+                     tot_dars=sum(rowRanges(mallSE)$DARs), 
+                     dars_anno=length(rowRanges(dars)$SYMBOL),
+                     peaks_degs=sum(rowRanges(mallSE)$DEGs),
+                     dars_degs=sum(rowRanges(mallSE)$DEGs & rowRanges(mallSE)$DARs)
+                     ))
+
+degsdown <- degss[degss$logFC<0,]
+degsup <- degss[degss$logFC>0,]
+darsdown <- rowRanges(dars)[rowRanges(dars)$edgeR$logFC<0,]
+darsup <- rowRanges(dars)[rowRanges(dars)$edgeR$logFC>0,]
+
+cols <- c(1:5, 8, 11:24, 30:36)
+darsdd <- darsdown[which(tolower(darsdown$SYMBOL) %in% tolower(degsdown$gene)),]
+darsdddf <- as.data.frame(darsdd)[,cols]
+darsdu <- darsdown[which(tolower(darsdown$SYMBOL) %in% tolower(degsup$gene)),]
+darsdudf <- as.data.frame(darsdu)[,cols]
+darsud <- darsup[which(tolower(darsup$SYMBOL) %in% tolower(degsdown$gene)),]
+darsuddf <- as.data.frame(darsud)[,cols]
+darsuu <- darsup[which(tolower(darsup$SYMBOL) %in% tolower(degsup$gene)),]
+darsuudf <- as.data.frame(darsuu)[,cols]
+darsdegdt <- datatable(data.frame(darsDWN_degsDWN=length(darsdd)[1],
+                     darsDWN_degsUP=length(darsdu)[1],
+                     darsUP_degsDWN=length(darsud)[1],
+                     darsUP_degsUP=length(darsuu)[1]
+                     ))
+```
+
+# Summary Statistics and Control Enrichment of DARs
+
+We compile statistics on DARs identified by the RUVs normalization method, focusing on their overlap with positive and negative control peak sets. We calculate counts and percentages of DARs overlapping positive controls, and similarly for a subset of negative controls (10%). The results are combined into a clear summary table with columns showing raw counts, percentages relative to DARs, and percentages relative to total controls. This helps us assess the quality and specificity of DAR detection by comparing observed enrichments against known control regions. The summary is displayed as an interactive datatable for easy inspection.
+
+```{r dars_res}
+
+df <- rbind(rk3darswnc)
+rownames(df) <- c("ruvs_K3_NC")
+df2 <- rbind(rk3darspcwnc)
+df3 <- (df2[,1]/df[,1])*100
+df7 <- (df2[,1]/length(pcpeaks))*100
+
+df4 <- rbind(rk3darsncwnc)
+df5 <- (df4[,1]/df[,1])*100
+df6 <- (df4[,1]/length(ncpeaks))*100
+
+df8 <- cbind(df, df2, paste0(round(df3),"%"),paste0(round(df7),"%"),paste0(round(df4),"%"),paste0(round(df5),"%"),paste0(round(df6),"%"))
+colnames(df8) <- c("DARs", "DARs Pos Ctrl", "PC/DARs %", "PC/totPC %", "DARs Neg Ctrl(10%)", "NC(10%)/DARs %", "NC(10%)/totNC %")
+library(DT)
+datatable(df8, options=list("lengthMenu"=c(25,50,100)), caption="Differential Accessible Regions for SD-CTRL of Wild Type genotype") 
+darsdeg
+darsdegdt
+```
+
+# sessionInfo()
+
+```{r, tidy=TRUE}
+sessionInfo()
+```

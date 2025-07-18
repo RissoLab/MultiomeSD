@@ -1,0 +1,14 @@
+{
+  "hash": "71b8f9fdf528084b42a3f38df852bc19",
+  "result": {
+    "markdown": "---\ntitle: \"Doublets Identification\"\noutput: rmarkdown::html_vignette\nvignette: >\n  %\\VignetteIndexEntry{Doublets Identification}\n  %\\VignetteEngine{knitr::rmarkdown}\n  %\\VignetteEncoding{UTF-8}\n---\n\n\n\n::: {.cell}\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

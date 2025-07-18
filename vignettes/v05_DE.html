@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dario Righelli">
+<meta name="dcterms.date" content="2025-07-18">
+
+<title>Multiome Sleep Deprivation - DEGs for All Cell Types on WT Genotype</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+
+<meta property="og:title" content="Multiome Sleep Deprivation - DEGs for All Cell Types on WT Genotype">
+<meta property="og:description" content="">
+<meta property="og:image" content="v05_DE_files/figure-html/unnamed-chunk-3-1.png">
+<meta property="og:site-name" content="Multiome Sleep">
+<meta property="og:locale" content="en_US">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Multiome Sleep Deprivation</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-vignettes" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Vignettes</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-vignettes">    
+        <li>
+    <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
+ <span class="dropdown-text">DEGsWT</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v06_DE_CA1Do.html" rel="" target="">
+ <span class="dropdown-text">DEGsWTCA1Do</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v07_DARs.html" rel="" target="">
+ <span class="dropdown-text">DARsWT_CA1Do</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#loading-libraries" id="toc-loading-libraries" class="nav-link active" data-scroll-target="#loading-libraries">Loading libraries</a></li>
+  <li><a href="#visualization-for-wt-samples" id="toc-visualization-for-wt-samples" class="nav-link" data-scroll-target="#visualization-for-wt-samples">Visualization for WT Samples</a></li>
+  <li><a href="#load-and-annotate-pseudobulk-data-all-cell-types" id="toc-load-and-annotate-pseudobulk-data-all-cell-types" class="nav-link" data-scroll-target="#load-and-annotate-pseudobulk-data-all-cell-types">Load and Annotate Pseudobulk Data (All Cell Types)</a></li>
+  <li><a href="#annotate-genes-with-external-feature-information" id="toc-annotate-genes-with-external-feature-information" class="nav-link" data-scroll-target="#annotate-genes-with-external-feature-information">Annotate Genes with External Feature Information</a></li>
+  <li><a href="#dimensionality-reduction-for-each-cell-type" id="toc-dimensionality-reduction-for-each-cell-type" class="nav-link" data-scroll-target="#dimensionality-reduction-for-each-cell-type">Dimensionality Reduction for Each Cell Type</a></li>
+  <li><a href="#normalization-using-upper-quartile-ruvs-per-cell-type" id="toc-normalization-using-upper-quartile-ruvs-per-cell-type" class="nav-link" data-scroll-target="#normalization-using-upper-quartile-ruvs-per-cell-type">Normalization Using Upper Quartile + RUVs (per Cell Type)</a></li>
+  <li><a href="#plot-mds-and-pca-after-normalization-per-cell-type" id="toc-plot-mds-and-pca-after-normalization-per-cell-type" class="nav-link" data-scroll-target="#plot-mds-and-pca-after-normalization-per-cell-type">Plot MDS and PCA after Normalization (per Cell Type)</a></li>
+  <li><a href="#run-differential-expression-with-uqruvsk3-normalization" id="toc-run-differential-expression-with-uqruvsk3-normalization" class="nav-link" data-scroll-target="#run-differential-expression-with-uqruvsk3-normalization">Run Differential Expression with UQ+RUVsK3 Normalization</a></li>
+  <li><a href="#compare-degs-and-nuclei-count" id="toc-compare-degs-and-nuclei-count" class="nav-link" data-scroll-target="#compare-degs-and-nuclei-count">Compare DEGs and Nuclei Count</a>
+  <ul class="collapse">
+  <li><a href="#compare-degs-and-nuclei-count-all-cell-types" id="toc-compare-degs-and-nuclei-count-all-cell-types" class="nav-link" data-scroll-target="#compare-degs-and-nuclei-count-all-cell-types">Compare DEGs and Nuclei Count (All Cell Types)</a></li>
+  <li><a href="#compare-degs-and-nuclei-filtered-100-nuclei" id="toc-compare-degs-and-nuclei-filtered-100-nuclei" class="nav-link" data-scroll-target="#compare-degs-and-nuclei-filtered-100-nuclei">Compare DEGs and Nuclei (Filtered: &gt;100 Nuclei)</a></li>
+  <li><a href="#compare-degs-vs-nuclei-in-neuronal-types-100-nuclei" id="toc-compare-degs-vs-nuclei-in-neuronal-types-100-nuclei" class="nav-link" data-scroll-target="#compare-degs-vs-nuclei-in-neuronal-types-100-nuclei">Compare DEGs vs Nuclei in Neuronal Types (&gt;100 Nuclei)</a></li>
+  <li><a href="#mds-plots-of-superclasses" id="toc-mds-plots-of-superclasses" class="nav-link" data-scroll-target="#mds-plots-of-superclasses">MDS Plots of Superclasses</a></li>
+  </ul></li>
+  <li><a href="#sessioninfo" id="toc-sessioninfo" class="nav-link" data-scroll-target="#sessioninfo">SessionInfo</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">DEGs for All Cell Types on WT Genotype</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dario Righelli </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 18, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo=</span><span class="cn">TRUE</span>, <span class="at">warning=</span><span class="cn">FALSE</span>, <span class="at">message=</span><span class="cn">FALSE</span>, <span class="at">include=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="loading-libraries" class="level1">
+<h1>Loading libraries</h1>
+<p>This chunk loads all the necessary R packages and resources for the downstream single-cell and pseudobulk analyses.</p>
+<ul>
+<li><code>scater</code>: used for visualization and processing of single-cell data.</li>
+<li><code>RUVSeq</code>: provides functions for normalization using control genes (RUV normalization).</li>
+<li><code>darioscripts</code>: a custom helper package with user-defined functions.</li>
+<li><code>DT</code>: used to generate interactive HTML tables.</li>
+<li><code>ggpubr</code> and <code>ggrepel</code>: utilities to produce clean ggplot-based visualizations with non-overlapping text labels.</li>
+<li><code>utils.R</code>: a script with additional helper functions, sourced from the <code>../R/</code> directory.</li>
+<li>The color palette used for plotting (<code>subcluster.color</code>) is loaded from a pre-saved <code>.RData</code> file and assigned to <code>palette</code>.</li>
+</ul>
+<p>Some libraries and scripts are commented out, likely because they are either not currently needed or replaced by custom implementations.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RUVSeq)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(darioscripts)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/utils.R"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"~/Downloads/multiome_data/data/MultiomeAllenColorLabel.RData"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>palette <span class="ot">&lt;-</span> subcluster.color</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="visualization-for-wt-samples" class="level1">
+<h1>Visualization for WT Samples</h1>
+<p>This chunk performs dimensionality reduction and visualization for wild-type (WT) and sleep-deprived (SD) samples from a filtered single-cell RNA-seq dataset.</p>
+<ul>
+<li>The <code>SingleCellExperiment</code> object list <code>scelist</code> is first read from a file containing RNA-only data with doublets removed.</li>
+<li>Only WT and SD samples are selected using a regex filter.</li>
+<li>Dimensionality reduction is computed using PCA, followed by <code>tSNE</code> and <code>UMAP</code>, which are embedded into the <code>scelistwt</code> objects.</li>
+<li>Sample names containing <code>_WT</code> are renamed to <code>_HC</code> (likely to represent healthy controls).</li>
+<li>For each sample, two plots are created: a tSNE and a UMAP, colored by annotated cell labels.</li>
+<li>These plots are arranged side-by-side and labeled with the sample name using <code>ggpubr</code>.</li>
+</ul>
+<p>This step is useful for visually inspecting clustering patterns and checking label separability across conditions.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>scelistwt <span class="ot">&lt;-</span> scelist[<span class="fu">grep</span>(<span class="st">"_WT|_SD$"</span>, <span class="fu">names</span>(scelist))]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>scelistwt <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelistwt, runTSNE, <span class="at">dimred=</span><span class="st">"PCA"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>scelistwt <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelistwt, runUMAP, <span class="at">dimred=</span><span class="st">"PCA"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(scelistwt) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"_WT"</span>, <span class="st">"_HC"</span>, <span class="fu">names</span>(scelistwt))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">seq_along</span>(scelistwt), <span class="cf">function</span>(i)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> scelistwt[[i]]</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    ts <span class="ot">&lt;-</span> <span class="fu">plotReducedDim</span>(sce, <span class="at">dimred=</span><span class="st">"TSNE"</span>, <span class="at">colour_by=</span><span class="st">"labels"</span>, <span class="at">point_size=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span>palette) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    um <span class="ot">&lt;-</span> <span class="fu">plotReducedDim</span>(sce, <span class="at">dimred=</span><span class="st">"UMAP"</span>, <span class="at">colour_by=</span><span class="st">"labels"</span>, <span class="at">point_size=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span>palette) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    gga <span class="ot">&lt;-</span> <span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(ts, um), <span class="at">common.legend=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">annotate_figure</span>(gga, <span class="at">top=</span>ggpubr<span class="sc">::</span><span class="fu">text_grob</span>(<span class="fu">names</span>(scelistwt)[i], </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>))</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-3-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[4]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-3-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[5]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-3-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[6]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-3-6.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="load-and-annotate-pseudobulk-data-all-cell-types" class="level1">
+<h1>Load and Annotate Pseudobulk Data (All Cell Types)</h1>
+<p>In this section, we load pseudobulk gene expression data and perform key preprocessing steps:</p>
+<ul>
+<li>The <code>multiome</code> object, a <code>SingleCellExperiment</code> storing pseudobulk counts, is loaded from disk.</li>
+<li>Each sample is annotated with a <code>superclass</code> label: either “Non Neuronal”, “Neuronal - Glutamatergic”, or “Neuronal - Gabaergic” based on known cell types.</li>
+<li>We load a list of known <strong>negative control genes</strong> (used later in RUV normalization) and assign a subset as a test set (10% of them).</li>
+<li>Similarly, <strong>positive control genes</strong> are loaded and flagged.</li>
+<li>Sample condition “CTRL” is renamed to “HC” for consistency.</li>
+<li>We then restrict the data to only <strong>wild-type (WT)</strong> samples and remove cell types not detected in <strong>all samples</strong> (fewer than 6 replicates).</li>
+<li>Library size normalization and log-normalization are performed.</li>
+<li>Finally, we compute and plot MDS and PCA embeddings to assess clustering across cell types and conditions.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS"</span>) <span class="co"># pseudobulk</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>superclass <span class="ot">&lt;-</span> <span class="st">"Non Neuronal"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>superclass[multiome<span class="sc">$</span>label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"CA1"</span>, <span class="st">"CA1-do"</span>,<span class="st">"CA1-ProS"</span>, <span class="st">"CA2"</span>, <span class="st">"CA3"</span>, <span class="st">"SUB-ProS"</span>, <span class="st">"DG"</span>)] <span class="ot">&lt;-</span> <span class="st">"Neuronal - Glutamatergic"</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>superclass[multiome<span class="sc">$</span>label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Lamp5"</span>, <span class="st">"Sncg"</span>, <span class="st">"Vip"</span>, <span class="st">"Serpinf1"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Ntng1"</span>, <span class="st">"Pvalb"</span>, <span class="st">"Sst"</span>, <span class="st">"Sst-Chodl"</span>)] <span class="ot">&lt;-</span> <span class="st">"Neuronal - Gabaergic"</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(nc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4033    2</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> nc<span class="sc">$</span>symbol] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>idxsamp <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_along</span>(nc<span class="sc">$</span>ensembl_id), <span class="fu">round</span>((<span class="fu">dim</span>(nc)[<span class="dv">1</span>]<span class="sc">*</span><span class="dv">10</span>)<span class="sc">/</span><span class="dv">100</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>nctest <span class="ot">&lt;-</span> nc[idxsamp,]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> nc[<span class="sc">-</span>idxsamp,]</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> nc<span class="sc">$</span>symbol] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctltest <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctltest[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> nctest<span class="sc">$</span>symbol] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>newps <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"~/Downloads/multiome_data/ctrls/111022_Positive_Controls_from_BMC_Genomics_AddFile2.txt"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>newpshits <span class="ot">&lt;-</span> newps</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>posctl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>posctl[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> newps<span class="sc">$</span>Gene_Name] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>newpshits<span class="sc">$</span>kept <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>newpshits<span class="sc">$</span>kept[<span class="fu">which</span>(newpshits<span class="sc">$</span>Gene_Name <span class="sc">%in%</span> <span class="fu">rownames</span>(multiome))] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>condition[multiome<span class="sc">$</span>condition<span class="sc">==</span><span class="st">"CTRL"</span>] <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> multiome[,multiome<span class="sc">$</span>genotype<span class="sc">==</span><span class="st">"WT"</span>]</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>noct <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which</span>(<span class="fu">table</span>(multiomewt<span class="sc">$</span>label)<span class="sc">&lt;</span><span class="dv">6</span>))</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> multiomewt[,<span class="sc">-</span><span class="fu">which</span>(multiomewt<span class="sc">$</span>labels <span class="sc">%in%</span> noct)]</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> <span class="fu">computeLibraryFactors</span>(multiomewt)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(multiomewt)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> <span class="fu">runMDS</span>(multiomewt)</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>mdal <span class="ot">&lt;-</span> scater<span class="sc">::</span><span class="fu">plotMDS</span>(multiomewt, <span class="at">color_by=</span><span class="st">"labels"</span>, <span class="at">shape_by=</span><span class="st">"condition"</span>, <span class="at">point_alpha=</span><span class="dv">1</span>, <span class="at">point_size=</span><span class="dv">2</span>) <span class="sc">+</span><span class="fu">theme_bw</span>()</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>pcal <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(multiomewt, <span class="at">color_by=</span><span class="st">"labels"</span>, <span class="at">shape_by=</span><span class="st">"condition"</span>, <span class="at">point_alpha=</span><span class="dv">1</span>, <span class="at">point_size=</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">theme_bw</span>()</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(mdal, pcal), <span class="at">common.legend=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="annotate-genes-with-external-feature-information" class="level1">
+<h1>Annotate Genes with External Feature Information</h1>
+<p>In this step, gene-level metadata is added to the <code>rowData</code> of the <code>multiomewt</code> object. These annotations include:</p>
+<ul>
+<li>Gene symbol (<code>TENxSymbol</code>)</li>
+<li>Ensembl gene ID (<code>TENxEnsembl</code>)</li>
+<li>Chromosome (<code>TENxChr</code>)</li>
+<li>Genomic start and end positions (<code>TENxStart</code>, <code>TENxEnd</code>)</li>
+</ul>
+<p>These annotations are matched using a reference file containing information on duplicated gene features (<code>features_duplicates.tsv</code>). This mapping enables downstream integration with genomic coordinates and facilitates better interpretation of differentially expressed genes.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>feat <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"~/Downloads/multiome_data/reference/features_duplicates.tsv"</span>, <span class="at">sep=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>rn <span class="ot">&lt;-</span> <span class="fu">rownames</span>(<span class="fu">rowData</span>(multiomewt)) </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(rn <span class="sc">%in%</span> feat<span class="sc">$</span>symbol)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>idx1 <span class="ot">&lt;-</span> <span class="fu">which</span>(feat<span class="sc">$</span>symbol <span class="sc">%in%</span> rn)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiomewt)<span class="sc">$</span>TENxSymbol[idx] <span class="ot">&lt;-</span> feat<span class="sc">$</span>symbol[idx1]</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiomewt)<span class="sc">$</span>TENxEnsembl[idx] <span class="ot">&lt;-</span> feat<span class="sc">$</span>ensembl[idx1]</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiomewt)<span class="sc">$</span>TENxChr[idx] <span class="ot">&lt;-</span> feat<span class="sc">$</span>chr[idx1]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiomewt)<span class="sc">$</span>TENxStart[idx] <span class="ot">&lt;-</span> feat<span class="sc">$</span>start[idx1]</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiomewt)<span class="sc">$</span>TENxEnd[idx] <span class="ot">&lt;-</span> feat<span class="sc">$</span>end[idx1]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="dimensionality-reduction-for-each-cell-type" class="level1">
+<h1>Dimensionality Reduction for Each Cell Type</h1>
+<p>In this section, we explore the variation between experimental conditions (<code>HC</code> and <code>SD</code>) at the <strong>single cell type level</strong>.</p>
+<ul>
+<li>We loop through each cell type (label) in the <code>multiomewt</code> dataset.</li>
+<li>For each subset (corresponding to one label), we perform dimensionality reduction using both <strong>MDS</strong> and <strong>PCA</strong>.</li>
+<li>The resulting plots are colored by experimental condition and shaped by replicate.</li>
+<li>We generate side-by-side plots of the two reductions (MDS and PCA) for each label, with a common legend and a title showing the cell type name.</li>
+</ul>
+<p>This helps visualize whether the sleep deprivation (<code>SD</code>) and control (<code>HC</code>) conditions lead to visible shifts in expression space within each cell type.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lbls <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiomewt<span class="sc">$</span>labels)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>bnormpl <span class="ot">&lt;-</span> <span class="fu">lapply</span>(lbls, <span class="cf">function</span>(l)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> multiomewt[,multiomewt<span class="sc">$</span>labels <span class="sc">%in%</span> l]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    md <span class="ot">&lt;-</span> scater<span class="sc">::</span><span class="fu">plotMDS</span>(sce, <span class="at">color_by=</span><span class="st">"condition"</span>, <span class="at">shape_by=</span><span class="st">"replicate"</span>, <span class="at">point_alpha=</span><span class="dv">1</span>)<span class="sc">+</span><span class="fu">theme_bw</span>()<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="at">SD=</span><span class="st">"black"</span>, <span class="at">HC=</span><span class="st">"red"</span>))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    pc <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(sce, <span class="at">color_by=</span><span class="st">"condition"</span>, <span class="at">shape_by=</span><span class="st">"replicate"</span>, <span class="at">point_alpha=</span><span class="dv">1</span> )<span class="sc">+</span><span class="fu">theme_bw</span>()<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="at">SD=</span><span class="st">"black"</span>, <span class="at">HC=</span><span class="st">"red"</span>))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    gg <span class="ot">&lt;-</span> <span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(md, pc), <span class="at">common.legend=</span><span class="cn">TRUE</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    gg <span class="ot">&lt;-</span> <span class="fu">annotate_figure</span>(gg, <span class="at">top=</span>ggpubr<span class="sc">::</span><span class="fu">text_grob</span>(l,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">14</span>))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(gg)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(bnormpl) <span class="ot">&lt;-</span> lbls</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="normalization-using-upper-quartile-ruvs-per-cell-type" class="level1">
+<h1>Normalization Using Upper Quartile + RUVs (per Cell Type)</h1>
+<p>In this section, we apply normalization to each cell type using a combination of <strong>Upper Quartile (UQ)</strong> normalization and <strong>RUVs</strong> (Removal of Unwanted Variation using replicate samples). This step helps reduce technical noise and unwanted batch effects.</p>
+<ul>
+<li>The dataset <code>multiomewt</code> is split by individual cell type labels.</li>
+<li>For each subset:
+<ul>
+<li><strong>Upper Quartile normalization</strong> is applied to reduce library size effects.</li>
+<li>The condition (<code>HC</code> or <code>SD</code>) is grouped to define biological replicates.</li>
+<li>The <code>RUVs</code> function is used to estimate 3 unwanted variation factors (k = 3), using negative control genes.</li>
+<li>The resulting normalized counts are saved under either <code>"uqruvsk3"</code> (if UQ was successful) or <code>"ruvsk3"</code> (if not).</li>
+<li>PCA and MDS are recomputed using the normalized data.</li>
+<li>The normalization method is saved in the metadata of the <code>SingleCellExperiment</code>.</li>
+</ul></li>
+</ul>
+<p>This step ensures that downstream differential expression analysis is robust to technical variability.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>lbls <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiomewt<span class="sc">$</span>labels)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(lbls, <span class="cf">function</span>(l)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    multiomewt[,multiomewt<span class="sc">$</span>labels <span class="sc">%in%</span> l]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(scelist) <span class="ot">&lt;-</span> lbls</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">reducedDims</span>(sce)<span class="sc">$</span>MDS <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    uq <span class="ot">&lt;-</span> EDASeq<span class="sc">::</span><span class="fu">betweenLaneNormalization</span>(<span class="fu">counts</span>(sce), <span class="at">which=</span><span class="st">"upper"</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    grp <span class="ot">&lt;-</span> <span class="fu">makeGroups</span>(sce<span class="sc">$</span>condition)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rownames</span>(grp) <span class="ot">&lt;-</span> <span class="fu">unique</span>(sce<span class="sc">$</span>condition)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    k<span class="ot">=</span><span class="dv">3</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ( <span class="fu">isEmpty</span>(<span class="fu">which</span>(<span class="fu">is.na</span>(uq), <span class="at">arr.ind=</span><span class="cn">TRUE</span>)) )</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>        mat <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">as.matrix</span>(uq))</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        norm <span class="ot">&lt;-</span> <span class="st">"uqruvsk3"</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>        mat <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">as.matrix</span>(<span class="fu">counts</span>(sce)))</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>        norm <span class="ot">&lt;-</span> <span class="st">"ruvsk3"</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    ruvs <span class="ot">&lt;-</span> <span class="fu">RUVs</span>(<span class="at">x=</span>mat, <span class="at">cIdx=</span><span class="fu">rownames</span>(sce)[<span class="fu">rowData</span>(sce)<span class="sc">$</span>negctl], <span class="at">k=</span>k,</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">scIdx=</span>grp, <span class="at">round=</span><span class="cn">TRUE</span>)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colData</span>(sce) <span class="ot">&lt;-</span> <span class="fu">cbind.DataFrame</span>(<span class="fu">colData</span>(sce), ruvs<span class="sc">$</span>W)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">assays</span>(sce)[[norm]] <span class="ot">&lt;-</span> ruvs<span class="sc">$</span>normalizedCounts</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> <span class="fu">runMDS</span>(sce, <span class="at">assay.type=</span>norm)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(sce, <span class="at">assay.type=</span>norm)</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">metadata</span>(sce)<span class="sc">$</span>norm <span class="ot">&lt;-</span> norm</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(sce)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(scelist) <span class="ot">&lt;-</span> lbls</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="plot-mds-and-pca-after-normalization-per-cell-type" class="level1">
+<h1>Plot MDS and PCA after Normalization (per Cell Type)</h1>
+<p>This section visualizes the effect of normalization and the separation of samples by condition (<code>HC</code> vs <code>SD</code>) for each cell type individually.</p>
+<ul>
+<li>For each cell type in the list <code>scelist</code>:
+<ul>
+<li>We extract the normalized <code>SingleCellExperiment</code> object.</li>
+<li>We generate two dimensionality reduction plots: one using <strong>MDS</strong> and one using <strong>PCA</strong>.</li>
+<li>Both plots are colored by the experimental condition and shaped by replicate, making batch effects and biological trends visually detectable.</li>
+<li>The plots are arranged side-by-side using <code>ggarrange</code>, and a title is added that includes the cell type and the normalization method used (from <code>metadata(sce)$norm</code>).</li>
+</ul></li>
+<li>Finally, for each cell type, the same set of plots is printed twice vertically using <code>ggarrange</code> with <code>nrow=2</code> (may be for layout testing or optional repetition).</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>normpl <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(scelist), <span class="cf">function</span>(i)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> scelist[[i]]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    l <span class="ot">&lt;-</span> <span class="fu">names</span>(scelist)[i]</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    md <span class="ot">&lt;-</span> scater<span class="sc">::</span><span class="fu">plotMDS</span>(sce, <span class="at">color_by=</span><span class="st">"condition"</span>, <span class="at">shape_by=</span><span class="st">"replicate"</span>, <span class="at">point_alpha=</span><span class="dv">1</span> )<span class="sc">+</span><span class="fu">theme_bw</span>()<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="at">SD=</span><span class="st">"black"</span>, <span class="at">HC=</span><span class="st">"red"</span>))</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    pc <span class="ot">&lt;-</span> <span class="fu">plotPCA</span>(sce, <span class="at">color_by=</span><span class="st">"condition"</span>, <span class="at">shape_by=</span><span class="st">"replicate"</span>, <span class="at">point_alpha=</span><span class="dv">1</span> )<span class="sc">+</span><span class="fu">theme_bw</span>()<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="at">SD=</span><span class="st">"black"</span>, <span class="at">HC=</span><span class="st">"red"</span>))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    gg <span class="ot">&lt;-</span> <span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(md, pc), <span class="at">common.legend=</span><span class="cn">TRUE</span>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    gg <span class="ot">&lt;-</span> <span class="fu">annotate_figure</span>(gg, <span class="at">top=</span>ggpubr<span class="sc">::</span><span class="fu">text_grob</span>(</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">paste0</span>(l, <span class="st">" "</span>, <span class="fu">metadata</span>(sce)<span class="sc">$</span>norm),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">color=</span><span class="st">"black"</span>, <span class="at">face=</span><span class="st">"bold"</span>, <span class="at">size=</span><span class="dv">14</span>))</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(gg)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(normpl) <span class="ot">&lt;-</span> <span class="fu">names</span>(scelist)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (l <span class="cf">in</span> lbls)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(normpl[[l]], normpl[[l]]), <span class="at">nrow=</span><span class="dv">2</span>))</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-6.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-7.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-8.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-9.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-10.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-11.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-12.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-13.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-14.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-15.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-16.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-8-17.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="run-differential-expression-with-uqruvsk3-normalization" class="level1">
+<h1>Run Differential Expression with UQ+RUVsK3 Normalization</h1>
+<p>In this step, we perform <strong>differential gene expression (DGE)</strong> analysis for each cell type using the <strong>edgeR</strong> framework, incorporating normalization from the previous RUVs (Removing Unwanted Variation) step.</p>
+<ul>
+<li>Iterates over each normalized <code>SingleCellExperiment</code> in <code>scelist</code>.</li>
+<li>Constructs a <code>DGEList</code> object from raw counts and associated metadata.</li>
+<li>If the sample was normalized with <strong>Upper Quartile + RUVs (uqruvsk3)</strong>, it computes <strong>offsets</strong> using library size and normalization factors to account for sequencing depth.</li>
+<li>Filters lowly expressed genes using <code>filterByExpr()</code>, requiring at least 5 counts across conditions.</li>
+<li>Calls a custom <code>applyEdgeR()</code> function, applying the contrast <code>"SD - HC"</code> and including the RUV W factors (<code>W_1</code>, <code>W_2</code>, <code>W_3</code>) as covariates.</li>
+<li>Reorders and integrates the differential results into the <code>rowData()</code> of the original object.</li>
+<li>Flags significantly differentially expressed genes (<code>FDR &lt; 0.05</code>) with a <code>sign</code> column.</li>
+<li>(Commented out) An optional block to save the resulting DEG tables for each cell type as <code>.tsv</code></li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="fu">counts</span>(sce), <span class="at">samples=</span><span class="fu">colData</span>(sce))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">metadata</span>(sce)<span class="sc">$</span>norm<span class="sc">==</span><span class="st">"uqruvsk3"</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        y1 <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(y, <span class="at">method=</span><span class="st">"upperquartile"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        offs <span class="ot">&lt;-</span> <span class="fu">log</span>(y1<span class="sc">$</span>samples<span class="sc">$</span>lib.size<span class="sc">*</span>y1<span class="sc">$</span>samples<span class="sc">$</span>norm.factors)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        offs <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(y, <span class="at">group=</span>sce<span class="sc">$</span>condition, <span class="at">min.count=</span><span class="dv">5</span>, <span class="at">min.total.count=</span><span class="dv">0</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    keep.genes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(keep[keep<span class="sc">==</span><span class="st">"TRUE"</span>])</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> sce[<span class="fu">rownames</span>(keep.genes),]</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    cntrs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"SD - HC"</span>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> <span class="fu">applyEdgeR</span>(<span class="at">counts=</span><span class="fu">counts</span>(sce), <span class="at">colData=</span><span class="fu">colData</span>(sce),</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                          <span class="at">factors=</span><span class="st">"condition"</span>, <span class="at">wnames=</span><span class="fu">c</span>(<span class="st">"W_1"</span>, <span class="st">"W_2"</span>, <span class="st">"W_3"</span>),</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                          <span class="at">contrasts=</span>cntrs, <span class="at">p.threshold=</span><span class="dv">1</span>,</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                          <span class="at">edgeroffs=</span>offs)[[<span class="dv">1</span>]]</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> res[<span class="fu">order</span>(<span class="fu">match</span>(<span class="fu">rownames</span>(res),<span class="fu">rownames</span>(sce))),]</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(sce) <span class="ot">&lt;-</span> <span class="fu">rowData</span>(sce)[,<span class="sc">-</span><span class="dv">2</span>]</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(sce) <span class="ot">&lt;-</span> <span class="fu">cbind.DataFrame</span>(<span class="fu">rowData</span>(sce), res)</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rowData</span>(sce)<span class="sc">$</span>sign <span class="ot">&lt;-</span> <span class="fu">rowData</span>(sce)<span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(sce)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="compare-degs-and-nuclei-count" class="level1">
+<h1>Compare DEGs and Nuclei Count</h1>
+<p>This section explores the relationship between the number of nuclei (cells) detected per cell type and the number of differentially expressed genes (DEGs) identified. This is done in two parts: using all cell types, and then filtering to those with more than 100 nuclei to reduce noise from low-abundance populations.</p>
+<section id="compare-degs-and-nuclei-count-all-cell-types" class="level2">
+<h2 class="anchored" data-anchor-id="compare-degs-and-nuclei-count-all-cell-types">Compare DEGs and Nuclei Count (All Cell Types)</h2>
+<p>For each cell type: - The function <code>statDEG()</code> summarizes DEG statistics, likely counting the number of significant genes. - These summaries are collected into a combined table with <code>buildTab()</code>, which returns a <code>data.frame</code> containing at least:<br>
+- the number of nuclei (<code>Nuclei</code>),<br>
+- the number of DEGs (<code>DEGs</code>),<br>
+- and the label (<code>Label</code>) for each cell type. - A scatter plot is created: - <strong>X-axis:</strong> log-transformed number of nuclei. - <strong>Y-axis:</strong> log-transformed number of DEGs. - Labels are annotated using <code>geom_text_repel()</code> for readability. - A quadratic regression line is fitted (<code>y ~ poly(x, 2)</code>) to highlight any non-linear trends. - The results are visualized both as a <code>ggplot</code> and as an interactive data table using <code>DT::datatable()</code>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">statDEG</span>(sce)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">buildTab</span>(scelist)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(tab, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(Nuclei), <span class="at">y =</span> <span class="fu">log</span>(DEGs), <span class="at">color =</span> Label)) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#scale_color_manual(values = neuronal_color) + </span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>, <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>), </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">2</span>), <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">col =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> Label), <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">box.padding   =</span> <span class="fl">0.35</span>) <span class="sc">+</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">"WT"</span>)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(tab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-081d71f52ee46eef3211" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-081d71f52ee46eef3211">{"x":{"filter":"none","vertical":false,"data":[["Astro","CA1","CA1-do","CA1-ProS","CA1-ve","CA2-IG-FC","CA3","DG","Lamp5","Micro-PVM","Oligo","Pvalb","Sncg","Sst","SUB-ProS","Vip","VLMC"],[183,210,1873,148,154,91,615,4099,283,2008,6596,263,61,336,771,194,50],["1832","7294","12638","6001","6111","3077","10621","13686","7646","8087","11547","8039","3457","8836","11526","5238","302"],[8,98,1305,64,11,16,506,1812,26,18,1022,30,0,16,72,0,0],["8","36","632","21","8","9","216","1059","13","10","571","8","0","10","40","0","0"],["0","62","673","43","3","7","290","753","13","8","451","22","0","6","32","0","0"],["1","10","108","2","1","1","25","118","0","0","63","1","0","1","7","0","0"],["ruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","ruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","ruvsk3","uqruvsk3","uqruvsk3","ruvsk3","ruvsk3"],["Astro","CA1","CA1-do","CA1-ProS","CA1-ve","CA2-IG-FC","CA3","DG","Lamp5","Micro-PVM","Oligo","Pvalb","Sncg","Sst","SUB-ProS","Vip","VLMC"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Nuclei<\/th>\n      <th>Genes<\/th>\n      <th>DEGs<\/th>\n      <th>DEGs_UP<\/th>\n      <th>DEGs_DOWN<\/th>\n      <th>PosCtrl<\/th>\n      <th>Normalization<\/th>\n      <th>Label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Nuclei","targets":1},{"name":"Genes","targets":2},{"name":"DEGs","targets":3},{"name":"DEGs_UP","targets":4},{"name":"DEGs_DOWN","targets":5},{"name":"PosCtrl","targets":6},{"name":"Normalization","targets":7},{"name":"Label","targets":8}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="compare-degs-and-nuclei-filtered-100-nuclei" class="level2">
+<h2 class="anchored" data-anchor-id="compare-degs-and-nuclei-filtered-100-nuclei">Compare DEGs and Nuclei (Filtered: &gt;100 Nuclei)</h2>
+<p>This analysis filters out low-abundance cell types, retaining only those with <strong>more than 100 detected nuclei</strong>. This threshold helps focus on well-sampled populations, where differential expression analysis is statistically more reliable.</p>
+<ul>
+<li>A subset <code>tab1</code> is created from the original summary table <code>tab</code>, keeping only cell types with more than 100 nuclei.</li>
+<li>A scatter plot is generated to show the relationship between the <strong>log-transformed number of nuclei</strong> and <strong>log-transformed number of DEGs</strong>.</li>
+<li>Labels for each point represent the cell type (<code>Label</code>), with overlap prevented using <code>geom_text_repel</code>.</li>
+<li>A polynomial trend line (<code>y ~ poly(x, 2)</code>) is added to model the relationship.</li>
+<li>The corresponding data is displayed in an interactive table using <code>DT::datatable</code></li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>tab1 <span class="ot">&lt;-</span> tab[tab<span class="sc">$</span>Nuclei<span class="sc">&gt;</span><span class="dv">100</span>,]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(tab1, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(Nuclei), <span class="at">y =</span> <span class="fu">log</span>(DEGs),<span class="at">color =</span> Label)) <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#scale_color_manual(values = neuronal_color) + </span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>, <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>), </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">2</span>), <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">col =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> Label), <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">box.padding   =</span> <span class="fl">0.35</span>)<span class="sc">+</span><span class="co">#,</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">"WT 100 nuclei"</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(tab1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f23a97072eede3952a5c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f23a97072eede3952a5c">{"x":{"filter":"none","vertical":false,"data":[["Astro","CA1","CA1-do","CA1-ProS","CA1-ve","CA3","DG","Lamp5","Micro-PVM","Oligo","Pvalb","Sst","SUB-ProS","Vip"],[183,210,1873,148,154,615,4099,283,2008,6596,263,336,771,194],["1832","7294","12638","6001","6111","10621","13686","7646","8087","11547","8039","8836","11526","5238"],[8,98,1305,64,11,506,1812,26,18,1022,30,16,72,0],["8","36","632","21","8","216","1059","13","10","571","8","10","40","0"],["0","62","673","43","3","290","753","13","8","451","22","6","32","0"],["1","10","108","2","1","25","118","0","0","63","1","1","7","0"],["ruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","ruvsk3"],["Astro","CA1","CA1-do","CA1-ProS","CA1-ve","CA3","DG","Lamp5","Micro-PVM","Oligo","Pvalb","Sst","SUB-ProS","Vip"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Nuclei<\/th>\n      <th>Genes<\/th>\n      <th>DEGs<\/th>\n      <th>DEGs_UP<\/th>\n      <th>DEGs_DOWN<\/th>\n      <th>PosCtrl<\/th>\n      <th>Normalization<\/th>\n      <th>Label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Nuclei","targets":1},{"name":"Genes","targets":2},{"name":"DEGs","targets":3},{"name":"DEGs_UP","targets":4},{"name":"DEGs_DOWN","targets":5},{"name":"PosCtrl","targets":6},{"name":"Normalization","targets":7},{"name":"Label","targets":8}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="compare-degs-vs-nuclei-in-neuronal-types-100-nuclei" class="level2">
+<h2 class="anchored" data-anchor-id="compare-degs-vs-nuclei-in-neuronal-types-100-nuclei">Compare DEGs vs Nuclei in Neuronal Types (&gt;100 Nuclei)</h2>
+<p>This analysis focuses specifically on <strong>neuronal populations</strong> that are well-sampled (i.e., having more than 100 nuclei). By excluding non-neuronal cells, the relationship between sample size and DEG count is analyzed within a more functionally homogeneous group.</p>
+<p>Steps performed: - Filter <code>tab</code> to retain only rows where the number of nuclei exceeds 100. - Further subset to include only neuronal cell types, based on the <code>superclass</code> annotation in the original <code>multiome</code> dataset. - Create a scatter plot showing the log-transformed number of nuclei vs.&nbsp;log-transformed number of DEGs. - Annotate cell types with <code>geom_text_repel</code> for clarity. - Add a quadratic regression line to highlight overall trends. - Present results both graphically and as an interactive table.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tab2 <span class="ot">&lt;-</span> tab[tab<span class="sc">$</span>Nuclei<span class="sc">&gt;</span><span class="dv">100</span>,]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>neuronallabels <span class="ot">&lt;-</span> <span class="fu">unique</span>(multiome<span class="sc">$</span>label[multiome<span class="sc">$</span>superclass <span class="sc">!=</span> <span class="st">"Non Neuronal"</span>])</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>tab2<span class="ot">&lt;-</span>tab2[tab2<span class="sc">$</span>Label <span class="sc">%in%</span> neuronallabels,]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(tab2, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log</span>(Nuclei), <span class="at">y =</span> <span class="fu">log</span>(DEGs), <span class="at">color=</span>Label)) <span class="sc">+</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>, <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>), </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">2</span>), <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">col =</span> <span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> Label), <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">box.padding   =</span> <span class="fl">0.35</span>)<span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="st">"WT 100 nuclei neuronal"</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(tab2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-94259c343d2207a99f20" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-94259c343d2207a99f20">{"x":{"filter":"none","vertical":false,"data":[["CA1","CA1-do","CA1-ProS","CA3","DG","Lamp5","Pvalb","Sst","SUB-ProS","Vip"],[210,1873,148,615,4099,283,263,336,771,194],["7294","12638","6001","10621","13686","7646","8039","8836","11526","5238"],[98,1305,64,506,1812,26,30,16,72,0],["36","632","21","216","1059","13","8","10","40","0"],["62","673","43","290","753","13","22","6","32","0"],["10","108","2","25","118","0","1","1","7","0"],["uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","uqruvsk3","ruvsk3"],["CA1","CA1-do","CA1-ProS","CA3","DG","Lamp5","Pvalb","Sst","SUB-ProS","Vip"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Nuclei<\/th>\n      <th>Genes<\/th>\n      <th>DEGs<\/th>\n      <th>DEGs_UP<\/th>\n      <th>DEGs_DOWN<\/th>\n      <th>PosCtrl<\/th>\n      <th>Normalization<\/th>\n      <th>Label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Nuclei","targets":1},{"name":"Genes","targets":2},{"name":"DEGs","targets":3},{"name":"DEGs_UP","targets":4},{"name":"DEGs_DOWN","targets":5},{"name":"PosCtrl","targets":6},{"name":"Normalization","targets":7},{"name":"Label","targets":8}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="mds-plots-of-superclasses" class="level2">
+<h2 class="anchored" data-anchor-id="mds-plots-of-superclasses">MDS Plots of Superclasses</h2>
+<p>This section explores differences in gene expression between broad neuronal classes — <strong>GABAergic</strong>, <strong>Glutamatergic</strong>, and <strong>Non-Neuronal</strong> — in wild-type samples. It involves the following steps:</p>
+<ul>
+<li>Load the pseudobulk <code>multiome</code> dataset.</li>
+<li>Define three main cell-type superclasses.</li>
+<li>Load and annotate both negative and positive control genes used for normalization.</li>
+<li>Filter out low-represented cell types (fewer than 6 replicates).</li>
+<li>Normalize each subclass and compute MDS (Multidimensional Scaling).</li>
+<li>Generate separate MDS plots for each superclass subset.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS"</span>) <span class="co"># pseudobulk</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>superclass <span class="ot">&lt;-</span> <span class="st">"Non Neuronal"</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>superclass[multiome<span class="sc">$</span>label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"CA1"</span>, <span class="st">"CA1-do"</span>,<span class="st">"CA1-ProS"</span>, <span class="st">"CA2"</span>, <span class="st">"CA3"</span>, <span class="st">"SUB-ProS"</span>, <span class="st">"DG"</span>)] <span class="ot">&lt;-</span> <span class="st">"Glutamatergic"</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>superclass[multiome<span class="sc">$</span>label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Lamp5"</span>, <span class="st">"Sncg"</span>, <span class="st">"Vip"</span>, <span class="st">"Serpinf1"</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Ntng1"</span>, <span class="st">"Pvalb"</span>, <span class="st">"Sst"</span>, <span class="st">"Sst-Chodl"</span>)] <span class="ot">&lt;-</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gabaergic"</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS"</span>)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(nc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4033    2</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> nc<span class="sc">$</span>symbol] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>idxsamp <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_along</span>(nc<span class="sc">$</span>ensembl_id), <span class="fu">round</span>((<span class="fu">dim</span>(nc)[<span class="dv">1</span>]<span class="sc">*</span><span class="dv">10</span>)<span class="sc">/</span><span class="dv">100</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>nctest <span class="ot">&lt;-</span> nc[idxsamp,]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> nc[<span class="sc">-</span>idxsamp,]</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctl[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> nc<span class="sc">$</span>symbol] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctltest <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>negctltest[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> nctest<span class="sc">$</span>symbol] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>newps <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"~/Downloads/multiome_data/ctrls/111022_Positive_Controls_from_BMC_Genomics_AddFile2.txt"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>newpshits <span class="ot">&lt;-</span> newps</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>posctl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(multiome)<span class="sc">$</span>posctl[<span class="fu">rownames</span>(multiome) <span class="sc">%in%</span> newps<span class="sc">$</span>Gene_Name] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>newpshits<span class="sc">$</span>kept <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>newpshits<span class="sc">$</span>kept[<span class="fu">which</span>(newpshits<span class="sc">$</span>Gene_Name <span class="sc">%in%</span> <span class="fu">rownames</span>(multiome))] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>multiome<span class="sc">$</span>condition[multiome<span class="sc">$</span>condition<span class="sc">==</span><span class="st">"CTRL"</span>] <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> multiome[,multiome<span class="sc">$</span>genotype<span class="sc">==</span><span class="st">"WT"</span>]</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>noct <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which</span>(<span class="fu">table</span>(multiomewt<span class="sc">$</span>label)<span class="sc">&lt;</span><span class="dv">6</span>))</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> multiomewt[,<span class="sc">-</span><span class="fu">which</span>(multiomewt<span class="sc">$</span>labels <span class="sc">%in%</span> noct)]</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> <span class="fu">computeLibraryFactors</span>(multiomewt)</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(multiomewt)</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>multiomewt <span class="ot">&lt;-</span> <span class="fu">runMDS</span>(multiomewt)</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>gaba <span class="ot">&lt;-</span> multiomewt[,multiomewt<span class="sc">$</span>superclass<span class="sc">==</span><span class="st">"Gabaergic"</span>]</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>gaba <span class="ot">&lt;-</span> <span class="fu">computeLibraryFactors</span>(gaba)</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>gaba <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(gaba)</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>gaba <span class="ot">&lt;-</span> <span class="fu">runMDS</span>(gaba)</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>scater<span class="sc">::</span><span class="fu">plotMDS</span>(gaba, <span class="at">color_by=</span><span class="st">"labels"</span>, <span class="at">shape_by=</span><span class="st">"condition"</span>, <span class="at">point_alpha=</span><span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"WT Gabaergic Neurons"</span>)<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span>palette)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>gluta <span class="ot">&lt;-</span> multiomewt[,multiomewt<span class="sc">$</span>superclass<span class="sc">==</span><span class="st">"Glutamatergic"</span>]</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>gluta <span class="ot">&lt;-</span> <span class="fu">computeLibraryFactors</span>(gluta)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>gluta <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(gluta)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>gluta <span class="ot">&lt;-</span> <span class="fu">runMDS</span>(gluta)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>scater<span class="sc">::</span><span class="fu">plotMDS</span>(gluta, <span class="at">color_by=</span><span class="st">"labels"</span>, <span class="at">shape_by=</span><span class="st">"condition"</span>, <span class="at">point_alpha=</span><span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"WT Glutamatergic Neurons"</span>)<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span>palette)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>nneu <span class="ot">&lt;-</span> multiomewt[,multiomewt<span class="sc">$</span>superclass<span class="sc">==</span><span class="st">"Non Neuronal"</span>]</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>nneu <span class="ot">&lt;-</span> <span class="fu">computeLibraryFactors</span>(nneu)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>nneu <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(nneu)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>nneu <span class="ot">&lt;-</span> <span class="fu">runMDS</span>(nneu)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>scater<span class="sc">::</span><span class="fu">plotMDS</span>(nneu, <span class="at">color_by=</span><span class="st">"labels"</span>, <span class="at">shape_by=</span><span class="st">"condition"</span>, <span class="at">point_alpha=</span><span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"WT Non Neuronal"</span>)<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span>palette)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v05_DE_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="sessioninfo" class="level1">
+<h1>SessionInfo</h1>
+<p>This final chunk prints the current R session information, which includes details about the R version, loaded packages, and the environment. This is useful for reproducibility and debugging.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.3.3 (2024-02-29)
+Platform: aarch64-unknown-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/aarch64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/aarch64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Europe/Zurich
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] ggrepel_0.9.5               ggpubr_0.6.0               
+ [3] DT_0.33                     darioscripts_0.1.0         
+ [5] RUVSeq_1.36.0               edgeR_4.0.1                
+ [7] limma_3.58.1                EDASeq_2.36.0              
+ [9] ShortRead_1.60.0            GenomicAlignments_1.38.2   
+[11] Rsamtools_2.18.0            Biostrings_2.70.3          
+[13] XVector_0.42.0              BiocParallel_1.36.0        
+[15] scater_1.30.1               ggplot2_3.5.0              
+[17] scuttle_1.12.0              SingleCellExperiment_1.24.0
+[19] SummarizedExperiment_1.32.0 Biobase_2.62.0             
+[21] GenomicRanges_1.54.1        GenomeInfoDb_1.38.8        
+[23] IRanges_2.36.0              S4Vectors_0.40.2           
+[25] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      
+[27] matrixStats_1.3.0          
+
+loaded via a namespace (and not attached):
+  [1] bitops_1.0-7              httr_1.4.7               
+  [3] webshot_0.5.5             RColorBrewer_1.1-3       
+  [5] doParallel_1.0.17         zinbwave_1.24.0          
+  [7] tools_4.3.3               backports_1.4.1          
+  [9] utf8_1.2.4                R6_2.5.1                 
+ [11] HDF5Array_1.30.1          mgcv_1.9-1               
+ [13] lazyeval_0.2.2            uwot_0.2.2               
+ [15] rhdf5filters_1.14.1       withr_3.0.0              
+ [17] prettyunits_1.2.0         gridExtra_2.3            
+ [19] preprocessCore_1.64.0     cli_3.6.2                
+ [21] formatR_1.14              TSP_1.2-4                
+ [23] sass_0.4.9                labeling_0.4.3           
+ [25] genefilter_1.84.0         R.utils_2.12.3           
+ [27] rstudioapi_0.16.0         RSQLite_2.3.6            
+ [29] howmany_0.3-1             FNN_1.1.4                
+ [31] generics_0.1.3            BiocIO_1.12.0            
+ [33] hwriter_1.3.2.1           crosstalk_1.2.1          
+ [35] car_3.1-2                 dplyr_1.1.4              
+ [37] dendextend_1.17.1         Matrix_1.6-5             
+ [39] interp_1.1-6              ggbeeswarm_0.7.2         
+ [41] fansi_1.0.6               abind_1.4-5              
+ [43] R.methodsS3_1.8.2         lifecycle_1.0.4          
+ [45] yaml_2.3.8                carData_3.0-5            
+ [47] rhdf5_2.46.1              SparseArray_1.2.4        
+ [49] BiocFileCache_2.10.2      Rtsne_0.17               
+ [51] grid_4.3.3                blob_1.2.4               
+ [53] clusterExperiment_2.22.0  crayon_1.5.2             
+ [55] lattice_0.22-6            beachmat_2.18.1          
+ [57] cowplot_1.1.3             GenomicFeatures_1.54.4   
+ [59] annotate_1.80.0           KEGGREST_1.42.0          
+ [61] pillar_1.9.0              knitr_1.46               
+ [63] rjson_0.2.21              codetools_0.2-20         
+ [65] glue_1.7.0                RNeXML_2.4.11            
+ [67] data.table_1.15.4         vctrs_0.6.5              
+ [69] png_0.1-8                 org.Mm.eg.db_3.18.0      
+ [71] locfdr_1.1-8              gtable_0.3.5             
+ [73] kernlab_0.9-32            assertthat_0.2.1         
+ [75] cachem_1.0.8              aroma.light_3.32.0       
+ [77] xfun_0.43                 S4Arrays_1.2.1           
+ [79] phylobase_0.8.12          survival_3.5-8           
+ [81] pheatmap_1.0.12           seriation_1.5.5          
+ [83] iterators_1.0.14          NOISeq_2.46.0            
+ [85] statmod_1.5.0             nlme_3.1-164             
+ [87] bit64_4.0.5               progress_1.2.3           
+ [89] filelock_1.0.3            RcppAnnoy_0.0.22         
+ [91] bslib_0.7.0               irlba_2.3.5.1            
+ [93] vipor_0.4.7               colorspace_2.1-0         
+ [95] DBI_1.2.2                 ade4_1.7-22              
+ [97] tidyselect_1.2.1          bit_4.0.5                
+ [99] compiler_4.3.3            curl_5.2.1               
+[101] BiocNeighbors_1.20.2      xml2_1.3.6               
+[103] DelayedArray_0.28.0       plotly_4.10.4            
+[105] rtracklayer_1.62.0        scales_1.3.0             
+[107] NMF_0.27                  rappdirs_0.3.3           
+[109] stringr_1.5.1             digest_0.6.35            
+[111] rmarkdown_2.26            ca_0.71.1                
+[113] htmltools_0.5.8.1         pkgconfig_2.0.3          
+[115] jpeg_0.1-10               sparseMatrixStats_1.14.0 
+[117] dbplyr_2.5.0              fastmap_1.1.1            
+[119] rlang_1.1.3               htmlwidgets_1.6.4        
+[121] DelayedMatrixStats_1.24.0 jquerylib_0.1.4          
+[123] farver_2.1.1              jsonlite_1.8.8           
+[125] R.oo_1.26.0               BiocSingular_1.18.0      
+[127] RCurl_1.98-1.14           magrittr_2.0.3           
+[129] GenomeInfoDbData_1.2.11   Rhdf5lib_1.24.2          
+[131] munsell_0.5.1             Rcpp_1.0.12              
+[133] ape_5.8                   viridis_0.6.5            
+[135] stringi_1.8.3             zlibbioc_1.48.2          
+[137] MASS_7.3-60.0.1           plyr_1.8.9               
+[139] parallel_4.3.3            deldir_2.0-4             
+[141] rncl_0.8.7                splines_4.3.3            
+[143] hms_1.1.3                 locfit_1.5-9.9           
+[145] uuid_1.2-0                ggsignif_0.6.4           
+[147] rngtools_1.5.2            softImpute_1.4-1         
+[149] reshape2_1.4.4            biomaRt_2.58.2           
+[151] ScaledMatrix_1.10.0       XML_3.99-0.16.1          
+[153] evaluate_0.23             latticeExtra_0.6-30      
+[155] foreach_1.5.2             tidyr_1.3.1              
+[157] purrr_1.0.2               heatmaply_1.5.0          
+[159] gridBase_0.4-7            rsvd_1.0.5               
+[161] broom_1.0.5               xtable_1.8-4             
+[163] restfulr_0.0.15           rstatix_0.7.2            
+[165] viridisLite_0.4.2         tibble_3.2.1             
+[167] memoise_2.0.1             beeswarm_0.4.0           
+[169] AnnotationDbi_1.64.1      registry_0.5-1           
+[171] writexl_1.5.0             cluster_2.1.6            </code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,461 @@
+---
+title: "DEGs for All Cell Types on WT Genotype"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options: 
+    chunk_output_type: console
+---
+
+```{r}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, include=TRUE)
+```
+
+# Loading libraries
+
+This chunk loads all the necessary R packages and resources for the downstream single-cell and pseudobulk analyses.
+
+-   `scater`: used for visualization and processing of single-cell data.
+-   `RUVSeq`: provides functions for normalization using control genes (RUV normalization).
+-   `darioscripts`: a custom helper package with user-defined functions.
+-   `DT`: used to generate interactive HTML tables.
+-   `ggpubr` and `ggrepel`: utilities to produce clean ggplot-based visualizations with non-overlapping text labels.
+-   `utils.R`: a script with additional helper functions, sourced from the `../R/` directory.
+-   The color palette used for plotting (`subcluster.color`) is loaded from a pre-saved `.RData` file and assigned to `palette`.
+
+Some libraries and scripts are commented out, likely because they are either not currently needed or replaced by custom implementations.
+
+```{r}
+library(scater)
+library(RUVSeq)
+library(darioscripts)
+library(DT)
+library(ggpubr)
+library(ggrepel)
+source("../R/utils.R")
+load("~/Downloads/multiome_data/data/MultiomeAllenColorLabel.RData")
+palette <- subcluster.color
+```
+
+# Visualization for WT Samples
+
+This chunk performs dimensionality reduction and visualization for wild-type (WT) and sleep-deprived (SD) samples from a filtered single-cell RNA-seq dataset.
+
+-   The `SingleCellExperiment` object list `scelist` is first read from a file containing RNA-only data with doublets removed.
+-   Only WT and SD samples are selected using a regex filter.
+-   Dimensionality reduction is computed using PCA, followed by `tSNE` and `UMAP`, which are embedded into the `scelistwt` objects.
+-   Sample names containing `_WT` are renamed to `_HC` (likely to represent healthy controls).
+-   For each sample, two plots are created: a tSNE and a UMAP, colored by annotated cell labels.
+-   These plots are arranged side-by-side and labeled with the sample name using `ggpubr`.
+
+This step is useful for visually inspecting clustering patterns and checking label separability across conditions.
+
+```{r}
+scelist <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
+scelistwt <- scelist[grep("_WT|_SD$", names(scelist))]
+library(scater)
+set.seed(3)
+scelistwt <- lapply(scelistwt, runTSNE, dimred="PCA")
+scelistwt <- lapply(scelistwt, runUMAP, dimred="PCA")
+names(scelistwt) <- gsub("_WT", "_HC", names(scelistwt))
+lapply(seq_along(scelistwt), function(i)
+{
+    sce <- scelistwt[[i]]
+    ts <- plotReducedDim(sce, dimred="TSNE", colour_by="labels", point_size=1) +
+        scale_color_manual(values=palette) + theme_bw()
+    um <- plotReducedDim(sce, dimred="UMAP", colour_by="labels", point_size=1) +
+        scale_color_manual(values=palette) + theme_bw()
+    gga <- ggarrange(plotlist=list(ts, um), common.legend=TRUE)
+    annotate_figure(gga, top=ggpubr::text_grob(names(scelistwt)[i], 
+    color = "black", face = "bold", size = 14))
+})
+
+```
+
+# Load and Annotate Pseudobulk Data (All Cell Types)
+
+In this section, we load pseudobulk gene expression data and perform key preprocessing steps:
+
+-   The `multiome` object, a `SingleCellExperiment` storing pseudobulk counts, is loaded from disk.
+-   Each sample is annotated with a `superclass` label: either "Non Neuronal", "Neuronal - Glutamatergic", or "Neuronal - Gabaergic" based on known cell types.
+-   We load a list of known **negative control genes** (used later in RUV normalization) and assign a subset as a test set (10% of them).
+-   Similarly, **positive control genes** are loaded and flagged.
+-   Sample condition "CTRL" is renamed to "HC" for consistency.
+-   We then restrict the data to only **wild-type (WT)** samples and remove cell types not detected in **all samples** (fewer than 6 replicates).
+-   Library size normalization and log-normalization are performed.
+-   Finally, we compute and plot MDS and PCA embeddings to assess clustering across cell types and conditions.
+
+```{r}
+multiome <- readRDS("~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS") # pseudobulk
+
+multiome$superclass <- "Non Neuronal"
+
+multiome$superclass[multiome$label %in% c("CA1", "CA1-do","CA1-ProS", "CA2", "CA3", "SUB-ProS", "DG")] <- "Neuronal - Glutamatergic"
+multiome$superclass[multiome$label %in% c("Lamp5", "Sncg", "Vip", "Serpinf1",
+                                          "Ntng1", "Pvalb", "Sst", "Sst-Chodl")] <- "Neuronal - Gabaergic"
+
+
+nc <- readRDS("~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS")
+dim(nc)
+rowData(multiome)$negctl <- FALSE
+rowData(multiome)$negctl[rownames(multiome) %in% nc$symbol] <- TRUE
+
+set.seed(3)
+idxsamp <- sample(seq_along(nc$ensembl_id), round((dim(nc)[1]*10)/100))
+nctest <- nc[idxsamp,]
+nc <- nc[-idxsamp,]
+rowData(multiome)$negctl <- FALSE
+rowData(multiome)$negctl[rownames(multiome) %in% nc$symbol] <- TRUE
+rowData(multiome)$negctltest <- FALSE
+rowData(multiome)$negctltest[rownames(multiome) %in% nctest$symbol] <- TRUE
+
+newps <- read.table("~/Downloads/multiome_data/ctrls/111022_Positive_Controls_from_BMC_Genomics_AddFile2.txt", header=TRUE)
+newpshits <- newps
+rowData(multiome)$posctl <- FALSE
+rowData(multiome)$posctl[rownames(multiome) %in% newps$Gene_Name] <- TRUE
+
+newpshits$kept <- FALSE
+newpshits$kept[which(newpshits$Gene_Name %in% rownames(multiome))] <- TRUE
+
+multiome$condition[multiome$condition=="CTRL"] <- "HC"
+multiomewt <- multiome[,multiome$genotype=="WT"]
+noct <- names(which(table(multiomewt$label)<6))
+multiomewt <- multiomewt[,-which(multiomewt$labels %in% noct)]
+multiomewt <- computeLibraryFactors(multiomewt)
+multiomewt <- logNormCounts(multiomewt)
+multiomewt <- runMDS(multiomewt)
+mdal <- scater::plotMDS(multiomewt, color_by="labels", shape_by="condition", point_alpha=1, point_size=2) +theme_bw()
+pcal <- plotPCA(multiomewt, color_by="labels", shape_by="condition", point_alpha=1, point_size=2)+theme_bw()
+ggarrange(plotlist=list(mdal, pcal), common.legend=TRUE)
+
+```
+
+# Annotate Genes with External Feature Information
+
+In this step, gene-level metadata is added to the `rowData` of the `multiomewt` object. These annotations include:
+
+-   Gene symbol (`TENxSymbol`)
+-   Ensembl gene ID (`TENxEnsembl`)
+-   Chromosome (`TENxChr`)
+-   Genomic start and end positions (`TENxStart`, `TENxEnd`)
+
+These annotations are matched using a reference file containing information on duplicated gene features (`features_duplicates.tsv`). This mapping enables downstream integration with genomic coordinates and facilitates better interpretation of differentially expressed genes.
+
+```{r}
+feat <- read.table("~/Downloads/multiome_data/reference/features_duplicates.tsv", sep="\t", header=TRUE)
+rn <- rownames(rowData(multiomewt)) 
+idx <- which(rn %in% feat$symbol)
+idx1 <- which(feat$symbol %in% rn)
+rowData(multiomewt)$TENxSymbol[idx] <- feat$symbol[idx1]
+rowData(multiomewt)$TENxEnsembl[idx] <- feat$ensembl[idx1]
+rowData(multiomewt)$TENxChr[idx] <- feat$chr[idx1]
+rowData(multiomewt)$TENxStart[idx] <- feat$start[idx1]
+rowData(multiomewt)$TENxEnd[idx] <- feat$end[idx1]
+```
+
+# Dimensionality Reduction for Each Cell Type
+
+In this section, we explore the variation between experimental conditions (`HC` and `SD`) at the **single cell type level**.
+
+-   We loop through each cell type (label) in the `multiomewt` dataset.
+-   For each subset (corresponding to one label), we perform dimensionality reduction using both **MDS** and **PCA**.
+-   The resulting plots are colored by experimental condition and shaped by replicate.
+-   We generate side-by-side plots of the two reductions (MDS and PCA) for each label, with a common legend and a title showing the cell type name.
+
+This helps visualize whether the sleep deprivation (`SD`) and control (`HC`) conditions lead to visible shifts in expression space within each cell type.
+
+```{r}
+lbls <- unique(multiomewt$labels)
+bnormpl <- lapply(lbls, function(l)
+{
+    sce <- multiomewt[,multiomewt$labels %in% l]
+    md <- scater::plotMDS(sce, color_by="condition", shape_by="replicate", point_alpha=1)+theme_bw()+scale_color_manual(values=c(SD="black", HC="red"))
+    pc <- plotPCA(sce, color_by="condition", shape_by="replicate", point_alpha=1 )+theme_bw()+scale_color_manual(values=c(SD="black", HC="red"))
+    gg <- ggarrange(plotlist=list(md, pc), common.legend=TRUE)
+    gg <- annotate_figure(gg, top=ggpubr::text_grob(l,
+                    color = "black", face = "bold", size = 14))
+    return(gg)
+})
+
+names(bnormpl) <- lbls
+```
+
+# Normalization Using Upper Quartile + RUVs (per Cell Type)
+
+In this section, we apply normalization to each cell type using a combination of **Upper Quartile (UQ)** normalization and **RUVs** (Removal of Unwanted Variation using replicate samples). This step helps reduce technical noise and unwanted batch effects.
+
+-   The dataset `multiomewt` is split by individual cell type labels.
+-   For each subset:
+    -   **Upper Quartile normalization** is applied to reduce library size effects.
+    -   The condition (`HC` or `SD`) is grouped to define biological replicates.
+    -   The `RUVs` function is used to estimate 3 unwanted variation factors (k = 3), using negative control genes.
+    -   The resulting normalized counts are saved under either `"uqruvsk3"` (if UQ was successful) or `"ruvsk3"` (if not).
+    -   PCA and MDS are recomputed using the normalized data.
+    -   The normalization method is saved in the metadata of the `SingleCellExperiment`.
+
+This step ensures that downstream differential expression analysis is robust to technical variability.
+
+```{r}
+lbls <- unique(multiomewt$labels)
+
+scelist <- lapply(lbls, function(l)
+{
+    multiomewt[,multiomewt$labels %in% l]
+})
+
+names(scelist) <- lbls
+
+scelist <- lapply(scelist, function(sce)
+{
+    reducedDims(sce)$MDS <- NULL
+    uq <- EDASeq::betweenLaneNormalization(counts(sce), which="upper")
+    grp <- makeGroups(sce$condition)
+    rownames(grp) <- unique(sce$condition)
+    k=3
+    if ( isEmpty(which(is.na(uq), arr.ind=TRUE)) )
+    {
+        mat <- round(as.matrix(uq))
+        norm <- "uqruvsk3"
+    } else {
+        mat <- round(as.matrix(counts(sce)))
+        norm <- "ruvsk3"
+    }
+    ruvs <- RUVs(x=mat, cIdx=rownames(sce)[rowData(sce)$negctl], k=k,
+                     scIdx=grp, round=TRUE)
+    colData(sce) <- cbind.DataFrame(colData(sce), ruvs$W)
+    assays(sce)[[norm]] <- ruvs$normalizedCounts
+    sce <- runMDS(sce, assay.type=norm)
+    sce <- runPCA(sce, assay.type=norm)
+    
+    metadata(sce)$norm <- norm
+    return(sce)
+})
+names(scelist) <- lbls
+
+```
+
+# Plot MDS and PCA after Normalization (per Cell Type)
+
+This section visualizes the effect of normalization and the separation of samples by condition (`HC` vs `SD`) for each cell type individually.
+
+-   For each cell type in the list `scelist`:
+    -   We extract the normalized `SingleCellExperiment` object.
+    -   We generate two dimensionality reduction plots: one using **MDS** and one using **PCA**.
+    -   Both plots are colored by the experimental condition and shaped by replicate, making batch effects and biological trends visually detectable.
+    -   The plots are arranged side-by-side using `ggarrange`, and a title is added that includes the cell type and the normalization method used (from `metadata(sce)$norm`).
+-   Finally, for each cell type, the same set of plots is printed twice vertically using `ggarrange` with `nrow=2` (may be for layout testing or optional repetition).
+
+```{r}
+normpl <- lapply(seq_along(scelist), function(i)
+{
+    sce <- scelist[[i]]
+    l <- names(scelist)[i]
+    md <- scater::plotMDS(sce, color_by="condition", shape_by="replicate", point_alpha=1 )+theme_bw()+scale_color_manual(values=c(SD="black", HC="red"))
+    pc <- plotPCA(sce, color_by="condition", shape_by="replicate", point_alpha=1 )+theme_bw()+scale_color_manual(values=c(SD="black", HC="red"))
+    gg <- ggarrange(plotlist=list(md, pc), common.legend=TRUE)
+    gg <- annotate_figure(gg, top=ggpubr::text_grob(
+                            paste0(l, " ", metadata(sce)$norm),
+                            color="black", face="bold", size=14))
+    return(gg)
+})
+
+names(normpl) <- names(scelist)
+for (l in lbls)
+{
+    print(ggarrange(plotlist=list(normpl[[l]], normpl[[l]]), nrow=2))
+}
+```
+
+# Run Differential Expression with UQ+RUVsK3 Normalization
+
+In this step, we perform **differential gene expression (DGE)** analysis for each cell type using the **edgeR** framework, incorporating normalization from the previous RUVs (Removing Unwanted Variation) step.
+
+-   Iterates over each normalized `SingleCellExperiment` in `scelist`.
+-   Constructs a `DGEList` object from raw counts and associated metadata.
+-   If the sample was normalized with **Upper Quartile + RUVs (uqruvsk3)**, it computes **offsets** using library size and normalization factors to account for sequencing depth.
+-   Filters lowly expressed genes using `filterByExpr()`, requiring at least 5 counts across conditions.
+-   Calls a custom `applyEdgeR()` function, applying the contrast `"SD - HC"` and including the RUV W factors (`W_1`, `W_2`, `W_3`) as covariates.
+-   Reorders and integrates the differential results into the `rowData()` of the original object.
+-   Flags significantly differentially expressed genes (`FDR < 0.05`) with a `sign` column.
+-   (Commented out) An optional block to save the resulting DEG tables for each cell type as `.tsv`
+
+```{r}
+scelist <- lapply(scelist, function(sce)
+{
+    y <- DGEList(counts(sce), samples=colData(sce))
+    if (metadata(sce)$norm=="uqruvsk3")
+    {
+        y1 <- calcNormFactors(y, method="upperquartile")
+        offs <- log(y1$samples$lib.size*y1$samples$norm.factors)
+    } else {
+        offs <- NULL
+    }
+    keep <- filterByExpr(y, group=sce$condition, min.count=5, min.total.count=0)
+    keep.genes <- data.frame(keep[keep=="TRUE"])
+    sce <- sce[rownames(keep.genes),]
+    cntrs <- c("SD - HC")
+    res <- applyEdgeR(counts=counts(sce), colData=colData(sce),
+                          factors="condition", wnames=c("W_1", "W_2", "W_3"),
+                          contrasts=cntrs, p.threshold=1,
+                          edgeroffs=offs)[[1]]
+    res <- res[order(match(rownames(res),rownames(sce))),]
+    rowData(sce) <- rowData(sce)[,-2]
+    rowData(sce) <- cbind.DataFrame(rowData(sce), res)
+    rowData(sce)$sign <- rowData(sce)$FDR < 0.05
+    return(sce)
+})
+
+```
+
+# Compare DEGs and Nuclei Count
+
+This section explores the relationship between the number of nuclei (cells) detected per cell type and the number of differentially expressed genes (DEGs) identified. This is done in two parts: using all cell types, and then filtering to those with more than 100 nuclei to reduce noise from low-abundance populations.
+
+## Compare DEGs and Nuclei Count (All Cell Types)
+
+For each cell type: - The function `statDEG()` summarizes DEG statistics, likely counting the number of significant genes. - These summaries are collected into a combined table with `buildTab()`, which returns a `data.frame` containing at least:\
+- the number of nuclei (`Nuclei`),\
+- the number of DEGs (`DEGs`),\
+- and the label (`Label`) for each cell type. - A scatter plot is created: - **X-axis:** log-transformed number of nuclei. - **Y-axis:** log-transformed number of DEGs. - Labels are annotated using `geom_text_repel()` for readability. - A quadratic regression line is fitted (`y ~ poly(x, 2)`) to highlight any non-linear trends. - The results are visualized both as a `ggplot` and as an interactive data table using `DT::datatable()`.
+
+```{r}
+
+scelist <- lapply(scelist, function(sce)
+{
+    statDEG(sce)
+})
+
+tab <- buildTab(scelist)
+p1 <- ggplot(tab, aes(x = log(Nuclei), y = log(DEGs), color = Label)) +
+    geom_point(size = 3) +
+    #scale_color_manual(values = neuronal_color) + 
+    theme_classic() +
+    theme(legend.position = "none", axis.text = element_text(size = 7), 
+          axis.title = element_text(size = 7)) +
+    stat_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE, col = "grey") +
+    geom_text_repel(aes(label = Label), size = 3,
+                    box.padding   = 0.35) +
+    ggtitle("WT")
+datatable(tab)
+p1
+```
+
+## Compare DEGs and Nuclei (Filtered: \>100 Nuclei)
+
+This analysis filters out low-abundance cell types, retaining only those with **more than 100 detected nuclei**. This threshold helps focus on well-sampled populations, where differential expression analysis is statistically more reliable.
+
+-   A subset `tab1` is created from the original summary table `tab`, keeping only cell types with more than 100 nuclei.
+-   A scatter plot is generated to show the relationship between the **log-transformed number of nuclei** and **log-transformed number of DEGs**.
+-   Labels for each point represent the cell type (`Label`), with overlap prevented using `geom_text_repel`.
+-   A polynomial trend line (`y ~ poly(x, 2)`) is added to model the relationship.
+-   The corresponding data is displayed in an interactive table using `DT::datatable`
+
+```{r}
+tab1 <- tab[tab$Nuclei>100,]
+p1 <- ggplot(tab1, aes(x = log(Nuclei), y = log(DEGs),color = Label)) +
+  geom_point(size = 3) +
+  #scale_color_manual(values = neuronal_color) + 
+  theme_classic() +
+  theme(legend.position = "none", axis.text = element_text(size = 7), 
+        axis.title = element_text(size = 7)) +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE, col = "grey") +
+    geom_text_repel(aes(label = Label), size = 3,
+                   box.padding   = 0.35)+#,
+    ggtitle("WT 100 nuclei")
+datatable(tab1)
+p1
+```
+
+## Compare DEGs vs Nuclei in Neuronal Types (\>100 Nuclei)
+
+This analysis focuses specifically on **neuronal populations** that are well-sampled (i.e., having more than 100 nuclei). By excluding non-neuronal cells, the relationship between sample size and DEG count is analyzed within a more functionally homogeneous group.
+
+Steps performed: - Filter `tab` to retain only rows where the number of nuclei exceeds 100. - Further subset to include only neuronal cell types, based on the `superclass` annotation in the original `multiome` dataset. - Create a scatter plot showing the log-transformed number of nuclei vs. log-transformed number of DEGs. - Annotate cell types with `geom_text_repel` for clarity. - Add a quadratic regression line to highlight overall trends. - Present results both graphically and as an interactive table.
+
+```{r}
+tab2 <- tab[tab$Nuclei>100,]
+neuronallabels <- unique(multiome$label[multiome$superclass != "Non Neuronal"])
+tab2<-tab2[tab2$Label %in% neuronallabels,]
+p1 <- ggplot(tab2, aes(x = log(Nuclei), y = log(DEGs), color=Label)) +
+  geom_point(size = 4) +
+  theme_classic() +
+  theme(legend.position = "none", axis.text = element_text(size = 7), 
+        axis.title = element_text(size = 7)) +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE, col = "grey") +
+  geom_text_repel(aes(label = Label), size = 3,
+                   box.padding   = 0.35)+
+    ggtitle("WT 100 nuclei neuronal")
+datatable(tab2)
+p1
+```
+
+## MDS Plots of Superclasses
+
+This section explores differences in gene expression between broad neuronal classes — **GABAergic**, **Glutamatergic**, and **Non-Neuronal** — in wild-type samples. It involves the following steps:
+
+-   Load the pseudobulk `multiome` dataset.
+-   Define three main cell-type superclasses.
+-   Load and annotate both negative and positive control genes used for normalization.
+-   Filter out low-represented cell types (fewer than 6 replicates).
+-   Normalize each subclass and compute MDS (Multidimensional Scaling).
+-   Generate separate MDS plots for each superclass subset.
+
+```{r}
+multiome <- readRDS("~/Downloads/multiome_data/data/GEX_pseudo_2023.RDS") # pseudobulk
+
+multiome$superclass <- "Non Neuronal"
+
+multiome$superclass[multiome$label %in% c("CA1", "CA1-do","CA1-ProS", "CA2", "CA3", "SUB-ProS", "DG")] <- "Glutamatergic"
+multiome$superclass[multiome$label %in% c("Lamp5", "Sncg", "Vip", "Serpinf1",
+                                          "Ntng1", "Pvalb", "Sst", "Sst-Chodl")] <-
+    "Gabaergic"
+nc <- readRDS("~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS")
+dim(nc)
+rowData(multiome)$negctl <- FALSE
+rowData(multiome)$negctl[rownames(multiome) %in% nc$symbol] <- TRUE
+set.seed(3)
+idxsamp <- sample(seq_along(nc$ensembl_id), round((dim(nc)[1]*10)/100))
+nctest <- nc[idxsamp,]
+nc <- nc[-idxsamp,]
+rowData(multiome)$negctl <- FALSE
+rowData(multiome)$negctl[rownames(multiome) %in% nc$symbol] <- TRUE
+rowData(multiome)$negctltest <- FALSE
+rowData(multiome)$negctltest[rownames(multiome) %in% nctest$symbol] <- TRUE
+newps <- read.table("~/Downloads/multiome_data/ctrls/111022_Positive_Controls_from_BMC_Genomics_AddFile2.txt", header=TRUE)
+newpshits <- newps
+rowData(multiome)$posctl <- FALSE
+rowData(multiome)$posctl[rownames(multiome) %in% newps$Gene_Name] <- TRUE
+newpshits$kept <- FALSE
+newpshits$kept[which(newpshits$Gene_Name %in% rownames(multiome))] <- TRUE
+multiome$condition[multiome$condition=="CTRL"] <- "HC"
+multiomewt <- multiome[,multiome$genotype=="WT"]
+noct <- names(which(table(multiomewt$label)<6))
+multiomewt <- multiomewt[,-which(multiomewt$labels %in% noct)]
+multiomewt <- computeLibraryFactors(multiomewt)
+multiomewt <- logNormCounts(multiomewt)
+multiomewt <- runMDS(multiomewt)
+gaba <- multiomewt[,multiomewt$superclass=="Gabaergic"]
+gaba <- computeLibraryFactors(gaba)
+gaba <- logNormCounts(gaba)
+gaba <- runMDS(gaba)
+scater::plotMDS(gaba, color_by="labels", shape_by="condition", point_alpha=1) + ggtitle("WT Gabaergic Neurons")+scale_color_manual(values=palette)
+
+gluta <- multiomewt[,multiomewt$superclass=="Glutamatergic"]
+gluta <- computeLibraryFactors(gluta)
+gluta <- logNormCounts(gluta)
+gluta <- runMDS(gluta)
+scater::plotMDS(gluta, color_by="labels", shape_by="condition", point_alpha=1) + ggtitle("WT Glutamatergic Neurons")+scale_color_manual(values=palette)
+
+nneu <- multiomewt[,multiomewt$superclass=="Non Neuronal"]
+nneu <- computeLibraryFactors(nneu)
+nneu <- logNormCounts(nneu)
+nneu <- runMDS(nneu)
+scater::plotMDS(nneu, color_by="labels", shape_by="condition", point_alpha=1) + ggtitle("WT Non Neuronal")+scale_color_manual(values=palette)
+```
+
+# SessionInfo
+
+This final chunk prints the current R session information, which includes details about the R version, loaded packages, and the environment. This is useful for reproducibility and debugging.
+
+```{r, tidy=TRUE}
+sessionInfo()
+```

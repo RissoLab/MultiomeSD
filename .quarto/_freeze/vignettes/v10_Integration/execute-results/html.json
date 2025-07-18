@@ -1,0 +1,14 @@
+{
+  "hash": "86cae7ad60a3c9411103d18a1e53af7d",
+  "result": {
+    "markdown": "---\ntitle: \"RNA + ATAC Integration\"\noutput: rmarkdown::html_vignette\nvignette: >\n  %\\VignetteIndexEntry{RNA + ATAC Integration}\n  %\\VignetteEngine{knitr::rmarkdown}\n  %\\VignetteEncoding{UTF-8}\n---\n\n\n\n::: {.cell}\n\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
