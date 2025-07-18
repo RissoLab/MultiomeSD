@@ -1,0 +1,334 @@
+---
+title: "Multi-Omic Factor Analysis (MOFA+) RNA and ATAC"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+# Additional util
+
+Here we set a function specifically designed to extract the a user-defined number of features from the MOFA+ weights present in the model.
+
+```{r}
+getTopWeightsMOFA2 <- function(model, factor, nfeatures=20, scale=TRUE, abs=FALSE)
+{
+    library(dplyr)
+    abs=TRUE
+    W <- get_weights(model, factors = factor, as.data.frame=TRUE)
+    if (scale) W$value <- W$value/max(abs(W$value))
+    W <- W[W$value != 0, ]
+    W$sign <- ifelse(W$value > 0, "+", "-")
+    if (abs) W$value <- abs(W$value)
+    W <- W[with(W, order(-abs(value))), ]
+    W <- as.data.frame(top_n(group_by(W, factor), n = nfeatures,
+                             wt = value))
+    
+    W$feature_id <- W$feature
+    W$feature_id <- factor(W$feature_id, levels = rev(unique(W$feature_id)))
+    return(W)
+}
+```
+
+# Loading libraries
+
+```{r, message=FALSE}
+library(MOFA2)
+library(MultiAssayExperiment)
+library(scater)
+library(scran)
+library(Matrix)
+library(dplyr)
+```
+
+# Preprocessing and Selection of Highly Variable Genes in CA1-do Cells in RNA assay
+
+We load single-cell RNA-seq data and then we merge the selected wild-type samples into a single object and focus on cells labeled as "CA1-do". We identify the top 1,000 highly variable genes and subset the data accordingly.
+
+```{r, eval=FALSE}
+set.seed(999)
+scelistrna <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
+scelistrnawt <- scelistrna[-grep("S3", names(scelistrna))]
+mornawt <- do.call(cbind,scelistrnawt)
+mornawtca1do <- mornawt[,mornawt$labels=="CA1-do"]
+hvg <- getTopHVGs(mornawtca1do, n=1000)
+mornawtca1dohvg <- mornawtca1do[hvg,]
+mornawtca1dohvg$sample.id <- gsub("WT", "HC", mornawtca1dohvg$sample.id)
+colnames(mornawtca1dohvg) <- paste0(mornawtca1dohvg$sample.id, "_", colnames(mornawtca1dohvg))
+mornawtca1dohvg$condition <- gsub("CTRL", "HC", mornawtca1dohvg$condition)
+```
+
+# Preprocessing amd selection Highly Variable Peaks in CA1-do Cellsin ATAC assay
+
+We load the single-cell ATAC-seq datasets and rename them based on sample metadata. 
+Peaks are converted into `GRanges` objects for genomic range handling. 
+Using annotation with `ChIPseeker` and `TxDb.Mmusculus.UCSC.mm10.knownGene`, we assign genomic features and focus on regions around transcription start sites (±3 kb).
+
+Peaks are reformatted back into string identifiers and subsetted accordingly, with annotations stored in the row data of each `SingleCellExperiment` object.
+
+We identify common genes across samples by intersecting annotated gene symbols. For each gene, we aggregate ATAC counts over all corresponding peaks to create a gene-level pseudo-count matrix. The count matrices are merged and column names standardized to reflect sample and barcode information.
+
+After removing NA genes, we assemble a combined `SingleCellExperiment` with gene counts and cell metadata, applying log-normalization. The top 1000 highly variable peaks are identified to focus on informative regions.
+Highly Variable Peaks are defined as the peaks that annotate for the most highly variable genes. We remind to the paper for additional details.
+
+
+```{r, eval=FALSE}
+scelistatac <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noRNA_doublrm.RDS")
+names(scelistatac) <- unlist(lapply(scelistatac, function(x){strsplit(x$Sample, "/")[[1]][2]}))
+scelistatacwt <- scelistatac[-grep("S3", names(scelistatac))]
+
+GRangesFromPeaks <- function(peaks, sep=":|-")
+{
+    require(GenomicRanges)
+    stopifnot(is(peaks, "character"))
+    plspl <- strsplit(peaks, sep)
+    chrs <- unlist(lapply(plspl, function(x){x[1]}))
+    start <- as.numeric(unlist(lapply(plspl, function(x){x[2]})))
+    end <- as.numeric(unlist(lapply(plspl, function(x){x[3]})))
+    gr <- GRanges(seqnames=chrs, ranges=IRanges(start=start,end=end))
+    return(gr)
+}
+grl <- lapply(scelistatacwt, function(x){ GRangesFromPeaks(rownames(x)) })
+library(SingleCellExperiment)
+library(ChIPseeker)
+library(TxDb.Mmusculus.UCSC.mm10.knownGene)
+rrannol <- lapply(grl, function(gr)
+{
+    annotatePeak(gr, tssRegion=c(-3000, 3000), TxDb=TxDb.Mmusculus.UCSC.mm10.knownGene, annoDb="org.Mm.eg.db")@anno
+})
+
+GRangesToPeaks <- function(gr, sep="-")
+{
+    require(GenomicRanges)
+    stopifnot(is(gr, "GRanges"))
+    pn <- paste(seqnames(gr), start(gr), end(gr), sep=sep)
+    return(pn)
+}
+scelistatacwtss <- lapply(seq_along(scelistatacwt), function(i)
+{
+    # print(i)
+    sce <- scelistatacwt[[i]]
+    gr <- rrannol[[i]]
+    pns <- GRangesToPeaks(gr)
+    sce <- sce[pns,]
+    rowData(sce)$annotation <- gr
+    sce
+})
+
+names(scelistatacwtss) <- names(scelistatacwt)
+
+rrgenesl <- lapply(rrannol, function(rr){unique(rr$SYMBOL)})
+cgenes <- Reduce(intersect, rrgenesl)
+
+## creating pseudo-counts over genes
+gcntsl <- lapply(cgenes, function(g)
+{
+    cntslist <- lapply(seq_along(scelistatacwtss), function(i)
+    {
+        sce <- scelistatacwtss[[i]]
+        sceidx <- which(rowData(sce)$annotation$SYMBOL==g)
+        assays(sce)$counts <- assays(sce)$ATAC
+        cnts <- t(Matrix(colSums(counts(sce[sceidx,]))))
+        colnames(cnts) <- paste0(colnames(sce[sceidx,]), "_", names(scelistatacwtss)[i])
+        rownames(cnts) <- g
+        cnts
+    })
+    names(cntslist) <- names(scelistatacwtss)
+    Reduce(cbind, cntslist)
+})
+saveRDS(gcntsl, file="gcntsl.RDS")
+gcounts <- Reduce(rbind, gcntsl)
+cngn <- colnames(gcounts)
+newcn <- unlist(lapply(strsplit(cngn, split = "_"), function(x) {return( paste(x[2], x[3], x[1], sep="_"))
+  }))
+colnames(gcounts) <- newcn
+saveRDS(gcounts, file="atac_gene_counts.RDS")
+
+scelistatacwtss <- lapply(scelistatacwtss, function(sce)
+{
+    sce$colname <- paste0(sce$sample.id, "_", sce$Barcode)
+    sce
+})
+
+cd1 <- lapply(scelistatacwtss, colData)
+
+cdatac <- Reduce(rbind, cd1)
+rownames(cdatac) <- cdatac$colname
+
+gcountsnona <- gcounts[-which(is.na(rownames(gcounts))),]
+mosceatacwt <- SingleCellExperiment(assays=list(counts=gcountsnona), colData=cdatac)
+mosceatacwt <- logNormCounts(mosceatacwt)
+atachvg <- getTopHVGs(mosceatacwt, n=1000)
+mosceatacwthvg <- mosceatacwt[atachvg,]
+
+mosceatacwthvg$sample.id <- gsub("WT", "HC", mosceatacwthvg$sample.id)
+mosceatacwthvg$condition <- gsub("CTRL", "HC", mosceatacwthvg$condition)
+colnames(mosceatacwthvg) <- gsub("WT", "HC", colnames(mosceatacwthvg))
+
+saveRDS(mosceatacwthvg, file="MAE_allCT_ATAC.RDS")
+```
+
+# Focusing on CA1-do Cells in the ATAC Dataset
+
+We subset the ATAC-seq data to include only cells labeled as "CA1-do", isolating this population for targeted downstream analysis.
+
+```{r, eval=FALSE}
+mosceatacwthvg <- readRDS(file="MAE_allCT_ATAC.RDS")
+moatacwtca1dohvg <- mosceatacwthvg[,mosceatacwthvg$labels=="CA1-do"]
+```
+
+# Preparing the MOFA Model from RNA and ATAC Modalities
+
+We combine RNA and ATAC data from CA1-do cells into a `MultiAssayExperiment` and extract condition and replicate metadata from the column names. This information is stored in the sample annotations. A MOFA object is then created without group specification, and default options are set to scale both views and groups. We configure the model to learn 10 latent factors and prepare the MOFA object for training. A summary plot is generated to visualize the input data structure.
+
+```{r, warning=FALSE, eval=FALSE}
+stopifnot(colnames(mornawtca1dohvg)==colnames(moatacwtca1dohvg))
+explistwt <- list("RNA"=mornawtca1dohvg, "ATAC"=moatacwtca1dohvg)
+(mae <- MultiAssayExperiment(experiments=explistwt))
+
+
+sampleMap(mae)$condition <- unlist(lapply(strsplit(as.character(sampleMap(mae)$colname), "_"), function(x) {x[2]}))
+sampleMap(mae)$rep <- unlist(lapply(strsplit(as.character(sampleMap(mae)$colname), "_"), function(x) {x[1]}))
+rep <- unlist(lapply(strsplit(unique(unlist(colnames(mae))),"_"), function(x) {x[1]}))
+cond <- unlist(lapply(strsplit(unique(unlist(colnames(mae))),"_"), function(x) {x[2]}))
+cd <- data.frame(cell=unique(unlist(colnames(mae))), replicate=rep, condition=cond, rep_cond=paste(rep, cond, sep="_"))
+rownames(cd) <- cd$cell
+colData(mae) <- DataFrame(cd)
+
+mofa <- create_mofa_from_MultiAssayExperiment(mae)#, groups = "replicate")
+
+data_opts <- get_default_data_options(mofa)
+data_opts$scale_views <- TRUE
+data_opts$scale_groups <- TRUE
+
+model_opts <- get_default_model_options(mofa)
+model_opts$num_factors <- 10
+
+train_opts <- get_default_training_options(mofa)
+
+MOFAobject <- prepare_mofa(
+  object = mofa,
+  data_options = data_opts,
+  model_options = model_opts,
+  training_options = train_opts
+)
+plot_data_overview(MOFAobject)
+```
+
+# Training the MOFA Model with RNA and ATAC Data
+
+We train the MOFA model using the integrated RNA and ATAC dataset, saving the trained object to an HDF5 file. After training, we merge the sample metadata with the original annotations to maintain consistent labeling, and update the model’s metadata accordingly.
+
+```{r, message=FALSE, results='hide', eval=FALSE}
+outfile = file.path("./model_ATAC_RNA.hdf5")
+MOFAobject.trained <- run_mofa(MOFAobject, outfile, use_basilisk=TRUE)
+model <- MOFAobject.trained
+sm <- samples_metadata(model)
+cd$sample <- cd$cell
+sm$cell <- sm$sample
+newcm <- merge(sm, cd, by.x="sample", by.y="sample")
+samples_metadata(model) <- newcm
+```
+
+# Visualizing Latent Factors to Assess Condition-Driven Variability
+
+We load the trained MOFA model and assign condition labels to each sample. We then visualize the first ten latent factors, coloring samples by condition, to evaluate which factors capture variability associated with the experimental groups.
+
+
+```{r, message=FALSE}
+model <- load_model("~/Downloads/multiome_data/data/model_ATAC_RNA.hdf5")
+samples_metadata(model)$condition <- "HC"
+samples_metadata(model)$condition[grep("SD", samples_metadata(model)$sample)] <- "SD"
+plot_factors(model,
+             factors = 1:10,
+             color_by = "condition"
+)
+```
+
+# Highlighting Condition-Associated Factors
+
+We focus on factors 4 and 5, which clearly distinguish between the experimental conditions, indicating that these factors capture relevant biological variability.
+
+```{r}
+plot_factors(model,
+             factors = c(4:5),
+             color_by = "condition"
+)
+```
+
+# Examining Feature Contributions to Factor 5
+
+We inspect the top 20 features with the highest weights for factor 5. By scaling the weights between -1 and 1, we identify the genes or regions most strongly contributing to the variability captured by this factor, offering insights into potential drivers of condition-specific differences.
+
+
+```{r}
+plot_weights(model,
+             factor = c(5),
+             nfeatures = 20,     # Number of features to highlight
+             scale = TRUE,          # Scale weights from -1 to 1
+             abs = FALSE             # Take the absolute value?
+)
+```
+
+# Visualizing Top Features for Factor 5
+
+We plot the top 20 features with the highest absolute weights for factor 5, using scaled values to highlight those with the strongest influence. This helps identify key genes or genomic regions driving the variability associated with this factor.
+
+```{r}
+plot_top_weights(model,
+                 factors = c(5),
+                 nfeatures = 20,     # Number of features to highlight
+                 scale = TRUE,          # Scale weights from -1 to 1
+                 abs = FALSE             # Take the absolute value?
+)
+```
+
+# Exporting Top Gene Weights for All Factors
+
+Thanks to our util, we can iterate through factors 1 to 10, extracting the top 100 genes contributing to each factor. Then we can save the results as separate tab-delimited files for downstream analysis or reporting.
+
+```{r, eval=FALSE}
+for(f in c(1:10))
+{
+    W <- getTopWeightsMOFA2(model, factor = f, nfeatures = 100)
+    fc <- paste0("Factor", f)
+    write.table(x = W[W$factor==fc,], file=paste0("top_100_MOFA_ATAC_RNA_",fc, ".tsv"), row.names = FALSE, quote=FALSE, sep = "\t")
+}
+
+```
+
+# t-SNE Visualization of MOFA-Inferred Latent Space
+
+We compute a t-SNE embedding using the first five latent factors from the MOFA model to reduce dimensionality and visualize the global structure of the data. The embedding is incorporated into a `SingleCellExperiment` object and plotted with cells colored by condition, allowing us to assess how well the inferred factors separate the experimental groups in a low-dimensional space.
+
+```{r}
+library(ggplot2)
+set.seed(999)
+model <- run_tsne(model, factors = 1:5)#, perplexity=100)
+
+tsne <- model@dim_red$TSNE
+rownames(tsne) <- tsne$sample
+tsne <- as.matrix(tsne[,-1])
+cd <- model@samples_metadata
+sce <- SingleCellExperiment(
+  assays = list(), 
+  colData = cd
+)
+
+reducedDims(sce)$TSNE <- tsne
+
+library(scater)
+
+plotTSNE(sce, colour_by="condition") +
+  scale_color_manual(name="Condition", values = c("HC" = "#F8766D", "SD" = "#00BFC4"))
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```

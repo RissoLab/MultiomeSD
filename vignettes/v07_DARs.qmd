@@ -1,5 +1,5 @@
 ---
-title: "Differential Accessible Regions"
+title: "Differential Accessible Regions on Wild Type"
 author: "Dario Righelli"
 date: "`r Sys.Date()`"
 editor_options: 
