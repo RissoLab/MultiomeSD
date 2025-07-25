@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Dario Righelli">
+<meta name="dcterms.date" content="2025-07-25">
 
 <title>10x-Multiome Sleep Deprivation Analysis - Differentially Accessible Regions of Shank3 DeltaC</title>
 <style>
@@ -19,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -60,8 +96,21 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="../site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="../site_libs/datatables-binding-0.33/datatables.js"></script>
+<script src="../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="../site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="../site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
 
 <meta property="og:title" content="10x-Multiome Sleep Deprivation Analysis - Differentially Accessible Regions of Shank3 DeltaC">
+<meta property="og:description" content="">
+<meta property="og:image" content="v10_DARs_S3_files/figure-html/exploring_peaks-1.png">
 <meta property="og:site-name" content="10x-Multiome Sleep Deprivation Analysis">
 <meta property="og:locale" content="en_US">
 </head>
@@ -94,31 +143,35 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
- <span class="dropdown-text">05 DEGs Wild Type</span></a>
+ <span class="dropdown-text">DEGs Wild Type</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v06_DE_CA1Do.html" rel="" target="">
- <span class="dropdown-text">06 DEGs Wild Type CA1-do</span></a>
+ <span class="dropdown-text">DEGs Wild Type CA1-do</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v07_DARs.html" rel="" target="">
- <span class="dropdown-text">07 DARs Wild Type CA1-do</span></a>
+ <span class="dropdown-text">DARs Wild Type CA1-do</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v08_DE_S3.html" rel="" target="">
- <span class="dropdown-text">06 DEGs Shank3</span></a>
+ <span class="dropdown-text">DEGs Shank3</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v09_DE_S3_CA1Do.html" rel="" target="">
- <span class="dropdown-text">09 DEGs Shank3 DeltaC CA1-do</span></a>
+ <span class="dropdown-text">DEGs Shank3 DeltaC CA1-do</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v10_DARs_S3.html" rel="" target="">
+ <span class="dropdown-text">DARs Shank3 DeltaC CA1-do</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v11_MOFA_RNA_ATAC.html" rel="" target="">
- <span class="dropdown-text">11 MOFA+ ATAC+RNA Analysis</span></a>
+ <span class="dropdown-text">MOFA+ ATAC+RNA Analysis</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v12_MOFA_RNA.html" rel="" target="">
- <span class="dropdown-text">12 MOFA+ RNA Analysis</span></a>
+ <span class="dropdown-text">MOFA+ RNA Analysis</span></a>
   </li>  
     </ul>
   </li>
@@ -134,7 +187,37 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#generate-and-process-bam-files-for-cell-type-specific-signal-tracks" id="toc-generate-and-process-bam-files-for-cell-type-specific-signal-tracks" class="nav-link active" data-scroll-target="#generate-and-process-bam-files-for-cell-type-specific-signal-tracks">Generate and Process BAM Files for Cell-Type Specific Signal Tracks</a></li>
+  <li><a href="#peak-calling-on-atac-bam-files-using-macs2" id="toc-peak-calling-on-atac-bam-files-using-macs2" class="nav-link" data-scroll-target="#peak-calling-on-atac-bam-files-using-macs2">Peak Calling on ATAC BAM Files Using MACS2</a></li>
+  <li><a href="#detecting-final-consensus-regions-from-macs2-peaks-with-descan2" id="toc-detecting-final-consensus-regions-from-macs2-peaks-with-descan2" class="nav-link" data-scroll-target="#detecting-final-consensus-regions-from-macs2-peaks-with-descan2">Detecting Final Consensus Regions from MACS2 Peaks with DEScan2</a></li>
+  <li><a href="#counting-reads-in-final-regions-with-descan2" id="toc-counting-reads-in-final-regions-with-descan2" class="nav-link" data-scroll-target="#counting-reads-in-final-regions-with-descan2">Counting Reads in Final Regions with DEScan2</a></li>
+  <li><a href="#loading-control-gene-sets-and-macs2-peak-data" id="toc-loading-control-gene-sets-and-macs2-peak-data" class="nav-link" data-scroll-target="#loading-control-gene-sets-and-macs2-peak-data">Loading Control Gene Sets and MACS2 Peak Data</a></li>
+  <li><a href="#exploring-the-number-of-consensus-peaks-across-samples" id="toc-exploring-the-number-of-consensus-peaks-across-samples" class="nav-link" data-scroll-target="#exploring-the-number-of-consensus-peaks-across-samples">Exploring the Number of Consensus Peaks Across Samples</a></li>
+  <li><a href="#filtering-and-extracting-robust-consensus-peaks-based-on-sample-carriers" id="toc-filtering-and-extracting-robust-consensus-peaks-based-on-sample-carriers" class="nav-link" data-scroll-target="#filtering-and-extracting-robust-consensus-peaks-based-on-sample-carriers">Filtering and Extracting Robust Consensus Peaks Based on Sample Carriers</a></li>
+  <li><a href="#preparing-promoter-regions-for-peak-distribution-analysis" id="toc-preparing-promoter-regions-for-peak-distribution-analysis" class="nav-link" data-scroll-target="#preparing-promoter-regions-for-peak-distribution-analysis">Preparing Promoter Regions for Peak Distribution Analysis</a></li>
+  <li><a href="#plotting-average-peak-profiles-around-promoters" id="toc-plotting-average-peak-profiles-around-promoters" class="nav-link" data-scroll-target="#plotting-average-peak-profiles-around-promoters">Plotting Average Peak Profiles Around Promoters</a></li>
+  <li><a href="#intersection-and-visualization-of-condition-specific-and-shared-peaks" id="toc-intersection-and-visualization-of-condition-specific-and-shared-peaks" class="nav-link" data-scroll-target="#intersection-and-visualization-of-condition-specific-and-shared-peaks">Intersection and Visualization of Condition-Specific and Shared Peaks</a></li>
+  <li><a href="#annotation-of-peaks-relative-to-genomic-features" id="toc-annotation-of-peaks-relative-to-genomic-features" class="nav-link" data-scroll-target="#annotation-of-peaks-relative-to-genomic-features">Annotation of Peaks Relative to Genomic Features</a>
+  <ul class="collapse">
+  <li><a href="#hc-sd-common-peaks" id="toc-hc-sd-common-peaks" class="nav-link" data-scroll-target="#hc-sd-common-peaks">HC-SD Common Peaks</a></li>
+  <li><a href="#sd-unique-peaks" id="toc-sd-unique-peaks" class="nav-link" data-scroll-target="#sd-unique-peaks">SD Unique Peaks</a></li>
+  <li><a href="#hc-unique-peaks" id="toc-hc-unique-peaks" class="nav-link" data-scroll-target="#hc-unique-peaks">HC Unique Peaks</a></li>
+  </ul></li>
+  <li><a href="#generating-count-matrices-for-differential-accessibility-analysis-using-descan2" id="toc-generating-count-matrices-for-differential-accessibility-analysis-using-descan2" class="nav-link" data-scroll-target="#generating-count-matrices-for-differential-accessibility-analysis-using-descan2">Generating Count Matrices for Differential Accessibility Analysis Using DEScan2</a></li>
+  <li><a href="#pca-visualization-of-raw-counts-across-condition-specific-and-merged-peak-sets" id="toc-pca-visualization-of-raw-counts-across-condition-specific-and-merged-peak-sets" class="nav-link" data-scroll-target="#pca-visualization-of-raw-counts-across-condition-specific-and-merged-peak-sets">PCA Visualization of Raw Counts Across Condition-Specific and Merged Peak Sets</a></li>
+  <li><a href="#annotation-and-pca-of-negative-and-positive-control-peaks" id="toc-annotation-and-pca-of-negative-and-positive-control-peaks" class="nav-link" data-scroll-target="#annotation-and-pca-of-negative-and-positive-control-peaks">Annotation and PCA of Negative and Positive Control Peaks</a></li>
+  <li><a href="#reconciliation-and-completion-of-peak-annotations-in-the-combined-dataset" id="toc-reconciliation-and-completion-of-peak-annotations-in-the-combined-dataset" class="nav-link" data-scroll-target="#reconciliation-and-completion-of-peak-annotations-in-the-combined-dataset">Reconciliation and Completion of Peak Annotations in the Combined Dataset</a></li>
+  <li><a href="#differential-accessibility-analysis-with-ruv-normalization-using-controls" id="toc-differential-accessibility-analysis-with-ruv-normalization-using-controls" class="nav-link" data-scroll-target="#differential-accessibility-analysis-with-ruv-normalization-using-controls">Differential Accessibility Analysis with RUV Normalization Using Controls</a></li>
+  <li><a href="#annotation-and-cross-comparison-of-dars-with-degs" id="toc-annotation-and-cross-comparison-of-dars-with-degs" class="nav-link" data-scroll-target="#annotation-and-cross-comparison-of-dars-with-degs">Annotation and Cross-Comparison of DARs with DEGs</a></li>
+  <li><a href="#distribution-of-differentially-accessible-regions-dars-across-genomic-elements" id="toc-distribution-of-differentially-accessible-regions-dars-across-genomic-elements" class="nav-link" data-scroll-target="#distribution-of-differentially-accessible-regions-dars-across-genomic-elements">Distribution of Differentially Accessible Regions (DARs) Across Genomic Elements</a></li>
+  <li><a href="#summary-statistics-and-control-enrichment-of-dars" id="toc-summary-statistics-and-control-enrichment-of-dars" class="nav-link" data-scroll-target="#summary-statistics-and-control-enrichment-of-dars">Summary Statistics and Control Enrichment of DARs</a></li>
+  <li><a href="#sessioninfo" id="toc-sessioninfo" class="nav-link" data-scroll-target="#sessioninfo">sessionInfo</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -148,7 +231,19 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dario Righelli </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 25, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -156,8 +251,1082 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="generate-and-process-bam-files-for-cell-type-specific-signal-tracks" class="level1">
+<h1>Generate and Process BAM Files for Cell-Type Specific Signal Tracks</h1>
+<p>This code performs a full pipeline for extracting, sorting, indexing, and generating coverage tracks (bigWig files) from BAM files associated with single-cell multiome data, focusing on a specific cell type (“CA1-do”). Here’s a unified explanation of what it does:</p>
+<ol type="1">
+<li><p>It lists all BAM files in the current directory and subdirectories, filtering to keep only those paths that include “outs” (likely 10x Genomics output folders).</p></li>
+<li><p>It loads a previously saved list of <code>SingleCellExperiment</code> objects (<code>scelist</code>), each likely corresponding to a different sample, and loads the <code>TENxMultiomeTools</code> package.</p></li>
+<li><p>For each <code>sce</code> object in <code>scelist</code>, it calls <code>createBamCt</code> to extract reads specific to the cell type <code>"CA1-do"</code> using the <code>"labels"</code> column to define cell identities. The function saves new BAM files (cell-type specific) in <code>2023/bams</code>, using the sample identifier (<code>sce$Sample</code>) to locate the original BAMs and determine output structure. The commented code above it suggests this step can be generalized to all cell types.</p></li>
+<li><p>After generating these BAM files, it sorts them using <code>samtools sort</code> with 10 threads, saving the output with a <code>_sorted.bam</code> suffix.</p></li>
+<li><p>It then indexes the sorted BAM files using <code>samtools index</code> with 10 threads.</p></li>
+<li><p>Finally, for each sorted BAM, it generates a normalized coverage track in bigWig format using <code>bamCoverage</code>, labeling it as “GEX” or “ATAC” depending on whether the BAM filename includes “GEX”. Normalization is done using CPM (counts per million), and the results are saved under <code>2023/bw/</code>.</p></li>
+</ol>
+<p>This pipeline is tailored for preparing cell type–specific signal tracks for genome browser visualization or downstream analysis.</p>
+<p><strong>Note:</strong> This code chunk is not evaluated in the document to save time. We directly begin from the pre-annotated dataset, which includes the information described above.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>bams <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"."</span>, <span class="at">pattern=</span><span class="st">"*bam$"</span>, <span class="at">recursive=</span><span class="cn">TRUE</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>bams <span class="ot">&lt;-</span> bams[<span class="fu">grep</span>(<span class="st">"outs"</span>,bams)]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"2023/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TENxMultiomeTools)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce){</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">createBamCt</span>(sce, <span class="at">cellType=</span><span class="st">"CA1-do"</span>, <span class="at">cellTypesCol=</span><span class="st">"labels"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">bamdir=</span><span class="fu">unique</span>(sce<span class="sc">$</span>Sample), <span class="at">outdir=</span><span class="st">"2023/bams"</span>, <span class="at">ncores=</span><span class="dv">10</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>bams <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/bams"</span>, <span class="at">pattern=</span><span class="st">"*.bam$"</span>, <span class="at">recursive=</span><span class="cn">TRUE</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(bams, <span class="cf">function</span>(bam)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    cmd <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"samtools sort -@ 10 "</span>, bam,<span class="st">" -o "</span>, <span class="fu">gsub</span>(<span class="st">".bam$"</span>, <span class="st">""</span>, bam), <span class="st">"_sorted.bam"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(cmd)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">system</span>(cmd)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>bamss <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/bams"</span>, <span class="at">pattern=</span><span class="st">"*_sorted.bam$"</span>, <span class="at">recursive=</span><span class="cn">TRUE</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(bamss, <span class="cf">function</span>(bam)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    cmd <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"samtools index -b "</span>, bam, <span class="st">" -@ 10 "</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(cmd)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">system</span>(cmd)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="do">## creating bigwigs</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>bams <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/bams"</span>, <span class="at">pattern=</span><span class="st">"*sorted.bam$"</span>, <span class="at">recursive=</span><span class="cn">TRUE</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>void <span class="ot">&lt;-</span> <span class="fu">lapply</span>(bams, <span class="cf">function</span>(bam)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    prefix <span class="ot">&lt;-</span> <span class="fu">ifelse</span>( <span class="fu">length</span>(<span class="fu">grep</span>(<span class="st">"GEX"</span>, bam)) <span class="sc">!=</span> <span class="dv">0</span>, <span class="st">"GEX"</span>, <span class="st">"ATAC"</span> )</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    cmd <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"bamCoverage --normalizeUsing CPM -b "</span>, bam,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>                <span class="st">" -o 2023/bw/"</span>, prefix, <span class="st">"_"</span>, <span class="fu">gsub</span>(<span class="st">".bam"</span>, <span class="st">".bw"</span>, <span class="fu">basename</span>(bam)), <span class="st">" -p "</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                <span class="dv">10</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">message</span>(cmd)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">system</span>(cmd)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="peak-calling-on-atac-bam-files-using-macs2" class="level1">
+<h1>Peak Calling on ATAC BAM Files Using MACS2</h1>
+<p>This code chunk calls MACS2 on sorted ATAC-seq BAM files to identify broad peaks from multiome data. Unlike the typical 10x Cell Ranger peak calling on single-cell matrices—which can produce less reliable peaks due to sparse data and noise—running MACS2 on bulk-level BAMs provides more trustworthy and robust peak detection. Calling broad peaks is particularly suited for ATAC-seq data because accessible chromatin regions often span wider genomic areas rather than sharp narrow peaks, capturing regulatory elements like enhancers and promoters more effectively. The code loops through each BAM file, runs MACS2 with custom parameters (–nomodel, fixed extension size, and shift).</p>
+<p><strong>Note:</strong> This code chunk is not evaluated in the document to save time. We directly begin from the pre-annotated dataset, which includes the information described above.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>bamfiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/bams"</span>, <span class="at">pattern=</span><span class="st">"*_sorted.bam$"</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>bamfiles <span class="ot">&lt;-</span> bamfiles[<span class="fu">grep</span>(<span class="st">"ATAC"</span>, bamfiles)]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>outdir <span class="ot">&lt;-</span> <span class="st">"2023/MACS2_peaks"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>additional.params <span class="ot">&lt;-</span> <span class="st">"--nomodel "</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>extsize <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>shift  <span class="ot">&lt;-</span> <span class="sc">-</span>(extsize<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(file <span class="cf">in</span> bamfiles)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    cmd <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"macs2 callpeak --treatment "</span>, file, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">" --name "</span>, <span class="fu">basename</span>(file), </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">" --outdir "</span>, outdir, </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">" --format BAM --gsize mm "</span>, </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                additional.params,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">" --extsize "</span>, extsize,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">" --shift "</span>, shift,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">" --broad"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(cmd)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">system</span>(cmd)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>pf <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/MACS2_peaks"</span>, <span class="at">pattern=</span><span class="st">".broadPeak"</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>pfwt <span class="ot">&lt;-</span> pf[<span class="fu">grep</span>(<span class="st">"WT|_SD_"</span>, pf)]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(pfwt, <span class="cf">function</span>(f){<span class="fu">system</span>(<span class="fu">paste0</span>(<span class="st">"mv "</span>, f, <span class="st">" 2023/MACS2_peaks/WT/"</span>, <span class="fu">basename</span>(f)))})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="detecting-final-consensus-regions-from-macs2-peaks-with-descan2" class="level1">
+<h1>Detecting Final Consensus Regions from MACS2 Peaks with DEScan2</h1>
+<p>Consensus regions are important because they represent genomic intervals consistently detected across samples within a condition, enabling reliable and comparable quantification. This ensures that downstream analyses, like normalization and differential testing, are performed on a robust, unified set of regions, improving biological interpretation and reducing noise.</p>
+<p>This chunk processes <strong>MACS2 broad peaks</strong> from ATAC-seq data to identify <strong>condition-specific consensus regions</strong> using <code>DEScan2::finalRegions</code>. It:</p>
+<ul>
+<li><p>Imports <code>.broadPeak</code> files from the “S3” genotype.</p></li>
+<li><p>Groups them by sample name (those matching <code>_SD$</code> and <code>HC</code>).</p></li>
+<li><p>Calls <code>finalRegions()</code> for each condition-specific group with:</p>
+<ul>
+<li>No z-score thresholding,</li>
+<li><code>minCarriers = 1</code> (regions kept if present in at least one sample),</li>
+<li>Based on MACS2’s <code>score</code> column.</li>
+</ul></li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## on MACS2 peaks</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">#######################</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>bpeaks <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/peaks/MACS2_peaks/S3"</span>, <span class="at">pattern=</span><span class="st">".broadPeak$"</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rtracklayer)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>grl<span class="ot">&lt;-</span> <span class="fu">lapply</span>(bpeaks, import, <span class="at">format=</span><span class="st">"broadPeak"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(grl) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"_CA1-do_sorted.bam_peaks.broadPeak"</span>, <span class="st">""</span>, <span class="fu">basename</span>(bpeaks))</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ccs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"_S3$"</span>,<span class="st">"_S3SD$"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>rrlistcond <span class="ot">&lt;-</span> <span class="fu">lapply</span>(ccs, <span class="cf">function</span>(c)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">finalRegions</span>(<span class="fu">GRangesList</span>(grl[<span class="fu">grep</span>(c, <span class="fu">names</span>(grl))]), </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">zThreshold=</span><span class="dv">0</span>, <span class="at">minCarriers=</span><span class="dv">1</span>, <span class="at">saveFlag=</span><span class="cn">FALSE</span>, </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">scorecolname=</span><span class="st">"score"</span>, <span class="at">verbose=</span><span class="cn">TRUE</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">BPPARAM=</span>BiocParallel<span class="sc">::</span><span class="fu">MulticoreParam</span>(<span class="at">workers=</span><span class="dv">1</span>)) </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(rrlistcond) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"S3_HC"</span>, <span class="st">"S3_SD"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="counting-reads-in-final-regions-with-descan2" class="level1">
+<h1>Counting Reads in Final Regions with DEScan2</h1>
+<p>This chunk organizes S3 ATAC-seq BAM files, counts reads over consensus peak regions using DEScan2, and annotates the resulting data with sample and experimental metadata, enabling downstream normalization and differential expression analyses on pseudo-bulk data.</p>
+<ol type="1">
+<li><p><strong>Moves BAM files</strong>:</p>
+<ul>
+<li>Filters and moves only <strong>S3 ATAC-seq</strong> BAM files and their indices (<code>.bai</code>) into a dedicated folder (<code>2023/bams/ATAC_S3</code>).</li>
+</ul></li>
+<li><p><strong>Counts reads in DEScan2 final regions</strong>:</p>
+<ul>
+<li>For each set of condition-specific consensus regions (<code>rrlistcond</code>), it uses <code>countFinalRegions()</code> to compute <strong>read counts</strong> from the BAMs in <code>ATAC_S3</code>.</li>
+</ul></li>
+<li><p><strong>Creates <code>SummarizedExperiment</code> objects</strong> with rich metadata:</p>
+<ul>
+<li>Assigns:
+<ul>
+<li><code>Sample</code>, <code>Replicate</code>, <code>Condition</code>, <code>Genotype</code>, <code>CellType</code>, and a composite <code>gcondition</code>.</li>
+</ul></li>
+<li>Extracts metadata from filenames via regex parsing.</li>
+<li>Normalizes condition labels (e.g., <code>"SD"</code> vs <code>"HC"</code>) and updates genotypes based on sample IDs (<code>"S3"</code> is assumed to be KO).</li>
+</ul></li>
+</ol>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rrlistcond <span class="ot">&lt;-</span> rrlistcond[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>)]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>bamss3 <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"2023/bams"</span>, <span class="at">pattern=</span><span class="st">"*sorted.bam$"</span>, <span class="at">recursive=</span><span class="cn">TRUE</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>bamss3 <span class="ot">&lt;-</span> bamss3[<span class="fu">grep</span>(<span class="at">pattern=</span><span class="st">"ATAC"</span>, <span class="at">x=</span>bamss3)]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>bamss3 <span class="ot">&lt;-</span> bamss3[<span class="fu">grep</span>(<span class="at">pattern=</span><span class="st">"_S3|_S3SD"</span>, <span class="at">x=</span>bamss3)]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(bamss3, <span class="cf">function</span>(b){</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">system</span>(<span class="fu">paste0</span>(<span class="st">"mv "</span>, b, <span class="st">" 2023/bams/ATAC_S3/"</span>, <span class="fu">basename</span>(b)))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># CREATED BAI FILES via terminal</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># bamss3 &lt;- list.files("2023/bams", pattern="*sorted.bam$", recursive=TRUE, full.names=TRUE)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># bamss3 &lt;- bamss3[grep(pattern="ATAC", x=bamss3)]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># bamss3 &lt;- bamss3[grep(pattern="_S3|_S3SD", x=bamss3)]</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># lapply(bamss3, function(b){</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#     system(paste0("samtools index -b ", b, " -@ 10 "))</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#     })</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>bamdir <span class="ot">&lt;-</span> <span class="st">"2023/bams/ATAC_S3"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>secondlist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(rrlistcond, <span class="cf">function</span>(finalrr)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">countFinalRegions</span>(finalrr, <span class="at">readsFilePath=</span>bamdir, </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                        <span class="at">fileType=</span><span class="st">"bam"</span>, <span class="at">minCarriers=</span><span class="dv">1</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>selist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(secondlist, <span class="cf">function</span>(se)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(<span class="fu">assays</span>(se)) <span class="ot">&lt;-</span><span class="st">"counts"</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>Sample <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"_CA1-do.bam"</span>, <span class="st">""</span>, <span class="fu">basename</span>(se<span class="sc">$</span>readsFiles))</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    rc <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">basename</span>(se<span class="sc">$</span>readsFiles), <span class="st">"_"</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>condition <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(rc, <span class="cf">function</span>(c) c[<span class="dv">2</span>]))</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>replicate <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(rc, <span class="cf">function</span>(r) r[<span class="dv">1</span>]))</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>cellType <span class="ot">&lt;-</span> <span class="st">"CA1-do"</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>genotype <span class="ot">&lt;-</span> <span class="st">"S3"</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># se$genotype[grep("S3", se$condition)] &lt;- "KO"</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    sd <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"SD"</span>, se<span class="sc">$</span>condition)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>condition <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>condition[sd] <span class="ot">&lt;-</span> <span class="st">"SD"</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    se<span class="sc">$</span>gcondition <span class="ot">&lt;-</span> <span class="fu">paste</span>(se<span class="sc">$</span>genotype, se<span class="sc">$</span>condition, <span class="at">sep=</span><span class="st">"_"</span>)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(se) <span class="ot">&lt;-</span> se<span class="sc">$</span>Sample</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    se</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="loading-control-gene-sets-and-macs2-peak-data" class="level1">
+<h1>Loading Control Gene Sets and MACS2 Peak Data</h1>
+<p>This chunk loads negative and positive control gene sets used for downstream analyses, imports necessary annotation libraries, and reads in previously processed MACS2 peak data for two conditions (“S3_SD” and “S3_HC”). The loaded controls will help in evaluating the specificity and validity of the results, while the color palette setup is for consistent plotting aesthetics.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/ctrls/SD_neg_ctrl.RDS"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pc <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"~/Downloads/multiome_data/ctrls/111022_Positive_Controls_from_BMC_Genomics_AddFile2.txt"</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># library(biomaRt)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># mart &lt;- useMart("ensembl", dataset = "mmusculus_gene_ensembl")</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ChIPpeakAnno)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># mm10anno &lt;- getAnnotation(mart)</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="do">## MACS2 Peaks</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>macsseclist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/results/S3_sleepmo_atac_selist_318_2023_MACS2_DEScan2.rds"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">palette.colors</span>(<span class="at">palette =</span> <span class="st">"Okabe-Ito"</span>) <span class="co">#colorblinded palette</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="exploring-the-number-of-consensus-peaks-across-samples" class="level1">
+<h1>Exploring the Number of Consensus Peaks Across Samples</h1>
+<p>This chunk analyzes and visualizes how many consensus peaks are detected in MACS2-DEScan2 processed data as the minimum number of samples (“carriers”) required to call a peak varies (from 1 to 3). For each condition (SD and HC), it calculates the number of peaks present in at least <code>k</code> samples and plots these counts to assess peak reproducibility across replicates. The resulting plots help to understand peak robustness and guide downstream filtering thresholds.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SummarizedExperiment)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>kdflist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(macsseclist, <span class="cf">function</span>(se)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    kk <span class="ot">&lt;-</span> <span class="fu">vector</span>()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>( k <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>)) </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        kk[k<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">dim</span>(se[<span class="fu">mcols</span>(<span class="fu">rowRanges</span>(se))<span class="sc">$</span><span class="st">`</span><span class="at">k-carriers</span><span class="st">`</span><span class="sc">&gt;</span>k,])[<span class="dv">1</span>]</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    kdf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">k=</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="at">peaks=</span>kk)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    kdf</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>gglist <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq_along</span>(kdflist))</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    kdf <span class="ot">&lt;-</span> kdflist[[i]]</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    gglist[[i]] <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>kdf, <span class="fu">aes</span>(<span class="at">x=</span>k, <span class="at">y=</span>peaks)) <span class="sc">+</span> </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ylab</span>(<span class="st">"peaks"</span>) <span class="sc">+</span> </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">xlab</span>(<span class="st">"samples"</span>) <span class="sc">+</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># xlim(1, 12)+</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        <span class="co">#ylim(-100,30000)+</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># geom_smooth(se=FALSE) +</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="at">by =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">100000</span>, <span class="at">by =</span> <span class="dv">3000</span>))<span class="sc">+</span> </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="fu">names</span>(kdflist)[i])</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span><span class="fu">theme_bw</span>()</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="fu">annotate_figure</span>(<span class="fu">ggarrange</span>(<span class="at">plotlist=</span>gglist), <span class="at">top=</span><span class="st">"MACS2 S3 DEScan2 Peaks"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/exploring_peaks-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="filtering-and-extracting-robust-consensus-peaks-based-on-sample-carriers" class="level1">
+<h1>Filtering and Extracting Robust Consensus Peaks Based on Sample Carriers</h1>
+<p>This chunk inspects the distribution of the number of samples (“carriers”) supporting each peak across conditions. It then filters peaks to retain only those present in more than one sample (<code>k-carriers &gt; 1</code>), creating a refined list of robust consensus peaks. Finally, it extracts the corresponding peak ranges and associated metadata for further analysis or export.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(macsseclist, <span class="cf">function</span>(se){<span class="fu">table</span>(<span class="fu">rowRanges</span>(se)<span class="sc">$</span><span class="st">`</span><span class="at">k-carriers</span><span class="st">`</span>)})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$S3_SD
+
+    1     2     3 
+29505 25214 29974 
+
+$S3_HC
+
+    1     2     3 
+31782 19819 30708 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nms <span class="ot">&lt;-</span> <span class="fu">names</span>(macsseclist)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mselist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(macsseclist), <span class="cf">function</span>(i)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    se <span class="ot">&lt;-</span> macsseclist[[i]]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    se <span class="ot">&lt;-</span> se[<span class="fu">mcols</span>(<span class="fu">rowRanges</span>(se))<span class="sc">$</span><span class="st">`</span><span class="at">k-carriers</span><span class="st">`</span><span class="sc">&gt;</span><span class="dv">1</span>,]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    se</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mselist) <span class="ot">&lt;-</span> nms</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>mselist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$S3_SD
+class: RangedSummarizedExperiment 
+dim: 55188 6 
+metadata(0):
+assays(1): ''
+rownames(55188): GL456211.1.p1_np3_k3 GL456213.1.p1_np3_k2 ...
+  chrY.p20_np3_k3 GL456396.1.p1_np2_k2
+rowData names(7): score n-peaks ... pValue qValue
+colnames(6): 2023/bams/ATAC_S3/REP1_S3_CA1-do_sorted.bam
+  2023/bams/ATAC_S3/REP1_S3SD_CA1-do_sorted.bam ...
+  2023/bams/ATAC_S3/REP3_S3_CA1-do_sorted.bam
+  2023/bams/ATAC_S3/REP3_S3SD_CA1-do_sorted.bam
+colData names(1): readsFiles
+
+$S3_HC
+class: RangedSummarizedExperiment 
+dim: 50527 6 
+metadata(0):
+assays(1): ''
+rownames(50527): GL456211.1.p1_np3_k3 GL456213.1.p2_np3_k2 ...
+  chrY.p24_np3_k3 chrY.p25_np3_k3
+rowData names(7): score n-peaks ... pValue qValue
+colnames(6): 2023/bams/ATAC_S3/REP1_S3_CA1-do_sorted.bam
+  2023/bams/ATAC_S3/REP1_S3SD_CA1-do_sorted.bam ...
+  2023/bams/ATAC_S3/REP3_S3_CA1-do_sorted.bam
+  2023/bams/ATAC_S3/REP3_S3SD_CA1-do_sorted.bam
+colData names(1): readsFiles</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mrrplist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(mselist, <span class="cf">function</span>(se)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>{   </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    rrp <span class="ot">&lt;-</span> <span class="fu">rowRanges</span>(se)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mcols</span>(rrp) <span class="ot">&lt;-</span> <span class="fu">mcols</span>(rrp)[,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    rrp</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="preparing-promoter-regions-for-peak-distribution-analysis" class="level1">
+<h1>Preparing Promoter Regions for Peak Distribution Analysis</h1>
+<p>This chunk loads mouse genome annotation data and defines promoter regions as ±3 kb around transcription start sites (TSS). These promoter regions will be used later to analyze the distribution of peaks relative to gene TSS, which helps understand the genomic context of the detected peaks.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TxDb.Mmusculus.UCSC.mm10.knownGene)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>txdb <span class="ot">&lt;-</span> TxDb.Mmusculus.UCSC.mm10.knownGene</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ChIPseeker)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>promoter <span class="ot">&lt;-</span> <span class="fu">getPromoters</span>(<span class="at">TxDb=</span>txdb, <span class="at">upstream=</span><span class="dv">3000</span>, <span class="at">downstream=</span><span class="dv">3000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="plotting-average-peak-profiles-around-promoters" class="level1">
+<h1>Plotting Average Peak Profiles Around Promoters</h1>
+<p>We now computes tag matrices representing peak signal enrichment around promoter regions (±3 kb from TSS) for each condition. It then plots the average peak profiles, allowing comparison of chromatin accessibility patterns near gene start sites across conditions, which is important for understanding regulatory differences.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tagMatrixList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(mrrplist, getTagMatrix, <span class="at">windows=</span>promoter, <span class="at">upstream=</span><span class="dv">3000</span>, </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">downstream=</span><span class="dv">3000</span>, <span class="at">type=</span><span class="st">"start_site"</span>, <span class="at">by=</span><span class="st">"gene"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt;&gt; preparing start_site regions by gene... 2025-07-25 12:10:21 PM
+&gt;&gt; preparing tag matrix...  2025-07-25 12:10:21 PM 
+&gt;&gt; preparing start_site regions by gene... 2025-07-25 12:10:28 PM
+&gt;&gt; preparing tag matrix...  2025-07-25 12:10:28 PM </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAvgProf</span>(tagMatrixList, <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3000</span>, <span class="dv">3000</span>)) <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="fu">names</span>(colors)[<span class="dv">1</span>], <span class="fu">names</span>(colors)[<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt;&gt; plotting figure...            2025-07-25 12:10:32 PM </code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/avgprof-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="intersection-and-visualization-of-condition-specific-and-shared-peaks" class="level1">
+<h1>Intersection and Visualization of Condition-Specific and Shared Peaks</h1>
+<p>Performs an intersection analysis of consensus peaks between the “SD” and “HC” conditions using <code>ChIPpeakAnno</code>. It identifies unique and shared peaks across conditions, annotates them accordingly, and visualizes overlaps with a Venn diagram. This helps highlight condition-specific and common regulatory regions.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ChIPpeakAnno)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ms3sd <span class="ot">&lt;-</span> mrrplist[[<span class="dv">1</span>]]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>ms3ct <span class="ot">&lt;-</span> mrrplist[[<span class="dv">2</span>]]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>mol <span class="ot">&lt;-</span> <span class="fu">findOverlapsOfPeaks</span>(ms3sd, ms3ct)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>ms3sdunique <span class="ot">&lt;-</span> mol<span class="sc">$</span>uniquePeaks[<span class="fu">grep</span>(<span class="st">"s3sd"</span>, <span class="fu">names</span>(mol<span class="sc">$</span>uniquePeaks)),]</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>ms3sdunique<span class="sc">$</span>details <span class="ot">&lt;-</span> <span class="st">"SD"</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>ms3ctunique <span class="ot">&lt;-</span> mol<span class="sc">$</span>uniquePeaks[<span class="fu">grep</span>(<span class="st">"s3ct"</span>, <span class="fu">names</span>(mol<span class="sc">$</span>uniquePeaks)),]</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>ms3ctunique<span class="sc">$</span>details <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>mmrgds3 <span class="ot">&lt;-</span> mol<span class="sc">$</span>mergedPeaks</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>mmrgd1s3 <span class="ot">&lt;-</span> mmrgds3</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mcols</span>(mmrgd1s3) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>mmrgd1s3<span class="sc">$</span>details <span class="ot">&lt;-</span> <span class="st">"merged"</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ChIPseeker)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">makeVennDiagram</span>(mol, <span class="at">NameOfPeaks=</span><span class="fu">c</span>(<span class="st">"SD"</span>, <span class="st">"HC"</span>), <span class="at">by=</span><span class="st">"region"</span>,</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span><span class="fu">c</span>(<span class="st">"#BCD2EE"</span>, <span class="st">"#ffffe0"</span>), <span class="co"># circle fill color</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">col=</span><span class="fu">c</span>(colors[<span class="dv">1</span>], colors[<span class="dv">1</span>]), <span class="co">#circle border color</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">cat.col=</span><span class="fu">c</span>(colors[<span class="dv">1</span>], colors[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/venn_conds-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>allpeakss3 <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">c</span>(ms3sdunique, ms3ctunique, mmrgd1s3))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="annotation-of-peaks-relative-to-genomic-features" class="level1">
+<h1>Annotation of Peaks Relative to Genomic Features</h1>
+<p>Annotates the merged consensus peaks by mapping them to genomic features using the mouse genome annotation. It classifies peaks based on their location relative to promoters (defined as 2 kb upstream to 500 bp downstream of TSS) and downstream gene regions (up to 2 kb), providing insight into the functional genomic context of these peaks.</p>
+<section id="hc-sd-common-peaks" class="level2">
+<h2 class="anchored" data-anchor-id="hc-sd-common-peaks">HC-SD Common Peaks</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">genomicElementDistribution</span>(mmrgds3, </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">TxDb =</span> TxDb.Mmusculus.UCSC.mm10.knownGene,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">promoterRegion=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">2000</span>, <span class="at">downstream=</span><span class="dv">500</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">geneDownstream=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">0</span>, <span class="at">downstream=</span><span class="dv">2000</span>)) <span class="do">## chipseeker</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/merged_anno-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="sd-unique-peaks" class="level2">
+<h2 class="anchored" data-anchor-id="sd-unique-peaks">SD Unique Peaks</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">genomicElementDistribution</span>(ms3sdunique, </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">TxDb =</span> TxDb.Mmusculus.UCSC.mm10.knownGene,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">promoterRegion=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">2000</span>, <span class="at">downstream=</span><span class="dv">500</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">geneDownstream=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">0</span>, <span class="at">downstream=</span><span class="dv">2000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/sd_anno-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="hc-unique-peaks" class="level2">
+<h2 class="anchored" data-anchor-id="hc-unique-peaks">HC Unique Peaks</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">genomicElementDistribution</span>(ms3ctunique, </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">TxDb =</span> TxDb.Mmusculus.UCSC.mm10.knownGene,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">promoterRegion=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">2000</span>, <span class="at">downstream=</span><span class="dv">500</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">geneDownstream=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">0</span>, <span class="at">downstream=</span><span class="dv">2000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/ct_anno-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="generating-count-matrices-for-differential-accessibility-analysis-using-descan2" class="level1">
+<h1>Generating Count Matrices for Differential Accessibility Analysis Using DEScan2</h1>
+<p>Counts reads overlapping merged and condition-specific peak sets using DEScan2’s countFinalRegions on WT ATAC BAM files. This produces count matrices needed for downstream differential accessibility analysis (DARs) across all peaks and condition-unique peaks.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>indir <span class="ot">&lt;-</span> <span class="st">"."</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>mmrgds3 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(indir,<span class="st">"bioc318_MACS2_bro_merged_S3_SDCT_peaks_2024.rds"</span>))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>mmrgds3<span class="sc">$</span><span class="st">`</span><span class="at">k-carriers</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>bamdir <span class="ot">&lt;-</span> <span class="st">"2023/bams/ATAC_S3"</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>mmrgdcntsSEs3 <span class="ot">&lt;-</span> DEScan2<span class="sc">::</span><span class="fu">countFinalRegions</span>(mmrgds3, <span class="at">readsFilePath=</span>bamdir, </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">fileType=</span><span class="st">"bam"</span>, <span class="at">minCarriers=</span><span class="dv">2</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>ms3sdunique <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(indir,<span class="st">"bioc318_MACS2_bro_S3_SD_unique_peaks_2024.rds"</span>))</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>ms3sdcntsSE <span class="ot">&lt;-</span> DEScan2<span class="sc">::</span><span class="fu">countFinalRegions</span>(ms3sdunique, <span class="at">readsFilePath=</span>bamdir, </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">fileType=</span><span class="st">"bam"</span>, <span class="at">minCarriers=</span><span class="dv">2</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>ms3ctunique <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(indir,<span class="st">"bioc318_MACS2_bro_S3_CT_unique_peaks_2024.rds"</span>))</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>ms3ctcntsSE <span class="ot">&lt;-</span> DEScan2<span class="sc">::</span><span class="fu">countFinalRegions</span>(ms3ctunique, <span class="at">readsFilePath=</span>bamdir, </span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>                        <span class="at">fileType=</span><span class="st">"bam"</span>, <span class="at">minCarriers=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="pca-visualization-of-raw-counts-across-condition-specific-and-merged-peak-sets" class="level1">
+<h1>PCA Visualization of Raw Counts Across Condition-Specific and Merged Peak Sets</h1>
+<p>We now use the previously computed DEScan2-generated count matrices for condition-specific peaks (“HC” and “SD”) and merged peaks, reshaping each dataset to a consistent format for analysis. For each dataset, PCA plots are generated based on raw (not normalized) counts to visualize sample clustering and assess variability related to experimental conditions. Finally, all datasets are combined into a single summarized experiment object, and a joint PCA plot is created to compare global patterns across all peak sets, providing an overview of data structure before further normalization and differential analysis.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/utils.R"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(darioscripts)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>ms3ctcntsSE <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/results/S3_bioc318_MACS2_bro_s3ctcntsSE_2024.rds"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>ms3ctcntsSE <span class="ot">&lt;-</span> <span class="fu">reshapeSEDEscan2</span>(ms3ctcntsSE, <span class="at">details=</span><span class="st">"HC"</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>ms3ctcntsSE<span class="sc">$</span>condition[ms3ctcntsSE<span class="sc">$</span>condition<span class="sc">==</span><span class="st">"CTRL"</span>] <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>mpccts3 <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">assay</span>(ms3ctcntsSE), <span class="at">colData=</span><span class="fu">colData</span>(ms3ctcntsSE), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"HC peaks"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>ms3sdcntsSE <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/results/S3_bioc318_MACS2_bro_s3sdcntsSE_2024.rds"</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>ms3sdcntsSE <span class="ot">&lt;-</span> <span class="fu">reshapeSEDEscan2</span>(ms3sdcntsSE, <span class="at">details=</span><span class="st">"SD"</span>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>ms3sdcntsSE<span class="sc">$</span>condition[ms3sdcntsSE<span class="sc">$</span>condition<span class="sc">==</span><span class="st">"CTRL"</span>] <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>mpcsds3 <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">assay</span>(ms3sdcntsSE), <span class="at">colData=</span><span class="fu">colData</span>(ms3sdcntsSE), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"SD peaks"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>mmrgdcntsSEs3 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/results/S3_bioc318_MACS2_bro_mrgdcntsSE_2024.rds"</span>)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>mmrgdcntsSEs3 <span class="ot">&lt;-</span> <span class="fu">reshapeSEDEscan2</span>(mmrgdcntsSEs3, <span class="at">details=</span><span class="st">"merged"</span>)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>mmrgdcntsSEs3<span class="sc">$</span>condition[mmrgdcntsSEs3<span class="sc">$</span>condition<span class="sc">==</span><span class="st">"CTRL"</span>] <span class="ot">&lt;-</span> <span class="st">"HC"</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>mpcmgs3 <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">assay</span>(mmrgdcntsSEs3), <span class="at">colData=</span><span class="fu">colData</span>(mmrgdcntsSEs3), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"merged peaks"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>mallSEs3 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(mmrgdcntsSEs3, ms3sdcntsSE, ms3ctcntsSE)</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="do">## keeping up with WT data structure</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>peakNames <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mallSEs3)</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="fu">elementMetadata</span>(<span class="fu">rowRanges</span>(mallSEs3)) <span class="ot">&lt;-</span> <span class="fu">elementMetadata</span>(<span class="fu">rowRanges</span>(mallSEs3))[,<span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">4</span>)]</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>mpcalls3 <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">assay</span>(mallSEs3), <span class="at">colData=</span><span class="fu">colData</span>(mallSEs3), <span class="at">shapeBy=</span><span class="st">"condition"</span>, </span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>            <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"All Peaks"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>peaksdfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">rowRanges</span>(mallSEs3))</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a><span class="fu">annotate_figure</span>(<span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(mpccts3, mpcsds3, mpcmgs3, mpcalls3), <span class="at">common.legend=</span><span class="cn">TRUE</span>), <span class="at">top=</span><span class="st">"S3 Not Normalized peaks"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/reading_descan2_mrgdconds-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="annotation-and-pca-of-negative-and-positive-control-peaks" class="level1">
+<h1>Annotation and PCA of Negative and Positive Control Peaks</h1>
+<p>Annotates peaks in the combined dataset (mallSE) with genomic features using known gene annotations and gene ontology databases. It identifies peaks overlapping negative control genes (nc) and positive control genes (pc), labeling them accordingly. The code then splits negative control peaks into training and testing sets for validation purposes. PCA plots are generated separately for negative control peaks, positive control peaks, and all peaks, allowing visualization of how these control sets cluster and behave across conditions. The combined plots facilitate assessment of data quality and control peak behavior in the dataset.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TxDb.Mmusculus.UCSC.mm10.knownGene)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>rrannos3 <span class="ot">&lt;-</span> <span class="fu">annotatePeak</span>(<span class="fu">rowRanges</span>(mallSEs3), <span class="at">tssRegion=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3000</span>, <span class="dv">3000</span>), <span class="at">TxDb=</span>TxDb.Mmusculus.UCSC.mm10.knownGene, <span class="at">annoDb=</span><span class="st">"org.Mm.eg.db"</span>)<span class="sc">@</span>anno</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt;&gt; preparing features information...         2025-07-25 12:11:15 PM 
+&gt;&gt; identifying nearest features...       2025-07-25 12:11:15 PM 
+&gt;&gt; calculating distance from peak to TSS...  2025-07-25 12:11:16 PM 
+&gt;&gt; assigning genomic annotation...       2025-07-25 12:11:16 PM 
+&gt;&gt; adding gene annotation...             2025-07-25 12:11:21 PM 
+&gt;&gt; assigning chromosome lengths          2025-07-25 12:11:21 PM 
+&gt;&gt; done...                   2025-07-25 12:11:21 PM </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="do">## NC</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>rrannoncs3 <span class="ot">&lt;-</span> rrannos3[<span class="fu">which</span>(rrannos3<span class="sc">$</span>ENSEMBL <span class="sc">%in%</span> nc<span class="sc">$</span>ensembl_id),]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>ncpeakss3 <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mallSEs3)[<span class="fu">which</span>(<span class="fu">rownames</span>(mallSEs3) <span class="sc">%in%</span> <span class="fu">names</span>(rrannoncs3))]</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">100</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>idxs <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_along</span>(ncpeakss3), <span class="fu">round</span>((<span class="fu">length</span>(ncpeakss3)[<span class="dv">1</span>]<span class="sc">*</span><span class="dv">10</span>)<span class="sc">/</span><span class="dv">100</span>))</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>ncpeakstests3 <span class="ot">&lt;-</span> ncpeakss3[idxs]</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>ncpeaksruvs3 <span class="ot">&lt;-</span> ncpeakss3[<span class="sc">-</span>idxs]</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>negCtl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>negCtl[<span class="fu">which</span>(<span class="fu">rownames</span>(mallSEs3) <span class="sc">%in%</span> ncpeakss3)] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="do">## PC</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>rrannopcs3 <span class="ot">&lt;-</span> rrannos3[<span class="fu">which</span>(rrannos3<span class="sc">$</span>ENSEMBL <span class="sc">%in%</span> pc<span class="sc">$</span>Ensembl_ID),]</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>pcpeakss3 <span class="ot">&lt;-</span> <span class="fu">rownames</span>(mallSEs3)[<span class="fu">which</span>(<span class="fu">rownames</span>(mallSEs3) <span class="sc">%in%</span> <span class="fu">names</span>(rrannopcs3))]</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>posCtl <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>posCtl[<span class="fu">which</span>(<span class="fu">rownames</span>(mallSEs3) <span class="sc">%in%</span> pcpeakss3)] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>ncpca <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">assay</span>(mallSEs3[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>negCtl,]), <span class="at">colData=</span><span class="fu">colData</span>(mallSEs3[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>negCtl,]), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"Negative Control Peaks"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>pcpca <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">assay</span>(mallSEs3[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>posCtl,]), <span class="at">colData=</span><span class="fu">colData</span>(mallSEs3[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>posCtl,]), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"Positive Control Peaks"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a><span class="fu">ggarrange</span>(<span class="at">plotlist=</span><span class="fu">list</span>(mpcalls3, ncpca, pcpca), <span class="at">common.legend=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/contrs_anno-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="reconciliation-and-completion-of-peak-annotations-in-the-combined-dataset" class="level1">
+<h1>Reconciliation and Completion of Peak Annotations in the Combined Dataset</h1>
+<p>This code aligns and reconciles peak annotations between the combined peak set (<code>mallSE</code>) and previously obtained annotations (<code>rranno</code>). It separates peaks that lack annotations (<code>notanno</code>) from those with existing annotations, ensuring metadata columns are consistent across both groups by adding missing columns with <code>NA</code> values where needed. Then, it merges the annotated and non-annotated peaks back together, preserving the original order to match the combined dataset. Finally, it updates the row ranges of the combined dataset (<code>mallSE</code>) with this completed and harmonized annotation data.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mallserrs3 <span class="ot">&lt;-</span> <span class="fu">rowRanges</span>(mallSEs3)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>rrannobkups3 <span class="ot">&lt;-</span> rrannos3</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>notannos3 <span class="ot">&lt;-</span> mallserrs3[<span class="fu">which</span>(<span class="sc">!</span><span class="fu">names</span>(mallserrs3) <span class="sc">%in%</span> <span class="fu">names</span>(rrannos3))]</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>annos3 <span class="ot">&lt;-</span> rrannos3[<span class="fu">which</span>(<span class="fu">names</span>(rrannos3) <span class="sc">%in%</span> <span class="fu">names</span>(mallserrs3))]</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>mallannos3 <span class="ot">&lt;-</span> mallserrs3[<span class="fu">which</span>(<span class="fu">names</span>(mallserrs3) <span class="sc">%in%</span> <span class="fu">names</span>(rrannos3))]</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>rrannos3 <span class="ot">&lt;-</span> rrannos3[<span class="fu">which</span>(<span class="fu">names</span>(rrannos3) <span class="sc">%in%</span> <span class="fu">names</span>(mallannos3))] <span class="do">## ordering based on mallSeAnno</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="do">####### adding controls to annotated GRanges</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>rrannos3<span class="sc">$</span>negCtl <span class="ot">&lt;-</span> mallannos3<span class="sc">$</span>negCtl</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>rrannos3<span class="sc">$</span>posCtl <span class="ot">&lt;-</span> mallannos3<span class="sc">$</span>posCtl</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">elementMetadata</span>(rrannos3) <span class="ot">&lt;-</span> <span class="fu">elementMetadata</span>(rrannos3)[,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">18</span>,<span class="dv">19</span>, <span class="dv">7</span><span class="sc">:</span><span class="dv">17</span>)]</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>newcolss3 <span class="ot">&lt;-</span> <span class="fu">colnames</span>(<span class="fu">elementMetadata</span>(rrannos3))[</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">which</span>(</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span><span class="fu">colnames</span>(<span class="fu">elementMetadata</span>(rrannos3)) <span class="sc">%in%</span> <span class="fu">colnames</span>(<span class="fu">elementMetadata</span>(notannos3)))</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>ddfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">elementMetadata</span>(notannos3))</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(c <span class="cf">in</span> newcolss3)</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>    ddfs3[[c]] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a><span class="fu">elementMetadata</span>(notannos3) <span class="ot">&lt;-</span> <span class="fu">DataFrame</span>(ddfs3)</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>annotatedrrs3 <span class="ot">&lt;-</span> <span class="fu">c</span>(rrannos3, notannos3)</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>annotatedrrs3 <span class="ot">&lt;-</span> annotatedrrs3[<span class="fu">match</span>(<span class="fu">rownames</span>(mallSEs3), <span class="fu">names</span>(annotatedrrs3)),]</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>mallSEss3 <span class="ot">&lt;-</span> mallSEs3</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3) <span class="ot">&lt;-</span> annotatedrrs3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="differential-accessibility-analysis-with-ruv-normalization-using-controls" class="level1">
+<h1>Differential Accessibility Analysis with RUV Normalization Using Controls</h1>
+<p>This chunk performs differential accessibility region (DAR) analysis on combined peak data (<code>mallSE</code>) using the RUVSeq package to remove unwanted variation, leveraging negative control peaks.</p>
+<ul>
+<li>It first visualizes PCA of raw peak counts by condition.</li>
+<li>Then, it defines sample groups and applies RUVs normalization with k=3 factors, using a set of negative control peaks (<code>ncpeaksruv</code>).</li>
+<li>PCA is plotted again to visualize effects of normalization.</li>
+<li>The RUV factors (W matrix) are added to the sample metadata, and normalized counts stored.</li>
+<li>EdgeR is applied with these factors included as covariates to identify DARs contrasting “SD” vs “HC” conditions.</li>
+<li>The code counts significant DARs and intersects them with known negative and positive control peaks to assess results.</li>
+<li>Finally, it reformats differential test results with genomic coordinates for downstream export or visualization.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RUVSeq)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>grp <span class="ot">&lt;-</span> <span class="fu">makeGroups</span>(mallSEs3<span class="sc">$</span>condition)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCAs</span>(<span class="fu">log1p</span>(<span class="fu">assay</span>(mallSEs3)), <span class="at">colData=</span><span class="fu">colData</span>(mallSEs3), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"S3 Not Norm"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>, <span class="at">size=</span><span class="dv">3</span>)<span class="sc">+</span><span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/dars-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ruvk3s3 <span class="ot">&lt;-</span> <span class="fu">RUVs</span>(<span class="at">x=</span><span class="fu">assay</span>(mallSEs3), <span class="at">cIdx=</span>ncpeaksruvs3, <span class="at">k=</span><span class="dv">3</span>, <span class="at">scIdx=</span>grp)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>(pcr3ncs3 <span class="ot">&lt;-</span> <span class="fu">plotPCAs</span>(<span class="fu">log1p</span>(ruvk3s3<span class="sc">$</span>normalizedCounts), <span class="at">colData=</span><span class="fu">colData</span>(mallSEs3), <span class="at">shapeBy=</span><span class="st">"condition"</span>, <span class="at">colorBy=</span><span class="st">"condition"</span>, <span class="at">prefix=</span><span class="st">"S3 ATAC RUVsK3 NC"</span>, <span class="at">returnOnly=</span><span class="cn">TRUE</span>, <span class="at">size=</span><span class="dv">3</span>)<span class="sc">+</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"black"</span>)) <span class="sc">+</span> </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="dv">16</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">+</span> </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/dars-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(mallSEs3) <span class="ot">&lt;-</span> <span class="fu">cbind.DataFrame</span>(<span class="fu">colData</span>(mallSEs3), ruvk3s3<span class="sc">$</span>W)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">assays</span>(mallSEs3)<span class="sc">$</span>RUVsk3 <span class="ot">&lt;-</span> ruvk3s3<span class="sc">$</span>normalizedCounts</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>resk3wncs3 <span class="ot">&lt;-</span> <span class="fu">applyEdgeR</span>(<span class="fu">assay</span>(mallSEs3), <span class="at">colData=</span><span class="fu">colData</span>(mallSEs3), <span class="at">factors=</span><span class="st">"condition"</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">wnames=</span><span class="fu">colnames</span>(ruvk3s3<span class="sc">$</span>W), <span class="at">contrasts=</span><span class="st">"SD - HC"</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>rk3darswncs3 <span class="ot">&lt;-</span> <span class="fu">sum</span>(resk3wncs3<span class="sc">$</span><span class="st">`</span><span class="at">SD - CTRL</span><span class="st">`</span><span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>rk3darsncwncs3 <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rownames</span>(resk3wncs3<span class="sc">$</span><span class="st">`</span><span class="at">SD - CTRL</span><span class="st">`</span>[resk3wncs3<span class="sc">$</span><span class="st">`</span><span class="at">SD - CTRL</span><span class="st">`</span><span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>,]) <span class="sc">%in%</span> ncpeakstests3)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>rk3darspcwncs3 <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rownames</span>(resk3wncs3<span class="sc">$</span><span class="st">`</span><span class="at">SD - CTRL</span><span class="st">`</span>[resk3wncs3<span class="sc">$</span><span class="st">`</span><span class="at">SD - CTRL</span><span class="st">`</span><span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>,]) <span class="sc">%in%</span> pcpeakss3)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>resk3wrs3 <span class="ot">&lt;-</span> resk3wncs3<span class="sc">$</span><span class="st">`</span><span class="at">SD - HC</span><span class="st">`</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>seqnames <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">strsplit</span>(<span class="fu">rownames</span>(resk3wrs3), <span class="st">":"</span>), <span class="cf">function</span>(x) x[<span class="dv">1</span>]))</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>startend <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">strsplit</span>(<span class="fu">rownames</span>(resk3wrs3), <span class="st">":"</span>), <span class="cf">function</span>(x) x[<span class="dv">2</span>]))</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">strsplit</span>(startend, <span class="st">"-"</span>), <span class="cf">function</span>(x) x[<span class="dv">1</span>])))</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>end <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">strsplit</span>(startend, <span class="st">"-"</span>), <span class="cf">function</span>(x) x[<span class="dv">2</span>])))</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>resk3wrs3<span class="sc">$</span>chr <span class="ot">&lt;-</span> seqnames</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>resk3wrs3<span class="sc">$</span>start <span class="ot">&lt;-</span> start</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>resk3wrs3<span class="sc">$</span>end <span class="ot">&lt;-</span> end</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>resk3wrs3 <span class="ot">&lt;-</span> resk3wrs3[,<span class="fu">c</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="annotation-and-cross-comparison-of-dars-with-degs" class="level1">
+<h1>Annotation and Cross-Comparison of DARs with DEGs</h1>
+<p>We now can annotate DARs in the <code>mallSEs3</code> SummarizedExperiment object by adding differential accessibility results (<code>edgeR</code>) and integrate previously identified differentially expressed genes (DEGs) data. We mark peaks associated with DARs and DEGs, then summarize overlaps and counts through interactive tables. The chunk further categorizes DARs and DEGs by direction of change (up/down regulation) and generates subsets where DARs and DEGs are concordant or discordant in their fold changes. This comprehensive annotation helps explore the relationship between chromatin accessibility and gene expression changes.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>mallSEs3 <span class="ot">&lt;-</span> mallSEs3[<span class="fu">match</span>( <span class="fu">rownames</span>(resk3wrs3), <span class="fu">rownames</span>(mallSEs3)),]</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">elementMetadata</span>(<span class="fu">rowRanges</span>(mallSEs3))<span class="sc">$</span>edgeR <span class="ot">&lt;-</span> resk3wrs3</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>darss3 <span class="ot">&lt;-</span> mallSEs3[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>edgeR<span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>,]</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>degss3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(readxl<span class="sc">::</span><span class="fu">read_excel</span>(<span class="st">"~/Downloads/multiome_data/results/DEGs_S3_UQRUVsK3_2023_bioc318_ens.xlsx"</span>))</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>degsss3 <span class="ot">&lt;-</span> degss3[degss3<span class="sc">$</span>sign,]</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DEGs <span class="ot">&lt;-</span> <span class="cn">FALSE</span> </span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DEGs[<span class="fu">which</span>(<span class="fu">tolower</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>SYMBOL) <span class="sc">%in%</span> <span class="fu">tolower</span>(degsss3<span class="sc">$</span>gene))] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>edgeR<span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>rrmsedddfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">rowRanges</span>(mallSEs3))</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">25</span>, <span class="dv">26</span>, <span class="dv">11</span><span class="sc">:</span><span class="dv">24</span>, <span class="dv">30</span><span class="sc">:</span><span class="dv">38</span>)</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>rrmsedddfs3 <span class="ot">&lt;-</span> rrmsedddfs3[,cols]</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(<span class="fu">data.frame</span>(<span class="at">tot_peaks=</span><span class="fu">dim</span>(mallSEs3)[<span class="dv">1</span>],</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                     <span class="at">peaks_anno=</span>(<span class="fu">dim</span>(mallSEs3)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>SYMBOL))),</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tot_dars=</span><span class="fu">sum</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs), </span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>                     <span class="at">dars_anno=</span><span class="fu">length</span>(<span class="fu">rowRanges</span>(darss3)<span class="sc">$</span>SYMBOL),</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>                     <span class="at">peaks_degs=</span><span class="fu">sum</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DEGs),</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>                     <span class="at">dars_degs=</span><span class="fu">sum</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DEGs <span class="sc">&amp;</span> <span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>                     ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-41df11c323b3fed4446d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-41df11c323b3fed4446d">{"x":{"filter":"none","vertical":false,"data":[["1"],[62692],[62602],[92],[92],[6223],[15]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>tot_peaks<\/th>\n      <th>peaks_anno<\/th>\n      <th>tot_dars<\/th>\n      <th>dars_anno<\/th>\n      <th>peaks_degs<\/th>\n      <th>dars_degs<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"tot_peaks","targets":1},{"name":"peaks_anno","targets":2},{"name":"tot_dars","targets":3},{"name":"dars_anno","targets":4},{"name":"peaks_degs","targets":5},{"name":"dars_degs","targets":6}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>darsdeg <span class="ot">&lt;-</span> <span class="fu">datatable</span>(<span class="fu">data.frame</span>(<span class="at">tot_peaks=</span><span class="fu">dim</span>(mallSEs3)[<span class="dv">1</span>],</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">peaks_anno=</span>(<span class="fu">dim</span>(mallSEs3)[<span class="dv">1</span>] <span class="sc">-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>SYMBOL))),</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">tot_dars=</span><span class="fu">sum</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs), </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">dars_anno=</span><span class="fu">length</span>(<span class="fu">rowRanges</span>(darss3)<span class="sc">$</span>SYMBOL),</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">peaks_degs=</span><span class="fu">sum</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DEGs),</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">dars_degs=</span><span class="fu">sum</span>(<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DEGs <span class="sc">&amp;</span> <span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                     ))</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>degsdowns3 <span class="ot">&lt;-</span> degsss3[degsss3<span class="sc">$</span>logFC<span class="sc">&lt;</span><span class="dv">0</span>,]</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>degsups3 <span class="ot">&lt;-</span> degsss3[degsss3<span class="sc">$</span>logFC<span class="sc">&gt;</span><span class="dv">0</span>,]</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>darsdowns3 <span class="ot">&lt;-</span> <span class="fu">rowRanges</span>(darss3)[<span class="fu">rowRanges</span>(darss3)<span class="sc">$</span>edgeR<span class="sc">$</span>logFC<span class="sc">&lt;</span><span class="dv">0</span>,]</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>darsups3 <span class="ot">&lt;-</span> <span class="fu">rowRanges</span>(darss3)[<span class="fu">rowRanges</span>(darss3)<span class="sc">$</span>edgeR<span class="sc">$</span>logFC<span class="sc">&gt;</span><span class="dv">0</span>,]</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>cols <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">11</span><span class="sc">:</span><span class="dv">24</span>, <span class="dv">30</span><span class="sc">:</span><span class="dv">36</span>)</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>darsdds3 <span class="ot">&lt;-</span> darsdowns3[<span class="fu">which</span>(<span class="fu">tolower</span>(darsdowns3<span class="sc">$</span>SYMBOL) <span class="sc">%in%</span> <span class="fu">tolower</span>(degsdowns3<span class="sc">$</span>gene)),]</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>darsdddfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(darsdds3)[,cols]</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>darsdus3 <span class="ot">&lt;-</span> darsdowns3[<span class="fu">which</span>(<span class="fu">tolower</span>(darsdowns3<span class="sc">$</span>SYMBOL) <span class="sc">%in%</span> <span class="fu">tolower</span>(degsups3<span class="sc">$</span>gene)),]</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>darsdudfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(darsdus3)[,cols]</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>darsuds3 <span class="ot">&lt;-</span> darsups3[<span class="fu">which</span>(<span class="fu">tolower</span>(darsups3<span class="sc">$</span>SYMBOL) <span class="sc">%in%</span> <span class="fu">tolower</span>(degsdowns3<span class="sc">$</span>gene)),]</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>darsuddfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(darsuds3)[,cols]</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>darsuus3 <span class="ot">&lt;-</span> darsups3[<span class="fu">which</span>(<span class="fu">tolower</span>(darsups3<span class="sc">$</span>SYMBOL) <span class="sc">%in%</span> <span class="fu">tolower</span>(degsups3<span class="sc">$</span>gene)),]</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>darsuudfs3 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(darsuus3)[,cols]</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>darsdegdt <span class="ot">&lt;-</span> <span class="fu">datatable</span>(<span class="fu">data.frame</span>(<span class="at">darsDWN_degsDWN=</span><span class="fu">length</span>(darsdds3)[<span class="dv">1</span>],</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>                     <span class="at">darsDWN_degsUP=</span><span class="fu">length</span>(darsdus3)[<span class="dv">1</span>],</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>                     <span class="at">darsUP_degsDWN=</span><span class="fu">length</span>(darsuds3)[<span class="dv">1</span>],</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>                     <span class="at">darsUP_degsUP=</span><span class="fu">length</span>(darsuus3)[<span class="dv">1</span>]</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>                     ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="distribution-of-differentially-accessible-regions-dars-across-genomic-elements" class="level1">
+<h1>Distribution of Differentially Accessible Regions (DARs) Across Genomic Elements</h1>
+<p>This code extracts DARs from the combined peak dataset (<code>mallSEs3</code>), filters them to standard chromosomes only, and then uses <code>genomicElementDistribution</code> to summarize their genomic annotation. Specifically, it calculates how DARs are distributed among genomic features such as promoters (defined here as 2 kb upstream to 500 bp downstream of transcription start sites) and downstream gene regions (up to 2 kb). This helps understand the genomic context where accessibility changes occur.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>darsregions <span class="ot">&lt;-</span> <span class="fu">rowRanges</span>(mallSEs3)[<span class="fu">rowRanges</span>(mallSEs3)<span class="sc">$</span>DARs,]</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>darsregions <span class="ot">&lt;-</span> <span class="fu">keepStandardChromosomes</span>(darsregions)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">genomicElementDistribution</span>(darsregions, </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">TxDb =</span> TxDb.Mmusculus.UCSC.mm10.knownGene,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">promoterRegion=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">2000</span>, <span class="at">downstream=</span><span class="dv">500</span>),</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">geneDownstream=</span><span class="fu">c</span>(<span class="at">upstream=</span><span class="dv">0</span>, <span class="at">downstream=</span><span class="dv">2000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="v10_DARs_S3_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="summary-statistics-and-control-enrichment-of-dars" class="level1">
+<h1>Summary Statistics and Control Enrichment of DARs</h1>
+<p>We compile statistics on DARs identified by the RUVs normalization method, focusing on their overlap with positive and negative control peak sets. We calculate counts and percentages of DARs overlapping positive controls, and similarly for a subset of negative controls (10%). The results are combined into a clear summary table with columns showing raw counts, percentages relative to DARs, and percentages relative to total controls. This helps us assess the quality and specificity of DAR detection by comparing observed enrichments against known control regions. The summary is displayed as an interactive datatable for easy inspection.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(rk3darswncs3)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ruvs_K3_NC"</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(rk3darspcwncs3)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> (df2[,<span class="dv">1</span>]<span class="sc">/</span>df[,<span class="dv">1</span>])<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>df7 <span class="ot">&lt;-</span> (df2[,<span class="dv">1</span>]<span class="sc">/</span><span class="fu">length</span>(pcpeakss3))<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>df4 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(rk3darsncwncs3)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>df5 <span class="ot">&lt;-</span> (df4[,<span class="dv">1</span>]<span class="sc">/</span>df[,<span class="dv">1</span>])<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>df6 <span class="ot">&lt;-</span> (df4[,<span class="dv">1</span>]<span class="sc">/</span><span class="fu">length</span>(ncpeakss3))<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>df8 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(df, df2, <span class="fu">paste0</span>(<span class="fu">round</span>(df3),<span class="st">"%"</span>),<span class="fu">paste0</span>(<span class="fu">round</span>(df7),<span class="st">"%"</span>),<span class="fu">paste0</span>(<span class="fu">round</span>(df4),<span class="st">"%"</span>),<span class="fu">paste0</span>(<span class="fu">round</span>(df5),<span class="st">"%"</span>),<span class="fu">paste0</span>(<span class="fu">round</span>(df6),<span class="st">"%"</span>))</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df8) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"DARs"</span>, <span class="st">"DARs Pos Ctrl"</span>, <span class="st">"PC/DARs %"</span>, <span class="st">"PC/totPC %"</span>, <span class="st">"DARs Neg Ctrl(10%)"</span>, <span class="st">"NC(10%)/DARs %"</span>, <span class="st">"NC(10%)/totNC %"</span>)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="fu">datatable</span>(df8, <span class="at">options=</span><span class="fu">list</span>(<span class="st">"lengthMenu"</span><span class="ot">=</span><span class="fu">c</span>(<span class="dv">25</span>,<span class="dv">50</span>,<span class="dv">100</span>)), <span class="at">caption=</span><span class="st">"Differential Accessible Regions for SD-CTRL of Wild Type genotype"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ae12ec1592626d9010be" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ae12ec1592626d9010be">{"x":{"filter":"none","vertical":false,"caption":"<caption>Differential Accessible Regions for SD-CTRL of Wild Type genotype<\/caption>","data":[["ruvs_K3_NC"],["0"],["0"],["NaN%"],["0%"],["0%"],["NaN%"],["0%"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>DARs<\/th>\n      <th>DARs Pos Ctrl<\/th>\n      <th>PC/DARs %<\/th>\n      <th>PC/totPC %<\/th>\n      <th>DARs Neg Ctrl(10%)<\/th>\n      <th>NC(10%)/DARs %<\/th>\n      <th>NC(10%)/totNC %<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"lengthMenu":[25,50,100],"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"DARs","targets":1},{"name":"DARs Pos Ctrl","targets":2},{"name":"PC/DARs %","targets":3},{"name":"PC/totPC %","targets":4},{"name":"DARs Neg Ctrl(10%)","targets":5},{"name":"NC(10%)/DARs %","targets":6},{"name":"NC(10%)/totNC %","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>darsdeg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-abae2e39e22d67c989c5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-abae2e39e22d67c989c5">{"x":{"filter":"none","vertical":false,"data":[["1"],[62692],[62602],[92],[92],[6223],[15]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>tot_peaks<\/th>\n      <th>peaks_anno<\/th>\n      <th>tot_dars<\/th>\n      <th>dars_anno<\/th>\n      <th>peaks_degs<\/th>\n      <th>dars_degs<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"tot_peaks","targets":1},{"name":"peaks_anno","targets":2},{"name":"tot_dars","targets":3},{"name":"dars_anno","targets":4},{"name":"peaks_degs","targets":5},{"name":"dars_degs","targets":6}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>darsdegdt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7ef57d1428be077e6619" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7ef57d1428be077e6619">{"x":{"filter":"none","vertical":false,"data":[["1"],[6],[1],[6],[2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>darsDWN_degsDWN<\/th>\n      <th>darsDWN_degsUP<\/th>\n      <th>darsUP_degsDWN<\/th>\n      <th>darsUP_degsUP<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"darsDWN_degsDWN","targets":1},{"name":"darsDWN_degsUP","targets":2},{"name":"darsUP_degsDWN","targets":3},{"name":"darsUP_degsUP","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="sessioninfo" class="level1">
+<h1>sessionInfo</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.3.3 (2024-02-29)
+Platform: aarch64-unknown-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/aarch64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/aarch64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Europe/Zurich
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] DT_0.33                                  
+ [2] RUVSeq_1.36.0                            
+ [3] edgeR_4.0.1                              
+ [4] limma_3.58.1                             
+ [5] EDASeq_2.36.0                            
+ [6] ShortRead_1.60.0                         
+ [7] GenomicAlignments_1.38.2                 
+ [8] Rsamtools_2.18.0                         
+ [9] Biostrings_2.70.3                        
+[10] XVector_0.42.0                           
+[11] BiocParallel_1.36.0                      
+[12] org.Mm.eg.db_3.18.0                      
+[13] darioscripts_0.1.0                       
+[14] ChIPseeker_1.38.0                        
+[15] TxDb.Mmusculus.UCSC.mm10.knownGene_3.10.0
+[16] GenomicFeatures_1.54.4                   
+[17] AnnotationDbi_1.64.1                     
+[18] SummarizedExperiment_1.32.0              
+[19] Biobase_2.62.0                           
+[20] MatrixGenerics_1.14.0                    
+[21] matrixStats_1.3.0                        
+[22] ggpubr_0.6.0                             
+[23] ggplot2_3.5.0                            
+[24] ChIPpeakAnno_3.36.1                      
+[25] GenomicRanges_1.54.1                     
+[26] GenomeInfoDb_1.38.8                      
+[27] IRanges_2.36.0                           
+[28] S4Vectors_0.40.2                         
+[29] BiocGenerics_0.48.1                      
+
+loaded via a namespace (and not attached):
+  [1] R.methodsS3_1.8.2                      
+  [2] progress_1.2.3                         
+  [3] locfdr_1.1-8                           
+  [4] HDF5Array_1.30.1                       
+  [5] vctrs_0.6.5                            
+  [6] digest_0.6.35                          
+  [7] png_0.1-8                              
+  [8] registry_0.5-1                         
+  [9] ggrepel_0.9.5                          
+ [10] deldir_2.0-4                           
+ [11] MASS_7.3-60.0.1                        
+ [12] reshape2_1.4.4                         
+ [13] foreach_1.5.2                          
+ [14] qvalue_2.34.0                          
+ [15] withr_3.0.0                            
+ [16] xfun_0.43                              
+ [17] ggfun_0.1.4                            
+ [18] survival_3.5-8                         
+ [19] memoise_2.0.1                          
+ [20] tidytree_0.4.6                         
+ [21] phylobase_0.8.12                       
+ [22] gtools_3.9.5                           
+ [23] R.oo_1.26.0                            
+ [24] prettyunits_1.2.0                      
+ [25] KEGGREST_1.42.0                        
+ [26] httr_1.4.7                             
+ [27] rstatix_0.7.2                          
+ [28] restfulr_0.0.15                        
+ [29] rncl_0.8.7                             
+ [30] rhdf5filters_1.14.1                    
+ [31] rhdf5_2.46.1                           
+ [32] rstudioapi_0.16.0                      
+ [33] zinbwave_1.24.0                        
+ [34] generics_0.1.3                         
+ [35] DOSE_3.28.2                            
+ [36] curl_5.2.1                             
+ [37] zlibbioc_1.48.2                        
+ [38] ScaledMatrix_1.10.0                    
+ [39] ggraph_2.2.1                           
+ [40] polyclip_1.10-6                        
+ [41] ca_0.71.1                              
+ [42] GenomeInfoDbData_1.2.11                
+ [43] SparseArray_1.2.4                      
+ [44] RBGL_1.78.0                            
+ [45] xtable_1.8-4                           
+ [46] stringr_1.5.1                          
+ [47] ade4_1.7-22                            
+ [48] doParallel_1.0.17                      
+ [49] evaluate_0.23                          
+ [50] S4Arrays_1.2.1                         
+ [51] BiocFileCache_2.10.2                   
+ [52] preprocessCore_1.64.0                  
+ [53] hms_1.1.3                              
+ [54] irlba_2.3.5.1                          
+ [55] colorspace_2.1-0                       
+ [56] filelock_1.0.3                         
+ [57] VennDiagram_1.7.3                      
+ [58] readxl_1.4.3                           
+ [59] magrittr_2.0.3                         
+ [60] viridis_0.6.5                          
+ [61] ggtree_3.10.1                          
+ [62] lattice_0.22-6                         
+ [63] NMF_0.27                               
+ [64] genefilter_1.84.0                      
+ [65] XML_3.99-0.16.1                        
+ [66] shadowtext_0.1.3                       
+ [67] cowplot_1.1.3                          
+ [68] pillar_1.9.0                           
+ [69] nlme_3.1-164                           
+ [70] iterators_1.0.14                       
+ [71] gridBase_0.4-7                         
+ [72] caTools_1.18.2                         
+ [73] compiler_4.3.3                         
+ [74] beachmat_2.18.1                        
+ [75] stringi_1.8.3                          
+ [76] TSP_1.2-4                              
+ [77] dendextend_1.17.1                      
+ [78] plyr_1.8.9                             
+ [79] crayon_1.5.2                           
+ [80] abind_1.4-5                            
+ [81] BiocIO_1.12.0                          
+ [82] gridGraphics_0.5-1                     
+ [83] locfit_1.5-9.9                         
+ [84] graphlayouts_1.1.1                     
+ [85] bit_4.0.5                              
+ [86] dplyr_1.1.4                            
+ [87] fastmatch_1.1-4                        
+ [88] codetools_0.2-20                       
+ [89] BiocSingular_1.18.0                    
+ [90] crosstalk_1.2.1                        
+ [91] bslib_0.7.0                            
+ [92] TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2
+ [93] plotly_4.10.4                          
+ [94] multtest_2.58.0                        
+ [95] splines_4.3.3                          
+ [96] Rcpp_1.0.12                            
+ [97] dbplyr_2.5.0                           
+ [98] HDO.db_0.99.1                          
+ [99] cellranger_1.1.0                       
+[100] interp_1.1-6                           
+[101] knitr_1.46                             
+[102] blob_1.2.4                             
+[103] utf8_1.2.4                             
+[104] fs_1.6.3                               
+[105] clusterExperiment_2.22.0               
+[106] ggsignif_0.6.4                         
+[107] ggplotify_0.1.2                        
+[108] tibble_3.2.1                           
+[109] Matrix_1.6-5                           
+[110] statmod_1.5.0                          
+[111] tweenr_2.0.3                           
+[112] pkgconfig_2.0.3                        
+[113] pheatmap_1.0.12                        
+[114] tools_4.3.3                            
+[115] cachem_1.0.8                           
+[116] RSQLite_2.3.6                          
+[117] viridisLite_0.4.2                      
+[118] DBI_1.2.2                              
+[119] fastmap_1.1.1                          
+[120] rmarkdown_2.26                         
+[121] scales_1.3.0                           
+[122] grid_4.3.3                             
+[123] sass_0.4.9                             
+[124] broom_1.0.5                            
+[125] patchwork_1.2.0                        
+[126] graph_1.80.0                           
+[127] carData_3.0-5                          
+[128] farver_2.1.1                           
+[129] tidygraph_1.3.1                        
+[130] scatterpie_0.2.2                       
+[131] yaml_2.3.8                             
+[132] latticeExtra_0.6-30                    
+[133] rtracklayer_1.62.0                     
+[134] cli_3.6.2                              
+[135] purrr_1.0.2                            
+[136] writexl_1.5.0                          
+[137] webshot_0.5.5                          
+[138] lifecycle_1.0.4                        
+[139] RNeXML_2.4.11                          
+[140] lambda.r_1.2.4                         
+[141] kernlab_0.9-32                         
+[142] backports_1.4.1                        
+[143] annotate_1.80.0                        
+[144] gtable_0.3.5                           
+[145] rjson_0.2.21                           
+[146] parallel_4.3.3                         
+[147] ape_5.8                                
+[148] softImpute_1.4-1                       
+[149] jsonlite_1.8.8                         
+[150] seriation_1.5.5                        
+[151] bitops_1.0-7                           
+[152] NOISeq_2.46.0                          
+[153] bit64_4.0.5                            
+[154] assertthat_0.2.1                       
+[155] yulab.utils_0.1.4                      
+[156] heatmaply_1.5.0                        
+[157] futile.options_1.0.1                   
+[158] jquerylib_0.1.4                        
+[159] GOSemSim_2.28.1                        
+[160] R.utils_2.12.3                         
+[161] lazyeval_0.2.2                         
+[162] htmltools_0.5.8.1                      
+[163] enrichplot_1.22.0                      
+[164] GO.db_3.18.0                           
+[165] howmany_0.3-1                          
+[166] rappdirs_0.3.3                         
+[167] formatR_1.14                           
+[168] glue_1.7.0                             
+[169] RCurl_1.98-1.14                        
+[170] InteractionSet_1.30.0                  
+[171] treeio_1.26.0                          
+[172] BSgenome_1.70.2                        
+[173] jpeg_0.1-10                            
+[174] futile.logger_1.4.3                    
+[175] gridExtra_2.3                          
+[176] boot_1.3-30                            
+[177] igraph_2.0.3                           
+[178] R6_2.5.1                               
+[179] tidyr_1.3.1                            
+[180] SingleCellExperiment_1.24.0            
+[181] gplots_3.1.3.1                         
+[182] labeling_0.4.3                         
+[183] cluster_2.1.6                          
+[184] rngtools_1.5.2                         
+[185] Rhdf5lib_1.24.2                        
+[186] regioneR_1.34.0                        
+[187] aplot_0.2.2                            
+[188] DelayedArray_0.28.0                    
+[189] tidyselect_1.2.1                       
+[190] plotrix_3.8-4                          
+[191] ggforce_0.4.2                          
+[192] xml2_1.3.6                             
+[193] car_3.1-2                              
+[194] rsvd_1.0.5                             
+[195] munsell_0.5.1                          
+[196] KernSmooth_2.23-22                     
+[197] data.table_1.15.4                      
+[198] htmlwidgets_1.6.4                      
+[199] aroma.light_3.32.0                     
+[200] fgsea_1.28.0                           
+[201] RColorBrewer_1.1-3                     
+[202] hwriter_1.3.2.1                        
+[203] biomaRt_2.58.2                         
+[204] rlang_1.1.3                            
+[205] uuid_1.2-0                             
+[206] fansi_1.0.6                            </code></pre>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
