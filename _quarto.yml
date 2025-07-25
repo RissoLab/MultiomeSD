@@ -15,19 +15,21 @@ website:
         href: index.html
       - text: "Articles"
         menu:
-        - text: "05 DEGs Wild Type"
+        - text: "DEGs Wild Type"
           href: vignettes/v05_DE.html
-        - text: "06 DEGs Wild Type CA1-do"
+        - text: "DEGs Wild Type CA1-do"
           href: vignettes/v06_DE_CA1Do.html
-        - text: "07 DARs Wild Type CA1-do"
+        - text: "DARs Wild Type CA1-do"
           href: vignettes/v07_DARs.html
-        - text: "06 DEGs Shank3"
+        - text: "DEGs Shank3"
           href: vignettes/v08_DE_S3.html
-        - text: "09 DEGs Shank3 DeltaC CA1-do"
+        - text: "DEGs Shank3 DeltaC CA1-do"
           href: vignettes/v09_DE_S3_CA1Do.html
-        - text: "11 MOFA+ ATAC+RNA Analysis"
+        - text: "DARs Shank3 DeltaC CA1-do"
+          href: vignettes/v10_DARs_S3.html
+        - text: "MOFA+ ATAC+RNA Analysis"
           href: vignettes/v11_MOFA_RNA_ATAC.html
-        - text: "12 MOFA+ RNA Analysis"
+        - text: "MOFA+ RNA Analysis"
           href: vignettes/v12_MOFA_RNA.html
 
 format:
@@ -37,6 +39,4 @@ format:
     toc_float: true
     code-fold: true
 
-
-editor: visual
 

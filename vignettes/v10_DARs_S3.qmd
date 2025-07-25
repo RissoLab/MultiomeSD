@@ -1,5 +1,5 @@
 ---
-title: "Differential Accessible Regions on Wild Type"
+title: "Differentially Accessible Regions of Shank3 DeltaC"
 author: "Dario Righelli"
 date: "`r Sys.Date()`"
 editor_options: 
@@ -7,8 +7,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, cache=FALSE)
 ```
+
+
 
 # Generate and Process BAM Files for Cell-Type Specific Signal Tracks
 
@@ -30,9 +32,10 @@ This pipeline is tailored for preparing cell type–specific signal tracks for g
 
 **Note:** This code chunk is not evaluated in the document to save time. We directly begin from the pre-annotated dataset, which includes the information described above.
 
-```{r bam_ct, eval=FALSE}
+```{r readingbams, eval=FALSE}
 bams <- list.files(".", pattern="*bam$", recursive=TRUE, full.names=TRUE)
 bams <- bams[grep("outs",bams)]
+
 scelist <- readRDS("2023/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
 library(TENxMultiomeTools)
 
@@ -74,6 +77,7 @@ This code chunk calls MACS2 on sorted ATAC-seq BAM files to identify broad peaks
 
 **Note:** This code chunk is not evaluated in the document to save time. We directly begin from the pre-annotated dataset, which includes the information described above.
 
+
 ```{r macs2, eval=FALSE}
 bamfiles <- list.files("2023/bams", pattern="*_sorted.bam$", full.names=TRUE)
 bamfiles <- bamfiles[grep("ATAC", bamfiles)]
@@ -103,13 +107,14 @@ lapply(pfwt, function(f){system(paste0("mv ", f, " 2023/MACS2_peaks/WT/", basena
 
 ```
 
+
 # Detecting Final Consensus Regions from MACS2 Peaks with DEScan2
 
 Consensus regions are important because they represent genomic intervals consistently detected across samples within a condition, enabling reliable and comparable quantification. This ensures that downstream analyses, like normalization and differential testing, are performed on a robust, unified set of regions, improving biological interpretation and reducing noise.
 
 This chunk processes **MACS2 broad peaks** from ATAC-seq data to identify **condition-specific consensus regions** using `DEScan2::finalRegions`. It:
 
--   Imports `.broadPeak` files from the "WT" genotype
+-   Imports `.broadPeak` files from the "S3" genotype.
 
 -   Groups them by sample name (those matching `_SD$` and `HC`).
 
@@ -118,39 +123,40 @@ This chunk processes **MACS2 broad peaks** from ATAC-seq data to identify **cond
     -   No z-score thresholding,
     -   `minCarriers = 1` (regions kept if present in at least one sample),
     -   Based on MACS2’s `score` column.
-
+    
 ```{r descan2_conds, eval=FALSE}
 #######################
 ## on MACS2 peaks
 #######################
-bpeaks <- list.files("2023/peaks/MACS2_peaks/WT", pattern=".broadPeak$", full.names=TRUE)
+bpeaks <- list.files("2023/peaks/MACS2_peaks/S3", pattern=".broadPeak$", full.names=TRUE)
 library(rtracklayer)
 grl<- lapply(bpeaks, import, format="broadPeak")
 names(grl) <- gsub("_CA1-do_sorted.bam_peaks.broadPeak", "", basename(bpeaks))
 
-library(DEScan2)
-ccs <- c("_SD$","WT")
+ccs <- c("_S3$","_S3SD$")
 rrlistcond <- lapply(ccs, function(c)
 {
     finalRegions(GRangesList(grl[grep(c, names(grl))]), 
             zThreshold=0, minCarriers=1, saveFlag=FALSE, 
-            scorecolname="score", verbose=TRUE) 
+            scorecolname="score", verbose=TRUE,
+            BPPARAM=BiocParallel::MulticoreParam(workers=1)) 
 })
 
-names(rrlistcond) <- c("WT_SD", "WT_CTRL")
+
+names(rrlistcond) <- c("S3_HC", "S3_SD")
 ```
 
 # Counting Reads in Final Regions with DEScan2
 
-This chunk organizes WT ATAC-seq BAM files, counts reads over consensus peak regions using DEScan2, and annotates the resulting data with sample and experimental metadata, enabling downstream normalization and differential expression analyses on pseudo-bulk data.
+This chunk organizes S3 ATAC-seq BAM files, counts reads over consensus peak regions using DEScan2, and annotates the resulting data with sample and experimental metadata, enabling downstream normalization and differential expression analyses on pseudo-bulk data.
 
 1.  **Moves BAM files**:
 
-    -   Filters and moves only **WT ATAC-seq** BAM files and their indices (`.bai`) into a dedicated folder (`2023/bams/ATAC_WT`).
+    -   Filters and moves only **S3 ATAC-seq** BAM files and their indices (`.bai`) into a dedicated folder (`2023/bams/ATAC_S3`).
 
 2.  **Counts reads in DEScan2 final regions**:
 
-    -   For each set of condition-specific consensus regions (`rrlistcond`), it uses `countFinalRegions()` to compute **read counts** from the BAMs in `ATAC_WT`.
+    -   For each set of condition-specific consensus regions (`rrlistcond`), it uses `countFinalRegions()` to compute **read counts** from the BAMs in `ATAC_S3`.
 
 3.  **Creates `SummarizedExperiment` objects** with rich metadata:
 
@@ -160,19 +166,24 @@ This chunk organizes WT ATAC-seq BAM files, counts reads over consensus peak reg
     -   Normalizes condition labels (e.g., `"SD"` vs `"HC"`) and updates genotypes based on sample IDs (`"S3"` is assumed to be KO).
 
 ```{r descan2_conds1, eval=FALSE}
-bamswt <- list.files("2023/bams", pattern="*sorted.bam$", recursive=TRUE, full.names=TRUE)
-bamswt <- bamswt[grep(pattern="ATAC", x=bamswt)]
-bamswt <- bamswt[grep(pattern="WT|_SD_", x=bamswt)]
-bamswt <- bamswt[-c(7,8)]
-lapply(bamswt, function(b){
-    system(paste0("mv ", b, " 2023/bams/ATAC_WT/", basename(b)))
-    })
+rrlistcond <- rrlistcond[c(2,1)]
 
-lapply(bamswt, function(b){
-    system(paste0("mv ", b, ".bai 2023/bams/ATAC_WT/", basename(b),".bai"))
+bamss3 <- list.files("2023/bams", pattern="*sorted.bam$", recursive=TRUE, full.names=TRUE)
+bamss3 <- bamss3[grep(pattern="ATAC", x=bamss3)]
+bamss3 <- bamss3[grep(pattern="_S3|_S3SD", x=bamss3)]
+lapply(bamss3, function(b){
+    system(paste0("mv ", b, " 2023/bams/ATAC_S3/", basename(b)))
     })
+# CREATED BAI FILES via terminal
+# bamss3 <- list.files("2023/bams", pattern="*sorted.bam$", recursive=TRUE, full.names=TRUE)
+# bamss3 <- bamss3[grep(pattern="ATAC", x=bamss3)]
+# bamss3 <- bamss3[grep(pattern="_S3|_S3SD", x=bamss3)]
+# 
+# lapply(bamss3, function(b){
+#     system(paste0("samtools index -b ", b, " -@ 10 "))
+#     })
 
-bamdir <- "2023/bams/ATAC_WT"
+bamdir <- "2023/bams/ATAC_S3"
 secondlist <- lapply(rrlistcond, function(finalrr)
 {
     countFinalRegions(finalrr, readsFilePath=bamdir, 
@@ -187,20 +198,22 @@ selist <- lapply(secondlist, function(se)
     se$condition <- unlist(lapply(rc, function(c) c[2]))
     se$replicate <- unlist(lapply(rc, function(r) r[1]))
     se$cellType <- "CA1-do"
-    se$genotype <- "WT"
-    se$genotype[grep("S3", se$condition)] <- "KO"
+    se$genotype <- "S3"
+    # se$genotype[grep("S3", se$condition)] <- "KO"
     sd <- grep("SD", se$condition)
-    se$condition <- "CTRL"
+    se$condition <- "HC"
     se$condition[sd] <- "SD"
     se$gcondition <- paste(se$genotype, se$condition, sep="_")
     colnames(se) <- se$Sample
     se
 })
+
 ```
 
 # Loading Control Gene Sets and MACS2 Peak Data
 
-This chunk loads negative and positive control gene sets used for downstream analyses, imports necessary annotation libraries, and reads in previously processed MACS2 peak data for two conditions ("WT_SD" and "WT_HC"). The loaded controls will help in evaluating the specificity and validity of the results, while the color palette setup is for consistent plotting aesthetics.
+This chunk loads negative and positive control gene sets used for downstream analyses, imports necessary annotation libraries, and reads in previously processed MACS2 peak data for two conditions ("S3_SD" and "S3_HC"). The loaded controls will help in evaluating the specificity and validity of the results, while the color palette setup is for consistent plotting aesthetics.
+
 
 ```{r reading_controls}
 
@@ -213,10 +226,10 @@ library(ChIPpeakAnno)
 # mm10anno <- getAnnotation(mart)
 
 ## MACS2 Peaks
-macsseclist <- readRDS("~/Downloads/multiome_data/results/sleepmo_atac_selist_318_2023_MACS2_DEScan2.rds")
-names(macsseclist) <- c("WT_SD", "WT_HC")
+macsseclist <- readRDS("~/Downloads/multiome_data/results/S3_sleepmo_atac_selist_318_2023_MACS2_DEScan2.rds")
 colors <- palette.colors(palette = "Okabe-Ito") #colorblinded palette
 ```
+
 
 # Exploring the Number of Consensus Peaks Across Samples
 
@@ -239,7 +252,6 @@ kdflist <- lapply(macsseclist, function(se)
 })
 
 gglist <- list()
-titl <- c("SD", "HC")
 for(i in seq_along(kdflist))
 {
     kdf <- kdflist[[i]]
@@ -253,10 +265,12 @@ for(i in seq_along(kdflist))
         geom_line() +
         scale_x_continuous(breaks = seq(0, 3, by = 1)) +
         scale_y_continuous(breaks = seq(0, 100000, by = 3000))+ 
-        ggtitle(titl[i]) + theme_bw()
+        ggtitle(paste0(names(kdflist)[i])
+        ) +theme_bw()
 }
-annotate_figure(ggarrange(plotlist=gglist), top="WT MACS2 DEScan2 Peaks")
+annotate_figure(ggarrange(plotlist=gglist), top="MACS2 S3 DEScan2 Peaks")
 ```
+
 
 # Filtering and Extracting Robust Consensus Peaks Based on Sample Carriers
 
@@ -276,7 +290,6 @@ mselist <- lapply(seq_along(macsseclist), function(i)
 names(mselist) <- nms
 mselist
 
-
 mrrplist <- lapply(mselist, function(se)
 {   
     rrp <- rowRanges(se)
@@ -295,8 +308,8 @@ library(TxDb.Mmusculus.UCSC.mm10.knownGene)
 txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
 library(ChIPseeker)
 promoter <- getPromoters(TxDb=txdb, upstream=3000, downstream=3000)
-
 ```
+
 
 # Plotting Average Peak Profiles Around Promoters
 
@@ -314,23 +327,24 @@ Performs an intersection analysis of consensus peaks between the "SD" and "HC" c
 
 ```{r venn_conds, cache=FALSE, results='hide'}
 library(ChIPpeakAnno)
-mwtsd <- mrrplist[[1]]
-mwtct <- mrrplist[[2]]
-mol <- findOverlapsOfPeaks(mwtsd, mwtct)
-mwtsdunique <- mol$uniquePeaks[grep("wtsd", names(mol$uniquePeaks)),]
-mwtsdunique$details <- "SD"
-mwtctunique <- mol$uniquePeaks[grep("wtct", names(mol$uniquePeaks)),]
-mwtctunique$details <- "CT"
-mmrgd <- mol$mergedPeaks
-mmrgd1 <- mmrgd
-mcols(mmrgd1) <- NULL
-mmrgd1$details <- "merged"
+ms3sd <- mrrplist[[1]]
+ms3ct <- mrrplist[[2]]
+mol <- findOverlapsOfPeaks(ms3sd, ms3ct)
+ms3sdunique <- mol$uniquePeaks[grep("s3sd", names(mol$uniquePeaks)),]
+ms3sdunique$details <- "SD"
+
+ms3ctunique <- mol$uniquePeaks[grep("s3ct", names(mol$uniquePeaks)),]
+ms3ctunique$details <- "HC"
+mmrgds3 <- mol$mergedPeaks
+mmrgd1s3 <- mmrgds3
+mcols(mmrgd1s3) <- NULL
+mmrgd1s3$details <- "merged"
 library(ChIPseeker)
 a <- makeVennDiagram(mol, NameOfPeaks=c("SD", "HC"), by="region",
     fill=c("#BCD2EE", "#ffffe0"), # circle fill color
     col=c(colors[1], colors[1]), #circle border color
     cat.col=c(colors[1], colors[1]))
-allpeaks <- sort(c(mwtsdunique, mwtctunique, mmrgd1))
+allpeakss3 <- sort(c(ms3sdunique, ms3ctunique, mmrgd1s3))
 ```
 
 # Annotation of Peaks Relative to Genomic Features
@@ -340,7 +354,7 @@ Annotates the merged consensus peaks by mapping them to genomic features using t
 ## HC-SD Common Peaks
 
 ```{r merged_anno}
-out <- genomicElementDistribution(mmrgd, 
+out <- genomicElementDistribution(mmrgds3, 
        TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
        promoterRegion=c(upstream=2000, downstream=500),
        geneDownstream=c(upstream=0, downstream=2000)) ## chipseeker
@@ -349,17 +363,16 @@ out <- genomicElementDistribution(mmrgd,
 ## SD Unique Peaks
 
 ```{r sd_anno}
-a<-genomicElementDistribution(mwtsdunique, 
+genomicElementDistribution(ms3sdunique, 
        TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
        promoterRegion=c(upstream=2000, downstream=500),
        geneDownstream=c(upstream=0, downstream=2000))
-
 ```
 
 ## HC Unique Peaks
 
 ```{r ct_anno}
-b<-genomicElementDistribution(mwtctunique, 
+genomicElementDistribution(ms3ctunique, 
        TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
        promoterRegion=c(upstream=2000, downstream=500),
        geneDownstream=c(upstream=0, downstream=2000))
@@ -370,19 +383,19 @@ b<-genomicElementDistribution(mwtctunique,
 Counts reads overlapping merged and condition-specific peak sets using DEScan2’s countFinalRegions on WT ATAC BAM files. This produces count matrices needed for downstream differential accessibility analysis (DARs) across all peaks and condition-unique peaks.
 
 ```{r descan2_mrg_conds, eval=FALSE}
-indir <- "2023/peaks"
-mmrgd <- readRDS(file.path(indir,"bioc318_MACS2_bro_merged_WT_SDCT_peaks_2023.rds"))
-mmrgd$`k-carriers` <- 3
-bamdir <- "2023/bams/ATAC_WT"
-mmrgdcntsSE <- DEScan2::countFinalRegions(mmrgd, readsFilePath=bamdir, 
+indir <- "."
+mmrgds3 <- readRDS(file.path(indir,"bioc318_MACS2_bro_merged_S3_SDCT_peaks_2024.rds"))
+mmrgds3$`k-carriers` <- 3
+bamdir <- "2023/bams/ATAC_S3"
+mmrgdcntsSEs3 <- DEScan2::countFinalRegions(mmrgds3, readsFilePath=bamdir, 
                         fileType="bam", minCarriers=2)
 
-
-mwtsdunique <- readRDS(file.path(indir,"bioc318_MACS2_bro_WT_SD_unique_peaks_2023.rds"))
-mwtsdcntsSE <- DEScan2::countFinalRegions(mwtsdunique, readsFilePath=bamdir, 
+ms3sdunique <- readRDS(file.path(indir,"bioc318_MACS2_bro_S3_SD_unique_peaks_2024.rds"))
+ms3sdcntsSE <- DEScan2::countFinalRegions(ms3sdunique, readsFilePath=bamdir, 
                         fileType="bam", minCarriers=2)
-mwtctunique <- readRDS(file.path(indir,"bioc318_MACS2_bro_WT_CT_unique_peaks_2023.rds"))
-mwtctcntsSE <- DEScan2::countFinalRegions(mwtctunique, readsFilePath=bamdir, 
+
+ms3ctunique <- readRDS(file.path(indir,"bioc318_MACS2_bro_S3_CT_unique_peaks_2024.rds"))
+ms3ctcntsSE <- DEScan2::countFinalRegions(ms3ctunique, readsFilePath=bamdir, 
                         fileType="bam", minCarriers=2)
 ```
 
@@ -394,71 +407,75 @@ We now use the previously computed DEScan2-generated count matrices for conditio
 source("../R/utils.R")
 library(darioscripts)
 library(ggpubr)
-mwtctcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_wtctcntsSE_2023.rds")
-mwtctcntsSE <- reshapeSEDEscan2(mwtctcntsSE, details="CT")
-mwtctcntsSE$condition[mwtctcntsSE$condition=="CTRL"] <- "HC"
-mpcct <- plotPCAs(assay(mwtctcntsSE), colData=colData(mwtctcntsSE), shapeBy="condition", colorBy="condition", prefix="HC peaks", returnOnly=TRUE)  +
-        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
-    theme_bw()# + theme(legend.position = "none")
-
-
-mwtsdcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_wtsdcntsSE_2023.rds")
-mwtsdcntsSE <- reshapeSEDEscan2(mwtsdcntsSE, details="SD")
-mwtsdcntsSE$condition[mwtsdcntsSE$condition=="CTRL"] <- "HC"
-mpcsd <- plotPCAs(assay(mwtsdcntsSE), colData=colData(mwtsdcntsSE), shapeBy="condition", colorBy="condition", prefix="SD peaks", returnOnly=TRUE) +
+ms3ctcntsSE <- readRDS("~/Downloads/multiome_data/results/S3_bioc318_MACS2_bro_s3ctcntsSE_2024.rds")
+ms3ctcntsSE <- reshapeSEDEscan2(ms3ctcntsSE, details="HC")
+ms3ctcntsSE$condition[ms3ctcntsSE$condition=="CTRL"] <- "HC"
+mpccts3 <- plotPCAs(assay(ms3ctcntsSE), colData=colData(ms3ctcntsSE), shapeBy="condition", colorBy="condition", prefix="HC peaks", returnOnly=TRUE) +
         scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
     theme_bw()
 
-mmrgdcntsSE <- readRDS("~/Downloads/multiome_data/data/bioc318_MACS2_bro_mrgdcntsSE_2023.rds")
-mmrgdcntsSE <- reshapeSEDEscan2(mmrgdcntsSE, details="merged")
-mmrgdcntsSE$condition[mmrgdcntsSE$condition=="CTRL"] <- "HC"
-mpcmg <- plotPCAs(assay(mmrgdcntsSE), colData=colData(mmrgdcntsSE), shapeBy="condition", colorBy="condition", prefix="Merged peaks", returnOnly=TRUE) + scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+ms3sdcntsSE <- readRDS("~/Downloads/multiome_data/results/S3_bioc318_MACS2_bro_s3sdcntsSE_2024.rds")
+ms3sdcntsSE <- reshapeSEDEscan2(ms3sdcntsSE, details="SD")
+ms3sdcntsSE$condition[ms3sdcntsSE$condition=="CTRL"] <- "HC"
+mpcsds3 <- plotPCAs(assay(ms3sdcntsSE), colData=colData(ms3sdcntsSE), shapeBy="condition", colorBy="condition", prefix="SD peaks", returnOnly=TRUE) +
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
     theme_bw()
 
-
-mallSE <- rbind(mmrgdcntsSE, mwtsdcntsSE, mwtctcntsSE)
-
-mpcall <- plotPCAs(assay(mallSE), colData=colData(mallSE), shapeBy="condition", 
-            colorBy="condition", prefix="All Peaks", returnOnly=TRUE)+ scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+mmrgdcntsSEs3 <- readRDS("~/Downloads/multiome_data/results/S3_bioc318_MACS2_bro_mrgdcntsSE_2024.rds")
+mmrgdcntsSEs3 <- reshapeSEDEscan2(mmrgdcntsSEs3, details="merged")
+mmrgdcntsSEs3$condition[mmrgdcntsSEs3$condition=="CTRL"] <- "HC"
+mpcmgs3 <- plotPCAs(assay(mmrgdcntsSEs3), colData=colData(mmrgdcntsSEs3), shapeBy="condition", colorBy="condition", prefix="merged peaks", returnOnly=TRUE) +
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
     theme_bw()
 
-peaksdf <- as.data.frame(rowRanges(mallSE))
-annotate_figure(ggarrange(plotlist=list(mpcct, mpcsd, mpcmg, mpcall), common.legend=TRUE), top="Not Normalized peaks")
+mallSEs3 <- rbind(mmrgdcntsSEs3, ms3sdcntsSE, ms3ctcntsSE)
+## keeping up with WT data structure
+rowRanges(mallSEs3)$peakNames <- rownames(mallSEs3)
+elementMetadata(rowRanges(mallSEs3)) <- elementMetadata(rowRanges(mallSEs3))[,c(5,2,1,3,4)]
+
+mpcalls3 <- plotPCAs(assay(mallSEs3), colData=colData(mallSEs3), shapeBy="condition", 
+            colorBy="condition", prefix="All Peaks", returnOnly=TRUE) +
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+    theme_bw()
+peaksdfs3 <- as.data.frame(rowRanges(mallSEs3))
+annotate_figure(ggarrange(plotlist=list(mpccts3, mpcsds3, mpcmgs3, mpcalls3), common.legend=TRUE), top="S3 Not Normalized peaks")
 ```
+
 
 # Annotation and PCA of Negative and Positive Control Peaks
 
 Annotates peaks in the combined dataset (mallSE) with genomic features using known gene annotations and gene ontology databases. It identifies peaks overlapping negative control genes (nc) and positive control genes (pc), labeling them accordingly. The code then splits negative control peaks into training and testing sets for validation purposes. PCA plots are generated separately for negative control peaks, positive control peaks, and all peaks, allowing visualization of how these control sets cluster and behave across conditions. The combined plots facilitate assessment of data quality and control peak behavior in the dataset.
 
 ```{r contrs_anno}
-
-rranno <- annotatePeak(rowRanges(mallSE), tssRegion=c(-3000, 3000), TxDb=TxDb.Mmusculus.UCSC.mm10.knownGene, annoDb="org.Mm.eg.db")@anno
-
+library(TxDb.Mmusculus.UCSC.mm10.knownGene)
+rrannos3 <- annotatePeak(rowRanges(mallSEs3), tssRegion=c(-3000, 3000), TxDb=TxDb.Mmusculus.UCSC.mm10.knownGene, annoDb="org.Mm.eg.db")@anno
 ## NC
-rrannonc <- rranno[which(rranno$ENSEMBL %in% nc$ensembl_id),]
-ncpeaks <- rownames(mallSE)[which(rownames(mallSE) %in% names(rrannonc))]
+rrannoncs3 <- rrannos3[which(rrannos3$ENSEMBL %in% nc$ensembl_id),]
+ncpeakss3 <- rownames(mallSEs3)[which(rownames(mallSEs3) %in% names(rrannoncs3))]
 
 set.seed(100)
-idxs <- sample(seq_along(ncpeaks), round((length(ncpeaks)[1]*10)/100))
-ncpeakstest <- ncpeaks[idxs]
-ncpeaksruv <- ncpeaks[-idxs]
+idxs <- sample(seq_along(ncpeakss3), round((length(ncpeakss3)[1]*10)/100))
+ncpeakstests3 <- ncpeakss3[idxs]
+ncpeaksruvs3 <- ncpeakss3[-idxs]
 
-rowRanges(mallSE)$negCtl <- FALSE
-rowRanges(mallSE)$negCtl[which(rownames(mallSE) %in% ncpeaks)] <- TRUE
+rowRanges(mallSEs3)$negCtl <- FALSE
+rowRanges(mallSEs3)$negCtl[which(rownames(mallSEs3) %in% ncpeakss3)] <- TRUE
 
 ## PC
-rrannopc <- rranno[which(rranno$ENSEMBL %in% pc$Ensembl_ID),]
-pcpeaks <- rownames(mallSE)[which(rownames(mallSE) %in% names(rrannopc))]
-rowRanges(mallSE)$posCtl <- FALSE
-rowRanges(mallSE)$posCtl[which(rownames(mallSE) %in% pcpeaks)] <- TRUE
+rrannopcs3 <- rrannos3[which(rrannos3$ENSEMBL %in% pc$Ensembl_ID),]
+pcpeakss3 <- rownames(mallSEs3)[which(rownames(mallSEs3) %in% names(rrannopcs3))]
+rowRanges(mallSEs3)$posCtl <- FALSE
+rowRanges(mallSEs3)$posCtl[which(rownames(mallSEs3) %in% pcpeakss3)] <- TRUE
 
-ncpca <- plotPCAs(assay(mallSE[rowRanges(mallSE)$negCtl,]), colData=colData(mallSE[rowRanges(mallSE)$negCtl,]), shapeBy="condition", colorBy="condition", prefix="Negative Control Peaks", returnOnly=TRUE)+ scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+ncpca <- plotPCAs(assay(mallSEs3[rowRanges(mallSEs3)$negCtl,]), colData=colData(mallSEs3[rowRanges(mallSEs3)$negCtl,]), shapeBy="condition", colorBy="condition", prefix="Negative Control Peaks", returnOnly=TRUE)+
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
     theme_bw()
 
-pcpca <- plotPCAs(assay(mallSE[rowRanges(mallSE)$posCtl,]), colData=colData(mallSE[rowRanges(mallSE)$posCtl,]), shapeBy="condition", colorBy="condition", prefix="Positive Control Peaks", returnOnly=TRUE)+ scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+pcpca <- plotPCAs(assay(mallSEs3[rowRanges(mallSEs3)$posCtl,]), colData=colData(mallSEs3[rowRanges(mallSEs3)$posCtl,]), shapeBy="condition", colorBy="condition", prefix="Positive Control Peaks", returnOnly=TRUE)+
+        scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
     theme_bw()
 
-ggarrange(plotlist=list(mpcall, ncpca, pcpca), common.legend=TRUE)
+ggarrange(plotlist=list(mpcalls3, ncpca, pcpca), common.legend=TRUE)
 
 ```
 
@@ -467,30 +484,34 @@ ggarrange(plotlist=list(mpcall, ncpca, pcpca), common.legend=TRUE)
 This code aligns and reconciles peak annotations between the combined peak set (`mallSE`) and previously obtained annotations (`rranno`). It separates peaks that lack annotations (`notanno`) from those with existing annotations, ensuring metadata columns are consistent across both groups by adding missing columns with `NA` values where needed. Then, it merges the annotated and non-annotated peaks back together, preserving the original order to match the combined dataset. Finally, it updates the row ranges of the combined dataset (`mallSE`) with this completed and harmonized annotation data.
 
 ```{r mrgd_peaks_anno}
-mallserr <- rowRanges(mallSE)
-rrannobkup <- rranno
-notanno <- mallserr[which(!names(mallserr) %in% names(rranno))]
-anno <- rranno[which(names(rranno) %in% names(mallserr))]
-mallanno <- mallserr[which(names(mallserr) %in% names(rranno))]
-rranno <- rranno[which(names(rranno) %in% names(mallanno))] 
-rranno$negCtl <- mallanno$negCtl
-rranno$posCtl <- mallanno$posCtl
-elementMetadata(rranno) <- elementMetadata(rranno)[,c(1:6, 18,19, 7:17)]
-newcols <- colnames(elementMetadata(rranno))[
+
+mallserrs3 <- rowRanges(mallSEs3)
+rrannobkups3 <- rrannos3
+notannos3 <- mallserrs3[which(!names(mallserrs3) %in% names(rrannos3))]
+annos3 <- rrannos3[which(names(rrannos3) %in% names(mallserrs3))]
+mallannos3 <- mallserrs3[which(names(mallserrs3) %in% names(rrannos3))]
+rrannos3 <- rrannos3[which(names(rrannos3) %in% names(mallannos3))] ## ordering based on mallSeAnno
+
+####### adding controls to annotated GRanges
+rrannos3$negCtl <- mallannos3$negCtl
+rrannos3$posCtl <- mallannos3$posCtl
+elementMetadata(rrannos3) <- elementMetadata(rrannos3)[,c(1:6, 18,19, 7:17)]
+
+newcolss3 <- colnames(elementMetadata(rrannos3))[
     which(
-        !colnames(elementMetadata(rranno)) %in% colnames(elementMetadata(notanno)))
+        !colnames(elementMetadata(rrannos3)) %in% colnames(elementMetadata(notannos3)))
     ]
-ddf <- as.data.frame(elementMetadata(notanno))
-for(c in newcols)
+ddfs3 <- as.data.frame(elementMetadata(notannos3))
+for(c in newcolss3)
 {
-    ddf[[c]] <- NA
+    ddfs3[[c]] <- NA
 }
 
-elementMetadata(notanno) <- DataFrame(ddf)
-annotatedrr <- c(rranno, notanno)
-annotatedrr <- annotatedrr[match(rownames(mallSE), names(annotatedrr)),]
-mallSEs <- mallSE
-rowRanges(mallSE) <- annotatedrr
+elementMetadata(notannos3) <- DataFrame(ddfs3)
+annotatedrrs3 <- c(rrannos3, notannos3)
+annotatedrrs3 <- annotatedrrs3[match(rownames(mallSEs3), names(annotatedrrs3)),]
+mallSEss3 <- mallSEs3
+rowRanges(mallSEs3) <- annotatedrrs3
 ```
 
 # Differential Accessibility Analysis with RUV Normalization Using Controls
@@ -507,101 +528,99 @@ This chunk performs differential accessibility region (DAR) analysis on combined
 
 ```{r dars}
 library(RUVSeq)
-
-plotPCAs(log1p(assay(mallSE)), colData=colData(mallSE), shapeBy="condition", colorBy="condition", prefix="WT Not Norm", returnOnly=TRUE, size=3)+scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+grp <- makeGroups(mallSEs3$condition)
+plotPCAs(log1p(assay(mallSEs3)), colData=colData(mallSEs3), shapeBy="condition", colorBy="condition", prefix="S3 Not Norm", returnOnly=TRUE, size=3)+scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
     theme_bw()
 
-grp <- makeGroups(mallSE$condition)
-
-ruvk3 <- RUVs(x=assay(mallSE), cIdx=ncpeaksruv, k=3, scIdx=grp)
-
-(pcr3nc <- plotPCAs(log1p(ruvk3$normalizedCounts), colData=colData(mallSE), shapeBy="condition", colorBy="condition", prefix="ATAC RUVsK3 NC", returnOnly=TRUE, size=3)+scale_color_manual(values=c("red", "black")) + scale_shape_manual(values = 16:17) + 
+ruvk3s3 <- RUVs(x=assay(mallSEs3), cIdx=ncpeaksruvs3, k=3, scIdx=grp)
+(pcr3ncs3 <- plotPCAs(log1p(ruvk3s3$normalizedCounts), colData=colData(mallSEs3), shapeBy="condition", colorBy="condition", prefix="S3 ATAC RUVsK3 NC", returnOnly=TRUE, size=3)+
+        scale_color_manual(values=c("red", "black")) + 
+        scale_shape_manual(values = 16:17) + 
     theme_bw())
 
-
-colData(mallSE) <- cbind.DataFrame(colData(mallSE), ruvk3$W)
-assays(mallSE)$RUVsk3 <- ruvk3$normalizedCounts
-resk3wnc <- applyEdgeR(assay(mallSE), colData=colData(mallSE), factors="condition",
-                    wnames=colnames(ruvk3$W), contrasts="SD - HC")
-rk3darswnc <- sum(resk3wnc$`SD - CTRL`$FDR < 0.05)
-rk3darsncwnc <- sum(rownames(resk3wnc$`SD - CTRL`[resk3wnc$`SD - CTRL`$FDR < 0.05,]) %in% ncpeakstest)
-rk3darspcwnc <- sum(rownames(resk3wnc$`SD - CTRL`[resk3wnc$`SD - CTRL`$FDR < 0.05,]) %in% pcpeaks)
-resk3wr <- resk3wnc$`SD - HC`
-seqnames <- unlist(lapply(strsplit(rownames(resk3wr), ":"), function(x) x[1]))
-startend <- unlist(lapply(strsplit(rownames(resk3wr), ":"), function(x) x[2]))
+colData(mallSEs3) <- cbind.DataFrame(colData(mallSEs3), ruvk3s3$W)
+assays(mallSEs3)$RUVsk3 <- ruvk3s3$normalizedCounts
+resk3wncs3 <- applyEdgeR(assay(mallSEs3), colData=colData(mallSEs3), factors="condition",
+                    wnames=colnames(ruvk3s3$W), contrasts="SD - HC")
+rk3darswncs3 <- sum(resk3wncs3$`SD - CTRL`$FDR < 0.05)
+rk3darsncwncs3 <- sum(rownames(resk3wncs3$`SD - CTRL`[resk3wncs3$`SD - CTRL`$FDR < 0.05,]) %in% ncpeakstests3)
+rk3darspcwncs3 <- sum(rownames(resk3wncs3$`SD - CTRL`[resk3wncs3$`SD - CTRL`$FDR < 0.05,]) %in% pcpeakss3)
+resk3wrs3 <- resk3wncs3$`SD - HC`
+seqnames <- unlist(lapply(strsplit(rownames(resk3wrs3), ":"), function(x) x[1]))
+startend <- unlist(lapply(strsplit(rownames(resk3wrs3), ":"), function(x) x[2]))
 start <- as.numeric(unlist(lapply(strsplit(startend, "-"), function(x) x[1])))
 end <- as.numeric(unlist(lapply(strsplit(startend, "-"), function(x) x[2])))
-resk3wr$chr <- seqnames
-resk3wr$start <- start
-resk3wr$end <- end
-resk3wr <- resk3wr[,c(8:10,1:7)]
+resk3wrs3$chr <- seqnames
+resk3wrs3$start <- start
+resk3wrs3$end <- end
+resk3wrs3 <- resk3wrs3[,c(8:10,1:7)]
 ```
 
 # Annotation and Cross-Comparison of DARs with DEGs
 
-We now can annotate DARs in the `mallSE` SummarizedExperiment object by adding differential accessibility results (`edgeR`) and integrate previously identified differentially expressed genes (DEGs) data. We mark peaks associated with DARs and DEGs, then summarize overlaps and counts through interactive tables. The chunk further categorizes DARs and DEGs by direction of change (up/down regulation) and generates subsets where DARs and DEGs are concordant or discordant in their fold changes. This comprehensive annotation helps explore the relationship between chromatin accessibility and gene expression changes.
+We now can annotate DARs in the `mallSEs3` SummarizedExperiment object by adding differential accessibility results (`edgeR`) and integrate previously identified differentially expressed genes (DEGs) data. We mark peaks associated with DARs and DEGs, then summarize overlaps and counts through interactive tables. The chunk further categorizes DARs and DEGs by direction of change (up/down regulation) and generates subsets where DARs and DEGs are concordant or discordant in their fold changes. This comprehensive annotation helps explore the relationship between chromatin accessibility and gene expression changes.
 
 ```{r dars_anno}
-mallSE <- mallSE[match( rownames(resk3wr), rownames(mallSE)),]
-elementMetadata(rowRanges(mallSE))$edgeR <- resk3wr
+mallSEs3 <- mallSEs3[match( rownames(resk3wrs3), rownames(mallSEs3)),]
+elementMetadata(rowRanges(mallSEs3))$edgeR <- resk3wrs3
 
-dars <- mallSE[rowRanges(mallSE)$edgeR$FDR < 0.05,]
-degs <- as.data.frame(readxl::read_excel("~/Downloads/multiome_data/results/DEGs_WT_UQRUVsK3_2023.xlsx"))
-degss <- degs[degs$sign,]
-rowRanges(mallSE)$DEGs <- FALSE 
-rowRanges(mallSE)$DEGs[which(tolower(rowRanges(mallSE)$SYMBOL) %in% tolower(degss$gene))] <- TRUE
-rowRanges(mallSE)$DARs <- FALSE
-rowRanges(mallSE)$DARs[rowRanges(mallSE)$edgeR$FDR < 0.05] <- TRUE
+darss3 <- mallSEs3[rowRanges(mallSEs3)$edgeR$FDR < 0.05,]
+degss3 <- as.data.frame(readxl::read_excel("~/Downloads/multiome_data/results/DEGs_S3_UQRUVsK3_2023_bioc318_ens.xlsx"))
+degsss3 <- degss3[degss3$sign,]
+rowRanges(mallSEs3)$DEGs <- FALSE 
+rowRanges(mallSEs3)$DEGs[which(tolower(rowRanges(mallSEs3)$SYMBOL) %in% tolower(degsss3$gene))] <- TRUE
+rowRanges(mallSEs3)$DARs <- FALSE
+rowRanges(mallSEs3)$DARs[rowRanges(mallSEs3)$edgeR$FDR < 0.05] <- TRUE
 
-rrmsedddf <- as.data.frame(rowRanges(mallSE))
+rrmsedddfs3 <- as.data.frame(rowRanges(mallSEs3))
 
 cols <- c(1:5, 8, 25, 26, 11:24, 30:38)
-rrmsedddf <- rrmsedddf[,cols]
+rrmsedddfs3 <- rrmsedddfs3[,cols]
 library(DT)
-datatable(data.frame(tot_peaks=dim(mallSE)[1],
-                     peaks_anno=(dim(mallSE)[1] - sum(is.na(rowRanges(mallSE)$SYMBOL))),
-                     tot_dars=sum(rowRanges(mallSE)$DARs), 
-                     dars_anno=length(rowRanges(dars)$SYMBOL),
-                     peaks_degs=sum(rowRanges(mallSE)$DEGs),
-                     dars_degs=sum(rowRanges(mallSE)$DEGs & rowRanges(mallSE)$DARs)
+datatable(data.frame(tot_peaks=dim(mallSEs3)[1],
+                     peaks_anno=(dim(mallSEs3)[1] - sum(is.na(rowRanges(mallSEs3)$SYMBOL))),
+                     tot_dars=sum(rowRanges(mallSEs3)$DARs), 
+                     dars_anno=length(rowRanges(darss3)$SYMBOL),
+                     peaks_degs=sum(rowRanges(mallSEs3)$DEGs),
+                     dars_degs=sum(rowRanges(mallSEs3)$DEGs & rowRanges(mallSEs3)$DARs)
                      ))
 
-darsdeg <- datatable(data.frame(tot_peaks=dim(mallSE)[1],
-                     peaks_anno=(dim(mallSE)[1] - sum(is.na(rowRanges(mallSE)$SYMBOL))),
-                     tot_dars=sum(rowRanges(mallSE)$DARs), 
-                     dars_anno=length(rowRanges(dars)$SYMBOL),
-                     peaks_degs=sum(rowRanges(mallSE)$DEGs),
-                     dars_degs=sum(rowRanges(mallSE)$DEGs & rowRanges(mallSE)$DARs)
+darsdeg <- datatable(data.frame(tot_peaks=dim(mallSEs3)[1],
+                     peaks_anno=(dim(mallSEs3)[1] - sum(is.na(rowRanges(mallSEs3)$SYMBOL))),
+                     tot_dars=sum(rowRanges(mallSEs3)$DARs), 
+                     dars_anno=length(rowRanges(darss3)$SYMBOL),
+                     peaks_degs=sum(rowRanges(mallSEs3)$DEGs),
+                     dars_degs=sum(rowRanges(mallSEs3)$DEGs & rowRanges(mallSEs3)$DARs)
                      ))
 
-degsdown <- degss[degss$logFC<0,]
-degsup <- degss[degss$logFC>0,]
-darsdown <- rowRanges(dars)[rowRanges(dars)$edgeR$logFC<0,]
-darsup <- rowRanges(dars)[rowRanges(dars)$edgeR$logFC>0,]
+degsdowns3 <- degsss3[degsss3$logFC<0,]
+degsups3 <- degsss3[degsss3$logFC>0,]
+darsdowns3 <- rowRanges(darss3)[rowRanges(darss3)$edgeR$logFC<0,]
+darsups3 <- rowRanges(darss3)[rowRanges(darss3)$edgeR$logFC>0,]
 
 cols <- c(1:5, 8, 11:24, 30:36)
-darsdd <- darsdown[which(tolower(darsdown$SYMBOL) %in% tolower(degsdown$gene)),]
-darsdddf <- as.data.frame(darsdd)[,cols]
-darsdu <- darsdown[which(tolower(darsdown$SYMBOL) %in% tolower(degsup$gene)),]
-darsdudf <- as.data.frame(darsdu)[,cols]
-darsud <- darsup[which(tolower(darsup$SYMBOL) %in% tolower(degsdown$gene)),]
-darsuddf <- as.data.frame(darsud)[,cols]
-darsuu <- darsup[which(tolower(darsup$SYMBOL) %in% tolower(degsup$gene)),]
-darsuudf <- as.data.frame(darsuu)[,cols]
-darsdegdt <- datatable(data.frame(darsDWN_degsDWN=length(darsdd)[1],
-                     darsDWN_degsUP=length(darsdu)[1],
-                     darsUP_degsDWN=length(darsud)[1],
-                     darsUP_degsUP=length(darsuu)[1]
+darsdds3 <- darsdowns3[which(tolower(darsdowns3$SYMBOL) %in% tolower(degsdowns3$gene)),]
+darsdddfs3 <- as.data.frame(darsdds3)[,cols]
+darsdus3 <- darsdowns3[which(tolower(darsdowns3$SYMBOL) %in% tolower(degsups3$gene)),]
+darsdudfs3 <- as.data.frame(darsdus3)[,cols]
+darsuds3 <- darsups3[which(tolower(darsups3$SYMBOL) %in% tolower(degsdowns3$gene)),]
+darsuddfs3 <- as.data.frame(darsuds3)[,cols]
+darsuus3 <- darsups3[which(tolower(darsups3$SYMBOL) %in% tolower(degsups3$gene)),]
+darsuudfs3 <- as.data.frame(darsuus3)[,cols]
+darsdegdt <- datatable(data.frame(darsDWN_degsDWN=length(darsdds3)[1],
+                     darsDWN_degsUP=length(darsdus3)[1],
+                     darsUP_degsDWN=length(darsuds3)[1],
+                     darsUP_degsUP=length(darsuus3)[1]
                      ))
 ```
 
 
 # Distribution of Differentially Accessible Regions (DARs) Across Genomic Elements
 
-This code extracts DARs from the combined peak dataset (`mallSE`), filters them to standard chromosomes only, and then uses `genomicElementDistribution` to summarize their genomic annotation. Specifically, it calculates how DARs are distributed among genomic features such as promoters (defined here as 2 kb upstream to 500 bp downstream of transcription start sites) and downstream gene regions (up to 2 kb). This helps understand the genomic context where accessibility changes occur.
+This code extracts DARs from the combined peak dataset (`mallSEs3`), filters them to standard chromosomes only, and then uses `genomicElementDistribution` to summarize their genomic annotation. Specifically, it calculates how DARs are distributed among genomic features such as promoters (defined here as 2 kb upstream to 500 bp downstream of transcription start sites) and downstream gene regions (up to 2 kb). This helps understand the genomic context where accessibility changes occur.
 
 ```{r}
-darsregions <- rowRanges(mallSE)[rowRanges(mallSE)$DARs,]
+darsregions <- rowRanges(mallSEs3)[rowRanges(mallSEs3)$DARs,]
 darsregions <- keepStandardChromosomes(darsregions)
 p <- genomicElementDistribution(darsregions, 
        TxDb = TxDb.Mmusculus.UCSC.mm10.knownGene,
@@ -610,21 +629,22 @@ p <- genomicElementDistribution(darsregions,
 ```
 
 
+
 # Summary Statistics and Control Enrichment of DARs
 
 We compile statistics on DARs identified by the RUVs normalization method, focusing on their overlap with positive and negative control peak sets. We calculate counts and percentages of DARs overlapping positive controls, and similarly for a subset of negative controls (10%). The results are combined into a clear summary table with columns showing raw counts, percentages relative to DARs, and percentages relative to total controls. This helps us assess the quality and specificity of DAR detection by comparing observed enrichments against known control regions. The summary is displayed as an interactive datatable for easy inspection.
 
 ```{r dars_res}
 
-df <- rbind(rk3darswnc)
+df <- rbind(rk3darswncs3)
 rownames(df) <- c("ruvs_K3_NC")
-df2 <- rbind(rk3darspcwnc)
+df2 <- rbind(rk3darspcwncs3)
 df3 <- (df2[,1]/df[,1])*100
-df7 <- (df2[,1]/length(pcpeaks))*100
+df7 <- (df2[,1]/length(pcpeakss3))*100
 
-df4 <- rbind(rk3darsncwnc)
+df4 <- rbind(rk3darsncwncs3)
 df5 <- (df4[,1]/df[,1])*100
-df6 <- (df4[,1]/length(ncpeaks))*100
+df6 <- (df4[,1]/length(ncpeakss3))*100
 
 df8 <- cbind(df, df2, paste0(round(df3),"%"),paste0(round(df7),"%"),paste0(round(df4),"%"),paste0(round(df5),"%"),paste0(round(df6),"%"))
 colnames(df8) <- c("DARs", "DARs Pos Ctrl", "PC/DARs %", "PC/totPC %", "DARs Neg Ctrl(10%)", "NC(10%)/DARs %", "NC(10%)/totNC %")
@@ -634,8 +654,9 @@ darsdeg
 darsdegdt
 ```
 
-# sessionInfo()
+# sessionInfo
 
 ```{r, tidy=TRUE}
 sessionInfo()
 ```
+
