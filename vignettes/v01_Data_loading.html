@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Dario Righelli">
+<meta name="dcterms.date" content="2025-08-25">
 
 <title>10x-Multiome Sleep Deprivation Analysis - Data Loading</title>
 <style>
@@ -19,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -62,6 +98,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 <meta property="og:title" content="10x-Multiome Sleep Deprivation Analysis - Data Loading">
+<meta property="og:description" content="">
 <meta property="og:site-name" content="10x-Multiome Sleep Deprivation Analysis">
 <meta property="og:locale" content="en_US">
 </head>
@@ -92,6 +129,22 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Articles</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
+        <li>
+    <a class="dropdown-item" href="../vignettes/v01_Data_loading.html" rel="" target="">
+ <span class="dropdown-text">Data Loading</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v02_QC.html" rel="" target="">
+ <span class="dropdown-text">Quality Control</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v03_CellType.html" rel="" target="">
+ <span class="dropdown-text">Cell Type Annotation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v04_Doublets.html" rel="" target="">
+ <span class="dropdown-text">Doublets Identification</span></a>
+  </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
  <span class="dropdown-text">DEGs Wild Type</span></a>
@@ -138,7 +191,17 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#raw-data-preprocessing" id="toc-raw-data-preprocessing" class="nav-link active" data-scroll-target="#raw-data-preprocessing">Raw data preprocessing</a></li>
+  <li><a href="#load-required-libraries" id="toc-load-required-libraries" class="nav-link" data-scroll-target="#load-required-libraries">Load required libraries</a></li>
+  <li><a href="#data-loading" id="toc-data-loading" class="nav-link" data-scroll-target="#data-loading">Data loading</a></li>
+  <li><a href="#data-splitting" id="toc-data-splitting" class="nav-link" data-scroll-target="#data-splitting">Data Splitting</a></li>
+  <li><a href="#session-info" id="toc-session-info" class="nav-link" data-scroll-target="#session-info">Session Info</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -152,7 +215,19 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dario Righelli </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 25, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -160,8 +235,190 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="raw-data-preprocessing" class="level1">
+<h1>Raw data preprocessing</h1>
+<p>To process raw 10x BCL files produced by the sequencer, we take aid of the 10x <a href="https://www.10xgenomics.com/support/software/cell-ranger-arc/latest">cellranger-arc software</a> Firstly, we used the <strong>makefastq</strong> command to generate fastq files for each sample GEX/ATAC and then with the <strong>count</strong> command by aid of the <strong>libraries</strong> files, we combined GEX and ATAC for each sample to obtain a unique output folder. This results in a unique output folder for each sample.</p>
+<p>Details of the implemented MAKEFILE(s) are present in the <a href="https://github.com/RissoLab/MultiomeSD">main github repository</a> of this website. In particular, the files are present in the <a href="https://github.com/RissoLab/MultiomeSD/tree/qwebsite/inst/preprocessing">inst/preprocessing</a> folder, where they are organized by replicate. Refer to the MAKEFILE present in each of these folders to replicate the results.</p>
+</section>
+<section id="load-required-libraries" class="level1">
+<h1>Load required libraries</h1>
+<p>This chunk loads the necessary Bioconductor packages: - <code>SingleCellExperiment</code>: data structure for single-cell assays - <code>TENxMultiomeTools</code>: helpers for 10x Genomics multiome data - <code>scater</code>, <code>scuttle</code>: normalization, QC, and visualization tools</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TENxMultiomeTools)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="data-loading" class="level1">
+<h1>Data loading</h1>
+<p>After processing the FASTQ files with Cell Ranger ARC, we are able to load each replicate as a separate SingleCellExperiment object.</p>
+<p>Here we show the code to use to load the data into R by using the <code>TENxMultiomeTools</code> package.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># After placing on the right path where all the replicates have been processed </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and stored </span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>dirs <span class="ot">&lt;-</span> <span class="fu">list.dirs</span>(<span class="st">"."</span>, <span class="at">full.names=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>repfolders <span class="ot">&lt;-</span> dirs[<span class="fu">grep</span>(<span class="st">"REP[^/]*?/outs$"</span>, dirs)]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(repfolders, read10xMultiome, <span class="at">type=</span><span class="st">"HDF5"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(scelist) <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">strsplit</span>(repfolders, <span class="at">split=</span><span class="st">"/"</span>), <span class="cf">function</span>(x){x[<span class="dv">3</span>]}))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This produces a list of sce objects with two main experiments, one, as default, named RNA, and an <code>altExp</code> named ATAC.</p>
+</section>
+<section id="data-splitting" class="level1">
+<h1>Data Splitting</h1>
+<p>To speed up further computations, and to lighten the load on memory here each sce is split in two different objects one with only RNA and one with only ATAC.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scelistnoatac <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce){</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">altExp</span>(sce) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    sce</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(scelistnoatac, <span class="at">file=</span><span class="st">"~/Downloads/multiome_data/data/scelist_noATAC.RDS"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>scelistnorna <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce){</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> <span class="fu">swapAltExp</span>(sce, <span class="at">name=</span><span class="st">"ATAC"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">altExp</span>(sce) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    sce</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(scelistnorna, <span class="at">file=</span><span class="st">"~/Downloads/multiome_data/data/scelist_noRNA.RDS"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="session-info" class="level1">
+<h1>Session Info</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.3.3 (2024-02-29)
+Platform: aarch64-unknown-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/aarch64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/aarch64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Europe/Zurich
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] TENxMultiomeTools_0.1.3     SingleCellExperiment_1.24.0
+ [3] SummarizedExperiment_1.32.0 Biobase_2.62.0             
+ [5] GenomicRanges_1.54.1        GenomeInfoDb_1.38.8        
+ [7] IRanges_2.36.0              S4Vectors_0.40.2           
+ [9] BiocGenerics_0.48.1         MatrixGenerics_1.14.0      
+[11] matrixStats_1.3.0          
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22          splines_4.3.3            
+  [3] later_1.3.2               BiocIO_1.12.0            
+  [5] bitops_1.0-7              tibble_3.2.1             
+  [7] R.oo_1.26.0               polyclip_1.10-6          
+  [9] XML_3.99-0.16.1           fastDummies_1.7.3        
+ [11] lifecycle_1.0.4           scDblFinder_1.16.0       
+ [13] rstatix_0.7.2             edgeR_4.0.1              
+ [15] globals_0.16.3            lattice_0.22-6           
+ [17] MASS_7.3-60.0.1           backports_1.4.1          
+ [19] magrittr_2.0.3            limma_3.58.1             
+ [21] plotly_4.10.4             rmarkdown_2.26           
+ [23] yaml_2.3.8                metapod_1.10.1           
+ [25] httpuv_1.6.15             Seurat_5.0.3             
+ [27] sctransform_0.4.1         spam_2.10-0              
+ [29] sp_2.1-3                  spatstat.sparse_3.0-3    
+ [31] reticulate_1.36.1         cowplot_1.1.3            
+ [33] pbapply_1.7-2             RColorBrewer_1.1-3       
+ [35] abind_1.4-5               zlibbioc_1.48.2          
+ [37] Rtsne_0.17                purrr_1.0.2              
+ [39] R.utils_2.12.3            RCurl_1.98-1.14          
+ [41] SingleR_2.4.1             GenomeInfoDbData_1.2.11  
+ [43] ggrepel_0.9.5             irlba_2.3.5.1            
+ [45] listenv_0.9.1             spatstat.utils_3.0-4     
+ [47] goftest_1.2-3             RSpectra_0.16-1          
+ [49] spatstat.random_3.2-3     dqrng_0.3.2              
+ [51] fitdistrplus_1.1-11       parallelly_1.37.1        
+ [53] DelayedMatrixStats_1.24.0 RcppRoll_0.3.0           
+ [55] leiden_0.4.3.1            codetools_0.2-20         
+ [57] DropletUtils_1.20.0       DelayedArray_0.28.0      
+ [59] scuttle_1.12.0            tidyselect_1.2.1         
+ [61] viridis_0.6.5             ScaledMatrix_1.10.0      
+ [63] spatstat.explore_3.2-7    GenomicAlignments_1.38.2 
+ [65] jsonlite_1.8.8            BiocNeighbors_1.20.2     
+ [67] progressr_0.14.0          scater_1.30.1            
+ [69] ggridges_0.5.6            survival_3.5-8           
+ [71] tools_4.3.3               ica_1.0-3                
+ [73] Rcpp_1.0.12               glue_1.7.0               
+ [75] gridExtra_2.3             SparseArray_1.2.4        
+ [77] xfun_0.43                 dplyr_1.1.4              
+ [79] HDF5Array_1.30.1          fastmap_1.1.1            
+ [81] bluster_1.12.0            rhdf5filters_1.14.1      
+ [83] fansi_1.0.6               rsvd_1.0.5               
+ [85] digest_0.6.35             R6_2.5.1                 
+ [87] mime_0.12                 colorspace_2.1-0         
+ [89] scattermore_1.2           tensor_1.5               
+ [91] spatstat.data_3.0-4       R.methodsS3_1.8.2        
+ [93] utf8_1.2.4                tidyr_1.3.1              
+ [95] generics_0.1.3            data.table_1.15.4        
+ [97] rtracklayer_1.62.0        httr_1.4.7               
+ [99] htmlwidgets_1.6.4         S4Arrays_1.2.1           
+[101] uwot_0.2.2                pkgconfig_2.0.3          
+[103] gtable_0.3.5              lmtest_0.9-40            
+[105] XVector_0.42.0            htmltools_0.5.8.1        
+[107] carData_3.0-5             dotCall64_1.1-1          
+[109] SeuratObject_5.0.1        scales_1.3.0             
+[111] png_0.1-8                 scran_1.30.2             
+[113] knitr_1.46                rstudioapi_0.16.0        
+[115] rjson_0.2.21              Signac_1.13.0            
+[117] reshape2_1.4.4            nlme_3.1-164             
+[119] zoo_1.8-12                rhdf5_2.46.1             
+[121] stringr_1.5.1             KernSmooth_2.23-22       
+[123] vipor_0.4.7               parallel_4.3.3           
+[125] miniUI_0.1.1.1            restfulr_0.0.15          
+[127] pillar_1.9.0              grid_4.3.3               
+[129] vctrs_0.6.5               RANN_2.6.1               
+[131] promises_1.3.0            ggpubr_0.6.0             
+[133] BiocSingular_1.18.0       car_3.1-2                
+[135] beachmat_2.18.1           xtable_1.8-4             
+[137] cluster_2.1.6             beeswarm_0.4.0           
+[139] evaluate_0.23             Rsamtools_2.18.0         
+[141] cli_3.6.2                 locfit_1.5-9.9           
+[143] compiler_4.3.3            rlang_1.1.3              
+[145] crayon_1.5.2              future.apply_1.11.2      
+[147] ggsignif_0.6.4            ggbeeswarm_0.7.2         
+[149] plyr_1.8.9                stringi_1.8.3            
+[151] deldir_2.0-4              viridisLite_0.4.2        
+[153] BiocParallel_1.36.0       Biostrings_2.70.3        
+[155] munsell_0.5.1             lazyeval_0.2.2           
+[157] spatstat.geom_3.2-9       Matrix_1.6-5             
+[159] RcppHNSW_0.6.0            patchwork_1.2.0          
+[161] sparseMatrixStats_1.14.0  future_1.33.2            
+[163] ggplot2_3.5.0             Rhdf5lib_1.24.2          
+[165] statmod_1.5.0             shiny_1.8.1.1            
+[167] ROCR_1.0-11               igraph_2.0.3             
+[169] broom_1.0.5               fastmatch_1.1-4          
+[171] xgboost_1.7.7.1          </code></pre>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

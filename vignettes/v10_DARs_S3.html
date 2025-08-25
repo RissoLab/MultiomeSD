@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Dario Righelli">
-<meta name="dcterms.date" content="2025-07-25">
+<meta name="dcterms.date" content="2025-08-25">
 
 <title>10x-Multiome Sleep Deprivation Analysis - Differentially Accessible Regions of Shank3 DeltaC</title>
 <style>
@@ -142,6 +142,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
         <li>
+    <a class="dropdown-item" href="../vignettes/v01_Data_loading.html" rel="" target="">
+ <span class="dropdown-text">Data Loading</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v02_QC.html" rel="" target="">
+ <span class="dropdown-text">Quality Control</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v03_CellType.html" rel="" target="">
+ <span class="dropdown-text">Cell Type Annotation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v04_Doublets.html" rel="" target="">
+ <span class="dropdown-text">Doublets Identification</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
  <span class="dropdown-text">DEGs Wild Type</span></a>
   </li>  
@@ -241,7 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 25, 2025</p>
+      <p class="date">August 25, 2025</p>
     </div>
   </div>
   
@@ -608,17 +624,17 @@ colData names(1): readsFiles</code></pre>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">downstream=</span><span class="dv">3000</span>, <span class="at">type=</span><span class="st">"start_site"</span>, <span class="at">by=</span><span class="st">"gene"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&gt;&gt; preparing start_site regions by gene... 2025-07-25 12:10:21 PM
-&gt;&gt; preparing tag matrix...  2025-07-25 12:10:21 PM 
-&gt;&gt; preparing start_site regions by gene... 2025-07-25 12:10:28 PM
-&gt;&gt; preparing tag matrix...  2025-07-25 12:10:28 PM </code></pre>
+<pre><code>&gt;&gt; preparing start_site regions by gene... 2025-08-25 11:07:48 AM
+&gt;&gt; preparing tag matrix...  2025-08-25 11:07:48 AM 
+&gt;&gt; preparing start_site regions by gene... 2025-08-25 11:07:56 AM
+&gt;&gt; preparing tag matrix...  2025-08-25 11:07:56 AM </code></pre>
 </div>
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotAvgProf</span>(tagMatrixList, <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3000</span>, <span class="dv">3000</span>)) <span class="sc">+</span> <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="fu">names</span>(colors)[<span class="dv">1</span>], <span class="fu">names</span>(colors)[<span class="dv">2</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&gt;&gt; plotting figure...            2025-07-25 12:10:32 PM </code></pre>
+<pre><code>&gt;&gt; plotting figure...            2025-08-25 11:08:00 AM </code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="v10_DARs_S3_files/figure-html/avgprof-1.png" class="img-fluid" width="672"></p>
@@ -788,13 +804,13 @@ colData names(1): readsFiles</code></pre>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>rrannos3 <span class="ot">&lt;-</span> <span class="fu">annotatePeak</span>(<span class="fu">rowRanges</span>(mallSEs3), <span class="at">tssRegion=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3000</span>, <span class="dv">3000</span>), <span class="at">TxDb=</span>TxDb.Mmusculus.UCSC.mm10.knownGene, <span class="at">annoDb=</span><span class="st">"org.Mm.eg.db"</span>)<span class="sc">@</span>anno</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>&gt;&gt; preparing features information...         2025-07-25 12:11:15 PM 
-&gt;&gt; identifying nearest features...       2025-07-25 12:11:15 PM 
-&gt;&gt; calculating distance from peak to TSS...  2025-07-25 12:11:16 PM 
-&gt;&gt; assigning genomic annotation...       2025-07-25 12:11:16 PM 
-&gt;&gt; adding gene annotation...             2025-07-25 12:11:21 PM 
-&gt;&gt; assigning chromosome lengths          2025-07-25 12:11:21 PM 
-&gt;&gt; done...                   2025-07-25 12:11:21 PM </code></pre>
+<pre><code>&gt;&gt; preparing features information...         2025-08-25 11:08:44 AM 
+&gt;&gt; identifying nearest features...       2025-08-25 11:08:44 AM 
+&gt;&gt; calculating distance from peak to TSS...  2025-08-25 11:08:45 AM 
+&gt;&gt; assigning genomic annotation...       2025-08-25 11:08:45 AM 
+&gt;&gt; adding gene annotation...             2025-08-25 11:08:50 AM 
+&gt;&gt; assigning chromosome lengths          2025-08-25 11:08:51 AM 
+&gt;&gt; done...                   2025-08-25 11:08:51 AM </code></pre>
 </div>
 <details>
 <summary>Code</summary>

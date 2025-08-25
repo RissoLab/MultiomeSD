@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Elena Zuin">
+<meta name="dcterms.date" content="2025-08-25">
 
 <title>10x-Multiome Sleep Deprivation Analysis - Cell Type Annotation</title>
 <style>
@@ -19,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -62,6 +98,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 <meta property="og:title" content="10x-Multiome Sleep Deprivation Analysis - Cell Type Annotation">
+<meta property="og:description" content="">
 <meta property="og:site-name" content="10x-Multiome Sleep Deprivation Analysis">
 <meta property="og:locale" content="en_US">
 </head>
@@ -92,6 +129,22 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Articles</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
+        <li>
+    <a class="dropdown-item" href="../vignettes/v01_Data_loading.html" rel="" target="">
+ <span class="dropdown-text">Data Loading</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v02_QC.html" rel="" target="">
+ <span class="dropdown-text">Quality Control</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v03_CellType.html" rel="" target="">
+ <span class="dropdown-text">Cell Type Annotation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v04_Doublets.html" rel="" target="">
+ <span class="dropdown-text">Doublets Identification</span></a>
+  </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
  <span class="dropdown-text">DEGs Wild Type</span></a>
@@ -138,7 +191,21 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#reference-preparation" id="toc-reference-preparation" class="nav-link" data-scroll-target="#reference-preparation">Reference preparation</a></li>
+  <li><a href="#cell-type-annotation-with-singler" id="toc-cell-type-annotation-with-singler" class="nav-link" data-scroll-target="#cell-type-annotation-with-singler">Cell-type annotation with SingleR</a>
+  <ul class="collapse">
+  <li><a href="#load-query-dataset" id="toc-load-query-dataset" class="nav-link" data-scroll-target="#load-query-dataset">Load query dataset</a></li>
+  <li><a href="#singler" id="toc-singler" class="nav-link" data-scroll-target="#singler">SingleR</a></li>
+  </ul></li>
+  <li><a href="#visualizing-cell-type-annotations" id="toc-visualizing-cell-type-annotations" class="nav-link" data-scroll-target="#visualizing-cell-type-annotations">Visualizing Cell Type Annotations</a></li>
+  <li><a href="#sessioninfo" id="toc-sessioninfo" class="nav-link" data-scroll-target="#sessioninfo">SessionInfo</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -152,7 +219,19 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Elena Zuin </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 25, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -160,8 +239,759 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AllenInstituteBrainData)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Mmusculus.v79)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scuttle)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleR)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scatter)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>To identify cell types, we utilized the SingleR annotation method, an automatic tool based on reference data.</p>
+</section>
+<section id="reference-preparation" class="level1">
+<h1>Reference preparation</h1>
+<p>The Allen Whole Cortex &amp; Hippocampus - 10x Genomics (v2021) dataset was used as the reference. T his dataset was imported using the <em>AllenInstituteBrainData</em> function from the <code>AllenInstituteBrainData</code> package.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>allen_ref <span class="ot">&lt;-</span> <span class="fu">AllenInstituteBrainData</span>(<span class="st">"Allen_Mouse_2021"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(allen_ref) <span class="ot">&lt;-</span> <span class="fu">rowData</span>(allen_ref)<span class="sc">$</span>X</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The cortical and unwanted subclasses were removed to focus specifically on the hippocampus brain region.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>allen_ref <span class="ot">&lt;-</span> allen_ref[, <span class="sc">!</span><span class="fu">is.na</span>(allen_ref<span class="sc">$</span>subclass_label) <span class="sc">&amp;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                           allen_ref<span class="sc">$</span>subclass_label <span class="sc">!=</span> <span class="st">""</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>exclude <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"V3d"</span>, <span class="st">"Meis2"</span>, <span class="st">"CR"</span>, <span class="st">"Car3"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>             <span class="fu">unique</span>(allen_ref<span class="sc">$</span>subclass_label[<span class="fu">grepl</span>(<span class="st">"^L[2-6]"</span>, allen_ref<span class="sc">$</span>subclass_label)]),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">unique</span>(allen_ref<span class="sc">$</span>subclass_label[<span class="fu">grepl</span>(<span class="st">"^NP"</span>, allen_ref<span class="sc">$</span>subclass_label)]), </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">unique</span>(allen_ref<span class="sc">$</span>subclass_label[<span class="fu">grepl</span>(<span class="st">"^CT"</span>, allen_ref<span class="sc">$</span>subclass_label)]))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>allen_ref <span class="ot">&lt;-</span> allen_ref[, <span class="sc">!</span>allen_ref<span class="sc">$</span>subclass_label <span class="sc">%in%</span> exclude]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Gene symbols were mapped to Ensembl Gene IDs using <code>EnsDb.Mmusculus.v79</code>, ensuring consistent identifiers for downstream analyses.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>map <span class="ot">&lt;-</span> AnnotationDbi<span class="sc">::</span><span class="fu">mapIds</span>(EnsDb.Mmusculus.v79, <span class="at">keys =</span> <span class="fu">rownames</span>(allen_ref),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">keytype  =</span> <span class="st">"SYMBOL"</span>, <span class="at">column =</span> <span class="st">"GENEID"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">multiVals =</span> <span class="st">"first"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(allen_ref)<span class="sc">$</span>symbol <span class="ot">&lt;-</span> <span class="fu">rownames</span>(allen_ref)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(allen_ref)<span class="sc">$</span>ens <span class="ot">&lt;-</span> <span class="fu">unname</span>(map)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>allen_ref <span class="ot">&lt;-</span> allen_ref[<span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">rowData</span>(allen_ref)<span class="sc">$</span>ens), ]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(allen_ref) <span class="ot">&lt;-</span> <span class="fu">rowData</span>(allen_ref)<span class="sc">$</span>ens</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Since the reference contains around 1 million cells, the dataset was aggregated across all cells belonging to the same subclass, producing one profile per subclass. Counts are log-normalized afterwards.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>allen_subclass <span class="ot">&lt;-</span> <span class="fu">aggregateAcrossCells</span>(allen_ref, <span class="at">use.assay.type =</span> <span class="st">"counts"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">id =</span> <span class="fu">DataFrame</span>(<span class="at">label =</span> allen_ref<span class="sc">$</span>subclass_label))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>allen_subclass <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(allen.subclass)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Focusing only on CA1-ProS subclass cells, we further aggregate by cluster label to examine finer-grained organization within this hippocampal population.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>allen_ca1_pros <span class="ot">&lt;-</span> allen_ref[, allen_ref<span class="sc">$</span>subclass_label <span class="sc">==</span> <span class="st">"CA1-ProS"</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>allen_ca1_pros_clust <span class="ot">&lt;-</span> <span class="fu">aggregateAcrossCells</span>(allen_ca1_pros,<span class="at">use.assay.type =</span> <span class="st">"counts"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">id =</span> <span class="fu">DataFrame</span>(<span class="at">label =</span> allen_ca1_pros<span class="sc">$</span>cluster_label)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>allen_ca1_pros_clust <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(allen_ca1_pros_clust)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The processed objects are saved for later reuse.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(allen_subclass, allen_ca1_pros_clust,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">file =</span> <span class="st">"allen_10xgenomics_hippo_processed.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="cell-type-annotation-with-singler" class="level1">
+<h1>Cell-type annotation with SingleR</h1>
+<section id="load-query-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="load-query-dataset">Load query dataset</h2>
+<p>Each query dataset was normalized, and Principal Component Analysis (PCA) and t-SNE were computed for each one.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"scelist_allexps.RDS"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome, <span class="cf">function</span>(x) <span class="fu">logNormCounts</span>(x))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">422</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome, <span class="cf">function</span>(x) <span class="fu">runPCA</span>(x, <span class="at">ntop =</span> <span class="fu">length</span>(<span class="fu">rownames</span>(x))))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">422</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome, <span class="cf">function</span>(x) <span class="fu">runTSNE</span>(x, <span class="at">dimred =</span> <span class="st">"PCA"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="singler" class="level2">
+<h2 class="anchored" data-anchor-id="singler">SingleR</h2>
+<p>Cell annotation was computed using the <em>SingleR</em> function from the <code>SingleR</code> package.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pred_subclass <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome, <span class="cf">function</span>(x) <span class="fu">SingleR</span>(x, <span class="at">ref =</span> allen_subclass, <span class="at">labels =</span> allen_subclass<span class="sc">$</span>subclass_label))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>multiome <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(multiome), <span class="cf">function</span>(i) {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  multiome[[i]]<span class="sc">$</span>subclass <span class="ot">&lt;-</span> pred_subclass[[i]]<span class="sc">$</span>labels </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  multiome[[i]]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>For CA1-ProS cells, we annotated the sub-population using the CA1-ProS reference, created previously.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>multiome_ca1_pros <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome, <span class="cf">function</span>(x) x[, x<span class="sc">$</span>subclass <span class="sc">==</span> <span class="st">"CA1-ProS"</span>])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">422</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>multiome_ca1_pros <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome_ca1_pros, <span class="cf">function</span>(x) <span class="fu">runPCA</span>(x, <span class="at">ntop =</span> <span class="fu">length</span>(<span class="fu">rownames</span>(x))))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">422</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>multiome_ca1_pros <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome_ca1_pros, <span class="cf">function</span>(x) <span class="fu">runTSNE</span>(x, <span class="at">dimred =</span> <span class="st">"PCA"</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>pred_ca1_pros_subclust <span class="ot">&lt;-</span> <span class="fu">lapply</span>(multiome_ca1_pros , <span class="cf">function</span>(x) <span class="fu">SingleR</span>(x, <span class="at">ref =</span> allen_ca1_pros_clust, </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                                                                         <span class="at">labels =</span> allen_ca1_pros_clust<span class="sc">$</span>cluster_label))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>multiome_ca1_pros <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(multiome_ca1_pros), <span class="cf">function</span>(i) {</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  multiome_ca1_pros[[i]]<span class="sc">$</span>cluster <span class="ot">&lt;-</span> pred_ca1_pros_subclust[[i]]<span class="sc">$</span>labels </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  multiome_ca1_pros[[i]]<span class="sc">$</span>cluster[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">"-ve"</span>, multiome_ca1_pros[[i]]<span class="sc">$</span>cluster))] <span class="ot">&lt;-</span> <span class="st">"CA1-ve"</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  multiome_ca1_pros[[i]]<span class="sc">$</span>cluster[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">"-do"</span>, multiome_ca1_pros[[i]]<span class="sc">$</span>cluster))] <span class="ot">&lt;-</span> <span class="st">"CA1-do"</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  multiome_ca1_pros[[i]]<span class="sc">$</span>cluster[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">"-ProS"</span>, multiome_ca1_pros[[i]]<span class="sc">$</span>cluster))] <span class="ot">&lt;-</span> <span class="st">"CA1-ProS"</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  multiome_ca1_pros[[i]]<span class="sc">$</span>cluster[<span class="fu">which</span>(<span class="fu">grepl</span>(<span class="st">"_CA1"</span>, multiome_ca1_pros[[i]]<span class="sc">$</span>cluster))] <span class="ot">&lt;-</span> <span class="st">"CA1"</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  multiome_ca1_pros[[i]]</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="visualizing-cell-type-annotations" class="level1">
+<h1>Visualizing Cell Type Annotations</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(scelist<span class="sc">$</span>REP1_S3<span class="sc">$</span>labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: SingleCellExperiment</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: SummarizedExperiment</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: MatrixGenerics</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: matrixStats</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MatrixGenerics'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:matrixStats':
+
+    colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
+    colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
+    colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
+    colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
+    colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
+    colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
+    colWeightedMeans, colWeightedMedians, colWeightedSds,
+    colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
+    rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
+    rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
+    rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
+    rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
+    rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
+    rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
+    rowWeightedSds, rowWeightedVars</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: GenomicRanges</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: stats4</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: BiocGenerics</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'BiocGenerics'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    IQR, mad, sd, var, xtabs</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    anyDuplicated, aperm, append, as.data.frame, basename, cbind,
+    colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find,
+    get, grep, grepl, intersect, is.unsorted, lapply, Map, mapply,
+    match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+    Position, rank, rbind, Reduce, rownames, sapply, setdiff, sort,
+    table, tapply, union, unique, unsplit, which.max, which.min</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: S4Vectors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'S4Vectors'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:utils':
+
+    findMatches</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    expand.grid, I, unname</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: IRanges</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: GenomeInfoDb</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Biobase</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Biobase'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:MatrixGenerics':
+
+    rowMedians</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:matrixStats':
+
+    anyMissing, rowMedians</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Astro       CA1    CA1-do  CA1-ProS    CA1-ve CA2-IG-FC       CA3        DG 
+       21        54       364        25        36        23       113       931 
+     Endo     Lamp5 Micro-PVM     Oligo     Pvalb      Sncg       Sst  SUB-ProS 
+        4        62       318      1080        45        17        67       107 
+      Vip      VLMC 
+       50         8 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prendi i conteggi delle labels per ogni campione</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>label_tables <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce) {</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  tbl <span class="ot">&lt;-</span> <span class="fu">table</span>(sce<span class="sc">$</span>labels)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(tbl)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># aggiungi il nome del campione</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (nm <span class="cf">in</span> <span class="fu">names</span>(label_tables)) {</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  label_tables[[nm]]<span class="sc">$</span>sample <span class="ot">&lt;-</span> nm</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="co"># unisci tutto in un unico data.frame</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, label_tables)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="co"># porta i campioni come colonne, le labels come righe</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'tidyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:S4Vectors':
+
+    expand</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:Biobase':
+
+    combine</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:GenomicRanges':
+
+    intersect, setdiff, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:GenomeInfoDb':
+
+    intersect</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:IRanges':
+
+    collapse, desc, intersect, setdiff, slice, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:S4Vectors':
+
+    first, intersect, rename, setdiff, setequal, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:BiocGenerics':
+
+    combine, intersect, setdiff, union</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:matrixStats':
+
+    count</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>label_matrix <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> sample, <span class="at">values_from =</span> Freq, <span class="at">values_fill =</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Var1)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="co"># rinomina la colonna delle labels</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(label_matrix)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"Label"</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(label_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Label</th>
+<th style="text-align: right;">REP1_S3</th>
+<th style="text-align: right;">REP1_S3SD</th>
+<th style="text-align: right;">REP1_SD</th>
+<th style="text-align: right;">REP1_WT</th>
+<th style="text-align: right;">REP2_S3</th>
+<th style="text-align: right;">REP2_S3SD</th>
+<th style="text-align: right;">REP2_SD</th>
+<th style="text-align: right;">REP2_WT</th>
+<th style="text-align: right;">REP3_S3</th>
+<th style="text-align: right;">REP3_S3SD</th>
+<th style="text-align: right;">REP3_SD</th>
+<th style="text-align: right;">REP3_WT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">354</td>
+<td style="text-align: right;">540</td>
+<td style="text-align: right;">390</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">328</td>
+<td style="text-align: right;">273</td>
+<td style="text-align: right;">388</td>
+<td style="text-align: right;">146</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">106</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">931</td>
+<td style="text-align: right;">1018</td>
+<td style="text-align: right;">1271</td>
+<td style="text-align: right;">856</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">882</td>
+<td style="text-align: right;">598</td>
+<td style="text-align: right;">772</td>
+<td style="text-align: right;">393</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">367</td>
+<td style="text-align: right;">235</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">318</td>
+<td style="text-align: right;">373</td>
+<td style="text-align: right;">421</td>
+<td style="text-align: right;">426</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">427</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">531</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">157</td>
+<td style="text-align: right;">112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">1080</td>
+<td style="text-align: right;">1197</td>
+<td style="text-align: right;">1597</td>
+<td style="text-align: right;">1356</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">1367</td>
+<td style="text-align: right;">1020</td>
+<td style="text-align: right;">1821</td>
+<td style="text-align: right;">521</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">385</td>
+<td style="text-align: right;">417</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">28</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">163</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="sessioninfo" class="level1">
+<h1>SessionInfo</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.3.3 (2024-02-29)
+Platform: aarch64-unknown-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/aarch64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/aarch64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Europe/Zurich
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] dplyr_1.1.4                 tidyr_1.3.1                
+ [3] SingleCellExperiment_1.24.0 SummarizedExperiment_1.32.0
+ [5] Biobase_2.62.0              GenomicRanges_1.54.1       
+ [7] GenomeInfoDb_1.38.8         IRanges_2.36.0             
+ [9] S4Vectors_0.40.2            BiocGenerics_0.48.1        
+[11] MatrixGenerics_1.14.0       matrixStats_1.3.0          
+
+loaded via a namespace (and not attached):
+ [1] Matrix_1.6-5            jsonlite_1.8.8          compiler_4.3.3         
+ [4] crayon_1.5.2            tidyselect_1.2.1        bitops_1.0-7           
+ [7] yaml_2.3.8              fastmap_1.1.1           lattice_0.22-6         
+[10] R6_2.5.1                XVector_0.42.0          S4Arrays_1.2.1         
+[13] generics_0.1.3          knitr_1.46              htmlwidgets_1.6.4      
+[16] tibble_3.2.1            DelayedArray_0.28.0     GenomeInfoDbData_1.2.11
+[19] pillar_1.9.0            rlang_1.1.3             utf8_1.2.4             
+[22] xfun_0.43               SparseArray_1.2.4       cli_3.6.2              
+[25] withr_3.0.0             magrittr_2.0.3          zlibbioc_1.48.2        
+[28] digest_0.6.35           grid_4.3.3              rstudioapi_0.16.0      
+[31] lifecycle_1.0.4         vctrs_0.6.5             glue_1.7.0             
+[34] evaluate_0.23           abind_1.4-5             RCurl_1.98-1.14        
+[37] fansi_1.0.6             purrr_1.0.2             rmarkdown_2.26         
+[40] pkgconfig_2.0.3         tools_4.3.3             htmltools_0.5.8.1      </code></pre>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

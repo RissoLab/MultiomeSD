@@ -6,6 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Dario Righelli">
+<meta name="dcterms.date" content="2025-08-25">
 
 <title>10x-Multiome Sleep Deprivation Analysis - Quality Control</title>
 <style>
@@ -19,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -62,6 +98,8 @@ ul.task-list li input[type="checkbox"] {
 
 
 <meta property="og:title" content="10x-Multiome Sleep Deprivation Analysis - Quality Control">
+<meta property="og:description" content="">
+<meta property="og:image" content="V02_QC_files/figure-html/plots-1.png">
 <meta property="og:site-name" content="10x-Multiome Sleep Deprivation Analysis">
 <meta property="og:locale" content="en_US">
 </head>
@@ -92,6 +130,22 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Articles</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-articles">    
+        <li>
+    <a class="dropdown-item" href="../vignettes/v01_Data_loading.html" rel="" target="">
+ <span class="dropdown-text">Data Loading</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v02_QC.html" rel="" target="">
+ <span class="dropdown-text">Quality Control</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v03_CellType.html" rel="" target="">
+ <span class="dropdown-text">Cell Type Annotation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../vignettes/v04_Doublets.html" rel="" target="">
+ <span class="dropdown-text">Doublets Identification</span></a>
+  </li>  
         <li>
     <a class="dropdown-item" href="../vignettes/v05_DE.html" rel="" target="">
  <span class="dropdown-text">DEGs Wild Type</span></a>
@@ -138,7 +192,24 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-libraries-and-helper-functions" id="toc-load-libraries-and-helper-functions" class="nav-link active" data-scroll-target="#load-libraries-and-helper-functions">Load libraries and helper functions</a>
+  <ul class="collapse">
+  <li><a href="#load-the-dataset" id="toc-load-the-dataset" class="nav-link" data-scroll-target="#load-the-dataset">Load the dataset</a></li>
+  <li><a href="#define-cell-types-and-compute-qc-metrics" id="toc-define-cell-types-and-compute-qc-metrics" class="nav-link" data-scroll-target="#define-cell-types-and-compute-qc-metrics">Define cell types and compute QC metrics</a></li>
+  </ul></li>
+  <li><a href="#number-of-cells-by-metrics" id="toc-number-of-cells-by-metrics" class="nav-link" data-scroll-target="#number-of-cells-by-metrics">Number of cells by metrics</a></li>
+  <li><a href="#number-of-cells-by-metrics-and-cell-types" id="toc-number-of-cells-by-metrics-and-cell-types" class="nav-link" data-scroll-target="#number-of-cells-by-metrics-and-cell-types">Number of cells by metrics and cell types</a>
+  <ul class="collapse">
+  <li><a href="#convert-logical-metadata-columns" id="toc-convert-logical-metadata-columns" class="nav-link" data-scroll-target="#convert-logical-metadata-columns">Convert logical metadata columns</a></li>
+  </ul></li>
+  <li><a href="#filtered-vs-unfiltered-cells" id="toc-filtered-vs-unfiltered-cells" class="nav-link" data-scroll-target="#filtered-vs-unfiltered-cells">Filtered vs unfiltered cells</a></li>
+  <li><a href="#session-info" id="toc-session-info" class="nav-link" data-scroll-target="#session-info">Session Info</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -152,7 +223,19 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dario Righelli </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 25, 2025</p>
+    </div>
+  </div>
   
     
   </div>
@@ -160,8 +243,3262 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="load-libraries-and-helper-functions" class="level1">
+<h1>Load libraries and helper functions</h1>
+<p>This section loads the required R packages for single-cell analysis and sources custom filtering utilities.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scran)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TENxMultiomeTools)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"~/MultiomeSD/R/filterCells.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="load-the-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="load-the-dataset">Load the dataset</h2>
+<p>Here we load a list of <code>SingleCellExperiment</code> objects (samples), either filtered/annotated or unfiltered.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"~/Downloads/multiome_data/data/scelist_filt_anno_dblts_tsne.rds"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Dropping ATAC for memory consumption</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce){ <span class="fu">altExp</span>(sce) <span class="ot">&lt;-</span> <span class="cn">NULL</span>; sce})</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">gc</span>())</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># scelist &lt;- readRDS("~/Downloads/multiome_data/data/scelist_unfiltered.RDS")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="define-cell-types-and-compute-qc-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="define-cell-types-and-compute-qc-metrics">Define cell types and compute QC metrics</h2>
+<p>This section collects all subclusters across samples, builds helper vectors of names, and computes QC filtering metrics (RNA + ATAC) for each dataset.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ct <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(<span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce) {<span class="fu">unique</span>(sce<span class="sc">$</span>subcluster)})))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># not computing metrics during compilation for memory problems </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># scelist &lt;- lapply(scelist, computeSignacMetrics) # &gt; needs ATAC</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, computeFilterCellsMetrics, <span class="at">metric=</span><span class="st">"both"</span>, <span class="at">highQuant=</span><span class="st">"95%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="number-of-cells-by-metrics" class="level1">
+<h1>Number of cells by metrics</h1>
+<p>This section summarizes the number of cells passing each quality-control metric (ATAC counts, RNA counts, features, nucleosome signal, TSS enrichment, Signac).</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sf <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(scelist), , <span class="at">ncol=</span><span class="dv">7</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> scelist[[i]]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    tot <span class="ot">&lt;-</span> <span class="fu">dim</span>(sce)[<span class="dv">2</span>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    natac <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nCount_ATAC_passed)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    nrna <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nCount_RNA_passed)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    nfea <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nFeature_RNA_passed)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    nnucl <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nucleosome_passed)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    ntss <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>TSS_passed)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    nsign <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>in_signac)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    sf[i,] <span class="ot">&lt;-</span> <span class="fu">c</span>(tot, natac, nrna, nfea, nnucl, ntss, nsign)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sf) <span class="ot">&lt;-</span> <span class="fu">names</span>(scelist)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Starting"</span>, <span class="st">"ATAC_s"</span>, <span class="st">"RNA_s"</span>, <span class="st">"Feature_s"</span>,  <span class="st">"Nucleosome_s"</span>, <span class="st">"TSS_s"</span>, <span class="st">"Signac"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>sfd <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(sf)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sfd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">REP1_S3</td>
+<td style="text-align: right;">6337</td>
+<td style="text-align: right;">5703</td>
+<td style="text-align: right;">5701</td>
+<td style="text-align: right;">6020</td>
+<td style="text-align: right;">6335</td>
+<td style="text-align: right;">6310</td>
+<td style="text-align: right;">5210</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REP1_S3SD</td>
+<td style="text-align: right;">8648</td>
+<td style="text-align: right;">7782</td>
+<td style="text-align: right;">7778</td>
+<td style="text-align: right;">8210</td>
+<td style="text-align: right;">8648</td>
+<td style="text-align: right;">8621</td>
+<td style="text-align: right;">7071</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REP1_SD</td>
+<td style="text-align: right;">13614</td>
+<td style="text-align: right;">12252</td>
+<td style="text-align: right;">12250</td>
+<td style="text-align: right;">12929</td>
+<td style="text-align: right;">13612</td>
+<td style="text-align: right;">13469</td>
+<td style="text-align: right;">11138</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REP1_WT</td>
+<td style="text-align: right;">8796</td>
+<td style="text-align: right;">7915</td>
+<td style="text-align: right;">7915</td>
+<td style="text-align: right;">8354</td>
+<td style="text-align: right;">8796</td>
+<td style="text-align: right;">8737</td>
+<td style="text-align: right;">7203</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REP2_S3</td>
+<td style="text-align: right;">1124</td>
+<td style="text-align: right;">1010</td>
+<td style="text-align: right;">1010</td>
+<td style="text-align: right;">1067</td>
+<td style="text-align: right;">1122</td>
+<td style="text-align: right;">1123</td>
+<td style="text-align: right;">919</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REP2_S3SD</td>
+<td style="text-align: right;">8345</td>
+<td style="text-align: right;">7507</td>
+<td style="text-align: right;">7509</td>
+<td style="text-align: right;">7924</td>
+<td style="text-align: right;">8343</td>
+<td style="text-align: right;">8304</td>
+<td style="text-align: right;">6867</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REP2_SD</td>
+<td style="text-align: right;">5955</td>
+<td style="text-align: right;">5359</td>
+<td style="text-align: right;">5359</td>
+<td style="text-align: right;">5656</td>
+<td style="text-align: right;">5955</td>
+<td style="text-align: right;">5933</td>
+<td style="text-align: right;">4893</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REP2_WT</td>
+<td style="text-align: right;">9680</td>
+<td style="text-align: right;">8711</td>
+<td style="text-align: right;">8708</td>
+<td style="text-align: right;">9196</td>
+<td style="text-align: right;">9674</td>
+<td style="text-align: right;">9622</td>
+<td style="text-align: right;">7931</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REP3_S3</td>
+<td style="text-align: right;">3429</td>
+<td style="text-align: right;">3085</td>
+<td style="text-align: right;">3083</td>
+<td style="text-align: right;">3255</td>
+<td style="text-align: right;">3427</td>
+<td style="text-align: right;">3420</td>
+<td style="text-align: right;">2837</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REP3_S3SD</td>
+<td style="text-align: right;">1883</td>
+<td style="text-align: right;">1693</td>
+<td style="text-align: right;">1693</td>
+<td style="text-align: right;">1787</td>
+<td style="text-align: right;">1882</td>
+<td style="text-align: right;">1881</td>
+<td style="text-align: right;">1534</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REP3_SD</td>
+<td style="text-align: right;">2839</td>
+<td style="text-align: right;">2555</td>
+<td style="text-align: right;">2555</td>
+<td style="text-align: right;">2697</td>
+<td style="text-align: right;">2836</td>
+<td style="text-align: right;">2832</td>
+<td style="text-align: right;">2338</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REP3_WT</td>
+<td style="text-align: right;">2090</td>
+<td style="text-align: right;">1880</td>
+<td style="text-align: right;">1880</td>
+<td style="text-align: right;">1985</td>
+<td style="text-align: right;">2089</td>
+<td style="text-align: right;">2084</td>
+<td style="text-align: right;">1721</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="number-of-cells-by-metrics-and-cell-types" class="level1">
+<h1>Number of cells by metrics and cell types</h1>
+<p>Here we break down the same QC metrics, but stratified by <strong>cell type</strong> within each sample, to see how filtering affects individual subclusters.</p>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    sc <span class="ot">&lt;-</span> scelist[[i]]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    idxct <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">unique</span>(sc<span class="sc">$</span>subcluster) <span class="sc">%in%</span> ct)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    sf <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow=</span><span class="fu">length</span>(idxct), <span class="at">ncol=</span><span class="dv">7</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    k <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> <span class="fu">seq_along</span>(ct))</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        idx <span class="ot">&lt;-</span> <span class="fu">which</span>(sc<span class="sc">$</span>subcluster<span class="sc">==</span>ct[j])</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">length</span>(idx)<span class="sc">==</span><span class="dv">0</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="fu">names</span>(scelist)[i], <span class="st">" has not any cells for "</span>, ct[j], <span class="st">" cell type</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">next</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        sce <span class="ot">&lt;-</span> sc[,idx]</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        tot <span class="ot">&lt;-</span> <span class="fu">dim</span>(sce)[<span class="dv">2</span>]</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        natac <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nCount_ATAC_passed)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        nrna <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nCount_RNA_passed)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        nfea <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nFeature_RNA_passed)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        nnucl <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>nucleosome_passed)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        ntss <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>TSS_passed)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        nsign <span class="ot">&lt;-</span> <span class="fu">sum</span>(sce<span class="sc">$</span>in_signac)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        sf[k,] <span class="ot">&lt;-</span> <span class="fu">c</span>(tot, natac, nrna, nfea, nnucl, ntss, nsign)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        k <span class="ot">&lt;-</span> k<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rownames</span>(sf) <span class="ot">&lt;-</span> ct[idxct]</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(sf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Starting"</span>, <span class="st">"ATAC_s"</span>, <span class="st">"RNA_s"</span>, <span class="st">"Feature_s"</span>, <span class="st">"Nucleosome_s"</span>, <span class="st">"TSS_s"</span>, <span class="st">"Signac"</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    sfd <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(sf)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Sample "</span>, <span class="fu">names</span>(scelist)[i], <span class="st">" Cell Type "</span>, ct[j],<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(knitr<span class="sc">::</span><span class="fu">kable</span>(sfd))</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<p>[1] “REP1_S3 has not any cells for Sst Chodl cell type” [1] “Sample REP1_S3 Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">1565</td>
+<td style="text-align: right;">1466</td>
+<td style="text-align: right;">1358</td>
+<td style="text-align: right;">1338</td>
+<td style="text-align: right;">1565</td>
+<td style="text-align: right;">1562</td>
+<td style="text-align: right;">1236</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">553</td>
+<td style="text-align: right;">493</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">552</td>
+<td style="text-align: right;">553</td>
+<td style="text-align: right;">552</td>
+<td style="text-align: right;">473</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">487</td>
+<td style="text-align: right;">464</td>
+<td style="text-align: right;">385</td>
+<td style="text-align: right;">413</td>
+<td style="text-align: right;">487</td>
+<td style="text-align: right;">487</td>
+<td style="text-align: right;">365</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">567</td>
+<td style="text-align: right;">509</td>
+<td style="text-align: right;">544</td>
+<td style="text-align: right;">566</td>
+<td style="text-align: right;">567</td>
+<td style="text-align: right;">563</td>
+<td style="text-align: right;">497</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">518</td>
+<td style="text-align: right;">421</td>
+<td style="text-align: right;">391</td>
+<td style="text-align: right;">516</td>
+<td style="text-align: right;">517</td>
+<td style="text-align: right;">515</td>
+<td style="text-align: right;">348</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">1275</td>
+<td style="text-align: right;">1155</td>
+<td style="text-align: right;">1251</td>
+<td style="text-align: right;">1274</td>
+<td style="text-align: right;">1275</td>
+<td style="text-align: right;">1265</td>
+<td style="text-align: right;">1148</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">240</td>
+<td style="text-align: right;">255</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">226</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">89</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">112</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">92</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">303</td>
+<td style="text-align: right;">360</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">357</td>
+<td style="text-align: right;">269</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">69</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">97</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">89</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">119</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">56</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP1_S3SD Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">1770</td>
+<td style="text-align: right;">1679</td>
+<td style="text-align: right;">1517</td>
+<td style="text-align: right;">1485</td>
+<td style="text-align: right;">1770</td>
+<td style="text-align: right;">1765</td>
+<td style="text-align: right;">1393</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">615</td>
+<td style="text-align: right;">556</td>
+<td style="text-align: right;">590</td>
+<td style="text-align: right;">613</td>
+<td style="text-align: right;">615</td>
+<td style="text-align: right;">613</td>
+<td style="text-align: right;">541</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">587</td>
+<td style="text-align: right;">560</td>
+<td style="text-align: right;">454</td>
+<td style="text-align: right;">490</td>
+<td style="text-align: right;">587</td>
+<td style="text-align: right;">587</td>
+<td style="text-align: right;">430</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">1347</td>
+<td style="text-align: right;">1204</td>
+<td style="text-align: right;">1285</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">1347</td>
+<td style="text-align: right;">1341</td>
+<td style="text-align: right;">1163</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">560</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">414</td>
+<td style="text-align: right;">555</td>
+<td style="text-align: right;">560</td>
+<td style="text-align: right;">559</td>
+<td style="text-align: right;">342</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">1621</td>
+<td style="text-align: right;">1486</td>
+<td style="text-align: right;">1583</td>
+<td style="text-align: right;">1610</td>
+<td style="text-align: right;">1621</td>
+<td style="text-align: right;">1616</td>
+<td style="text-align: right;">1463</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">365</td>
+<td style="text-align: right;">324</td>
+<td style="text-align: right;">333</td>
+<td style="text-align: right;">359</td>
+<td style="text-align: right;">365</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">304</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">163</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">196</td>
+<td style="text-align: right;">202</td>
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">180</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">611</td>
+<td style="text-align: right;">492</td>
+<td style="text-align: right;">524</td>
+<td style="text-align: right;">608</td>
+<td style="text-align: right;">611</td>
+<td style="text-align: right;">608</td>
+<td style="text-align: right;">449</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">66</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">152</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">150</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">115</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">207</td>
+<td style="text-align: right;">181</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">207</td>
+<td style="text-align: right;">206</td>
+<td style="text-align: right;">175</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">49</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP1_SD Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">2375</td>
+<td style="text-align: right;">2265</td>
+<td style="text-align: right;">1947</td>
+<td style="text-align: right;">1895</td>
+<td style="text-align: right;">2375</td>
+<td style="text-align: right;">2366</td>
+<td style="text-align: right;">1781</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">1104</td>
+<td style="text-align: right;">975</td>
+<td style="text-align: right;">1031</td>
+<td style="text-align: right;">1100</td>
+<td style="text-align: right;">1104</td>
+<td style="text-align: right;">1098</td>
+<td style="text-align: right;">941</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">724</td>
+<td style="text-align: right;">674</td>
+<td style="text-align: right;">575</td>
+<td style="text-align: right;">619</td>
+<td style="text-align: right;">724</td>
+<td style="text-align: right;">721</td>
+<td style="text-align: right;">530</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">1084</td>
+<td style="text-align: right;">988</td>
+<td style="text-align: right;">1013</td>
+<td style="text-align: right;">1074</td>
+<td style="text-align: right;">1083</td>
+<td style="text-align: right;">1069</td>
+<td style="text-align: right;">934</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">1389</td>
+<td style="text-align: right;">1137</td>
+<td style="text-align: right;">1117</td>
+<td style="text-align: right;">1380</td>
+<td style="text-align: right;">1389</td>
+<td style="text-align: right;">1365</td>
+<td style="text-align: right;">966</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">2279</td>
+<td style="text-align: right;">2073</td>
+<td style="text-align: right;">2222</td>
+<td style="text-align: right;">2262</td>
+<td style="text-align: right;">2279</td>
+<td style="text-align: right;">2257</td>
+<td style="text-align: right;">2039</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">1207</td>
+<td style="text-align: right;">1098</td>
+<td style="text-align: right;">1142</td>
+<td style="text-align: right;">1189</td>
+<td style="text-align: right;">1207</td>
+<td style="text-align: right;">1186</td>
+<td style="text-align: right;">1047</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">152</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">267</td>
+<td style="text-align: right;">273</td>
+<td style="text-align: right;">309</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">304</td>
+<td style="text-align: right;">247</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">1909</td>
+<td style="text-align: right;">1662</td>
+<td style="text-align: right;">1778</td>
+<td style="text-align: right;">1899</td>
+<td style="text-align: right;">1909</td>
+<td style="text-align: right;">1880</td>
+<td style="text-align: right;">1599</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">82</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">148</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">154</td>
+<td style="text-align: right;">132</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">212</td>
+<td style="text-align: right;">191</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">208</td>
+<td style="text-align: right;">212</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">186</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">186</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">186</td>
+<td style="text-align: right;">186</td>
+<td style="text-align: right;">157</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">239</td>
+<td style="text-align: right;">251</td>
+<td style="text-align: right;">262</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">234</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">94</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP1_WT Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">1906</td>
+<td style="text-align: right;">1710</td>
+<td style="text-align: right;">1685</td>
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">1569</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">720</td>
+<td style="text-align: right;">637</td>
+<td style="text-align: right;">688</td>
+<td style="text-align: right;">720</td>
+<td style="text-align: right;">720</td>
+<td style="text-align: right;">714</td>
+<td style="text-align: right;">620</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">634</td>
+<td style="text-align: right;">612</td>
+<td style="text-align: right;">509</td>
+<td style="text-align: right;">539</td>
+<td style="text-align: right;">634</td>
+<td style="text-align: right;">633</td>
+<td style="text-align: right;">486</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">1160</td>
+<td style="text-align: right;">1059</td>
+<td style="text-align: right;">1112</td>
+<td style="text-align: right;">1160</td>
+<td style="text-align: right;">1160</td>
+<td style="text-align: right;">1149</td>
+<td style="text-align: right;">1034</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">544</td>
+<td style="text-align: right;">443</td>
+<td style="text-align: right;">401</td>
+<td style="text-align: right;">543</td>
+<td style="text-align: right;">544</td>
+<td style="text-align: right;">540</td>
+<td style="text-align: right;">345</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">1548</td>
+<td style="text-align: right;">1412</td>
+<td style="text-align: right;">1515</td>
+<td style="text-align: right;">1542</td>
+<td style="text-align: right;">1548</td>
+<td style="text-align: right;">1535</td>
+<td style="text-align: right;">1396</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">336</td>
+<td style="text-align: right;">338</td>
+<td style="text-align: right;">363</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">360</td>
+<td style="text-align: right;">316</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">163</td>
+<td style="text-align: right;">173</td>
+<td style="text-align: right;">174</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">142</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">216</td>
+<td style="text-align: right;">211</td>
+<td style="text-align: right;">156</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">677</td>
+<td style="text-align: right;">526</td>
+<td style="text-align: right;">573</td>
+<td style="text-align: right;">677</td>
+<td style="text-align: right;">677</td>
+<td style="text-align: right;">673</td>
+<td style="text-align: right;">495</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">114</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">110</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">177</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">75</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “REP2_S3 has not any cells for SMC-Peri cell type” [1] “Sample REP2_S3 Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">250</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">222</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">207</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">92</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">102</td>
+<td style="text-align: right;">87</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">53</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">213</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">223</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">206</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">68</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">27</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP2_S3SD Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">2044</td>
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">1785</td>
+<td style="text-align: right;">1754</td>
+<td style="text-align: right;">2044</td>
+<td style="text-align: right;">2039</td>
+<td style="text-align: right;">1638</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">549</td>
+<td style="text-align: right;">498</td>
+<td style="text-align: right;">517</td>
+<td style="text-align: right;">549</td>
+<td style="text-align: right;">549</td>
+<td style="text-align: right;">547</td>
+<td style="text-align: right;">483</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">614</td>
+<td style="text-align: right;">557</td>
+<td style="text-align: right;">592</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">524</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">1111</td>
+<td style="text-align: right;">1009</td>
+<td style="text-align: right;">1063</td>
+<td style="text-align: right;">1105</td>
+<td style="text-align: right;">1110</td>
+<td style="text-align: right;">1106</td>
+<td style="text-align: right;">980</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">361</td>
+<td style="text-align: right;">354</td>
+<td style="text-align: right;">432</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">429</td>
+<td style="text-align: right;">314</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">1376</td>
+<td style="text-align: right;">1246</td>
+<td style="text-align: right;">1328</td>
+<td style="text-align: right;">1362</td>
+<td style="text-align: right;">1376</td>
+<td style="text-align: right;">1364</td>
+<td style="text-align: right;">1217</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">403</td>
+<td style="text-align: right;">364</td>
+<td style="text-align: right;">362</td>
+<td style="text-align: right;">381</td>
+<td style="text-align: right;">403</td>
+<td style="text-align: right;">401</td>
+<td style="text-align: right;">333</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">122</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">275</td>
+<td style="text-align: right;">223</td>
+<td style="text-align: right;">231</td>
+<td style="text-align: right;">274</td>
+<td style="text-align: right;">275</td>
+<td style="text-align: right;">274</td>
+<td style="text-align: right;">202</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">676</td>
+<td style="text-align: right;">524</td>
+<td style="text-align: right;">530</td>
+<td style="text-align: right;">671</td>
+<td style="text-align: right;">675</td>
+<td style="text-align: right;">673</td>
+<td style="text-align: right;">467</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">97</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">88</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">116</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">121</td>
+<td style="text-align: right;">106</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">112</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">170</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">150</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP2_SD Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">1533</td>
+<td style="text-align: right;">1435</td>
+<td style="text-align: right;">1331</td>
+<td style="text-align: right;">1302</td>
+<td style="text-align: right;">1533</td>
+<td style="text-align: right;">1529</td>
+<td style="text-align: right;">1212</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">412</td>
+<td style="text-align: right;">366</td>
+<td style="text-align: right;">396</td>
+<td style="text-align: right;">412</td>
+<td style="text-align: right;">412</td>
+<td style="text-align: right;">410</td>
+<td style="text-align: right;">359</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">528</td>
+<td style="text-align: right;">493</td>
+<td style="text-align: right;">437</td>
+<td style="text-align: right;">471</td>
+<td style="text-align: right;">528</td>
+<td style="text-align: right;">528</td>
+<td style="text-align: right;">408</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">833</td>
+<td style="text-align: right;">749</td>
+<td style="text-align: right;">784</td>
+<td style="text-align: right;">831</td>
+<td style="text-align: right;">833</td>
+<td style="text-align: right;">830</td>
+<td style="text-align: right;">721</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">455</td>
+<td style="text-align: right;">380</td>
+<td style="text-align: right;">370</td>
+<td style="text-align: right;">454</td>
+<td style="text-align: right;">455</td>
+<td style="text-align: right;">453</td>
+<td style="text-align: right;">329</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">745</td>
+<td style="text-align: right;">691</td>
+<td style="text-align: right;">727</td>
+<td style="text-align: right;">743</td>
+<td style="text-align: right;">745</td>
+<td style="text-align: right;">742</td>
+<td style="text-align: right;">680</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">207</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">218</td>
+<td style="text-align: right;">187</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">133</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">141</td>
+<td style="text-align: right;">123</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">138</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">124</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">424</td>
+<td style="text-align: right;">340</td>
+<td style="text-align: right;">354</td>
+<td style="text-align: right;">422</td>
+<td style="text-align: right;">424</td>
+<td style="text-align: right;">421</td>
+<td style="text-align: right;">316</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">61</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">94</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">130</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">136</td>
+<td style="text-align: right;">135</td>
+<td style="text-align: right;">118</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP2_WT Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">2596</td>
+<td style="text-align: right;">2471</td>
+<td style="text-align: right;">2363</td>
+<td style="text-align: right;">2367</td>
+<td style="text-align: right;">2595</td>
+<td style="text-align: right;">2591</td>
+<td style="text-align: right;">2228</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">722</td>
+<td style="text-align: right;">636</td>
+<td style="text-align: right;">682</td>
+<td style="text-align: right;">717</td>
+<td style="text-align: right;">722</td>
+<td style="text-align: right;">718</td>
+<td style="text-align: right;">616</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">752</td>
+<td style="text-align: right;">716</td>
+<td style="text-align: right;">659</td>
+<td style="text-align: right;">676</td>
+<td style="text-align: right;">752</td>
+<td style="text-align: right;">751</td>
+<td style="text-align: right;">624</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">1519</td>
+<td style="text-align: right;">1367</td>
+<td style="text-align: right;">1409</td>
+<td style="text-align: right;">1495</td>
+<td style="text-align: right;">1518</td>
+<td style="text-align: right;">1507</td>
+<td style="text-align: right;">1287</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">579</td>
+<td style="text-align: right;">468</td>
+<td style="text-align: right;">435</td>
+<td style="text-align: right;">569</td>
+<td style="text-align: right;">579</td>
+<td style="text-align: right;">573</td>
+<td style="text-align: right;">366</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">1226</td>
+<td style="text-align: right;">1108</td>
+<td style="text-align: right;">1166</td>
+<td style="text-align: right;">1187</td>
+<td style="text-align: right;">1226</td>
+<td style="text-align: right;">1213</td>
+<td style="text-align: right;">1056</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">388</td>
+<td style="text-align: right;">337</td>
+<td style="text-align: right;">328</td>
+<td style="text-align: right;">358</td>
+<td style="text-align: right;">386</td>
+<td style="text-align: right;">383</td>
+<td style="text-align: right;">290</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">226</td>
+<td style="text-align: right;">198</td>
+<td style="text-align: right;">205</td>
+<td style="text-align: right;">218</td>
+<td style="text-align: right;">225</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">186</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">145</td>
+<td style="text-align: right;">176</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">122</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">612</td>
+<td style="text-align: right;">493</td>
+<td style="text-align: right;">499</td>
+<td style="text-align: right;">580</td>
+<td style="text-align: right;">612</td>
+<td style="text-align: right;">608</td>
+<td style="text-align: right;">422</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">88</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">93</td>
+<td style="text-align: right;">85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">163</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">155</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">166</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">171</td>
+<td style="text-align: right;">152</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">236</td>
+<td style="text-align: right;">249</td>
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">274</td>
+<td style="text-align: right;">217</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">78</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">91</td>
+<td style="text-align: right;">73</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP3_S3 Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">767</td>
+<td style="text-align: right;">709</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">651</td>
+<td style="text-align: right;">766</td>
+<td style="text-align: right;">767</td>
+<td style="text-align: right;">596</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">225</td>
+<td style="text-align: right;">244</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">221</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">254</td>
+<td style="text-align: right;">219</td>
+<td style="text-align: right;">229</td>
+<td style="text-align: right;">264</td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">208</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">423</td>
+<td style="text-align: right;">380</td>
+<td style="text-align: right;">403</td>
+<td style="text-align: right;">423</td>
+<td style="text-align: right;">423</td>
+<td style="text-align: right;">423</td>
+<td style="text-align: right;">371</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">238</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">277</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">210</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">514</td>
+<td style="text-align: right;">469</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">510</td>
+<td style="text-align: right;">514</td>
+<td style="text-align: right;">511</td>
+<td style="text-align: right;">462</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">65</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">63</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">51</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">253</td>
+<td style="text-align: right;">263</td>
+<td style="text-align: right;">306</td>
+<td style="text-align: right;">310</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">235</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">52</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">61</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">47</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: right;">124</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “REP3_S3SD has not any cells for VLMC cell type” [1] “REP3_S3SD has not any cells for SMC-Peri cell type” [1] “Sample REP3_S3SD Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">430</td>
+<td style="text-align: right;">408</td>
+<td style="text-align: right;">374</td>
+<td style="text-align: right;">367</td>
+<td style="text-align: right;">429</td>
+<td style="text-align: right;">430</td>
+<td style="text-align: right;">348</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">119</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">105</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">129</td>
+<td style="text-align: right;">99</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">246</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">118</td>
+<td style="text-align: right;">64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">307</td>
+<td style="text-align: right;">332</td>
+<td style="text-align: right;">339</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">344</td>
+<td style="text-align: right;">299</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">68</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">77</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">61</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">32</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">35</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">101</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">94</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">38</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “Sample REP3_SD Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">483</td>
+<td style="text-align: right;">456</td>
+<td style="text-align: right;">442</td>
+<td style="text-align: right;">437</td>
+<td style="text-align: right;">482</td>
+<td style="text-align: right;">483</td>
+<td style="text-align: right;">409</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">266</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">251</td>
+<td style="text-align: right;">266</td>
+<td style="text-align: right;">266</td>
+<td style="text-align: right;">265</td>
+<td style="text-align: right;">234</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">196</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: right;">190</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">176</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">255</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">269</td>
+<td style="text-align: right;">276</td>
+<td style="text-align: right;">275</td>
+<td style="text-align: right;">238</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">261</td>
+<td style="text-align: right;">209</td>
+<td style="text-align: right;">199</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">261</td>
+<td style="text-align: right;">260</td>
+<td style="text-align: right;">176</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">484</td>
+<td style="text-align: right;">440</td>
+<td style="text-align: right;">472</td>
+<td style="text-align: right;">477</td>
+<td style="text-align: right;">482</td>
+<td style="text-align: right;">481</td>
+<td style="text-align: right;">430</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">159</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">158</td>
+<td style="text-align: right;">179</td>
+<td style="text-align: right;">178</td>
+<td style="text-align: right;">130</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">44</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">246</td>
+<td style="text-align: right;">257</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">292</td>
+<td style="text-align: right;">227</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">35</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">43</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">39</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">77</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sst Chodl</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>[1] “REP3_WT has not any cells for SMC-Peri cell type” [1] “Sample REP3_WT Cell Type Sst Chodl”</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 19%">
+<col style="width: 8%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Starting</th>
+<th style="text-align: right;">ATAC_s</th>
+<th style="text-align: right;">RNA_s</th>
+<th style="text-align: right;">Feature_s</th>
+<th style="text-align: right;">Nucleosome_s</th>
+<th style="text-align: right;">TSS_s</th>
+<th style="text-align: right;">Signac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Oligo</td>
+<td style="text-align: right;">545</td>
+<td style="text-align: right;">511</td>
+<td style="text-align: right;">487</td>
+<td style="text-align: right;">484</td>
+<td style="text-align: right;">545</td>
+<td style="text-align: right;">545</td>
+<td style="text-align: right;">451</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-do</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">145</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Micro-PVM</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">139</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">127</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">119</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SUB-ProS</td>
+<td style="text-align: right;">239</td>
+<td style="text-align: right;">213</td>
+<td style="text-align: right;">221</td>
+<td style="text-align: right;">233</td>
+<td style="text-align: right;">239</td>
+<td style="text-align: right;">237</td>
+<td style="text-align: right;">203</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA3</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">125</td>
+<td style="text-align: right;">110</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">99</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DG</td>
+<td style="text-align: right;">321</td>
+<td style="text-align: right;">287</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">319</td>
+<td style="text-align: right;">320</td>
+<td style="text-align: right;">320</td>
+<td style="text-align: right;">284</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA2-IG-FC</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">62</td>
+<td style="text-align: right;">69</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">74</td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">58</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pvalb</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">38</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CA1-ProS</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">48</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">113</td>
+<td style="text-align: right;">123</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">143</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">102</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Astro</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CA1-ve</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lamp5</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">41</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vip</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sst</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">53</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sncg</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">VLMC</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Endo</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMC-Peri</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<section id="convert-logical-metadata-columns" class="level2">
+<h2 class="anchored" data-anchor-id="convert-logical-metadata-columns">Convert logical metadata columns</h2>
+<p>This section converts all logical (TRUE/FALSE) metadata columns into string labels (“1. TRUE” / “2. FALSE”) for easier tabulation and plotting.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>scelist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(scelist, <span class="cf">function</span>(sce) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(<span class="fu">colData</span>(sce))[<span class="dv">2</span>])</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>( <span class="fu">is.logical</span>(<span class="fu">colData</span>(sce)[,i]) )</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="fu">colData</span>(sce)[,i] <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">colData</span>(sce)[,i]<span class="sc">==</span><span class="cn">TRUE</span>, <span class="st">"1. TRUE"</span>, <span class="st">"2. FALSE"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(sce)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="filtered-vs-unfiltered-cells" class="level1">
+<h1>Filtered vs unfiltered cells</h1>
+<p>This section generates diagnostic plots showing the distribution of cells <strong>before and after filtering</strong>, using either all QC filters or only the Signac filter.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>glist <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">seq_along</span>(scelist), <span class="cf">function</span>(i)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> scelist[[i]]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plotFilteredCells</span>(sce, <span class="at">filterCellsBy=</span><span class="st">"custom"</span>, <span class="at">customColName=</span><span class="st">"in_signac"</span>, <span class="at">name=</span><span class="fu">paste0</span>(<span class="fu">names</span>(scelist)[i], <span class="st">" sign_filtered"</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">seq_along</span>(scelist), <span class="cf">function</span>(i)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    sce <span class="ot">&lt;-</span> scelist[[i]]</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">plotFilteredCells</span>(sce, <span class="at">filterCellsBy=</span><span class="st">"all"</span>, <span class="at">name=</span><span class="fu">paste0</span>(<span class="fu">names</span>(scelist)[i], <span class="st">" unfiltered"</span>)))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">plotFilteredCells</span>(sce, <span class="at">filterCellsBy=</span><span class="st">"custom"</span>, <span class="at">customColName=</span><span class="st">"in_signac"</span>, <span class="at">name=</span><span class="fu">paste0</span>(<span class="fu">names</span>(scelist)[i], <span class="st">" signac_filtered"</span>)))</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-6.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-7.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-8.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-9.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-10.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-11.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-12.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-13.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-14.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-15.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-16.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-17.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-18.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-19.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-20.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-21.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-22.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-23.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-24.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-25.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[2]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-26.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[3]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-27.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[4]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-28.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[5]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-29.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[6]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-30.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[7]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-31.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[8]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-32.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[9]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-33.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[10]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-34.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[11]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-35.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+[[12]]</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="V02_QC_files/figure-html/plots-36.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="session-info" class="level1">
+<h1>Session Info</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.3.3 (2024-02-29)
+Platform: aarch64-unknown-linux-gnu (64-bit)
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/aarch64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/aarch64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Europe/Zurich
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] TENxMultiomeTools_0.1.3     scater_1.30.1              
+ [3] ggpubr_0.6.0                ggplot2_3.5.0              
+ [5] scran_1.30.2                scuttle_1.12.0             
+ [7] SingleCellExperiment_1.24.0 SummarizedExperiment_1.32.0
+ [9] Biobase_2.62.0              GenomicRanges_1.54.1       
+[11] GenomeInfoDb_1.38.8         IRanges_2.36.0             
+[13] S4Vectors_0.40.2            BiocGenerics_0.48.1        
+[15] MatrixGenerics_1.14.0       matrixStats_1.3.0          
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22          splines_4.3.3            
+  [3] later_1.3.2               BiocIO_1.12.0            
+  [5] bitops_1.0-7              tibble_3.2.1             
+  [7] R.oo_1.26.0               polyclip_1.10-6          
+  [9] XML_3.99-0.16.1           fastDummies_1.7.3        
+ [11] lifecycle_1.0.4           scDblFinder_1.16.0       
+ [13] rstatix_0.7.2             edgeR_4.0.1              
+ [15] globals_0.16.3            lattice_0.22-6           
+ [17] MASS_7.3-60.0.1           backports_1.4.1          
+ [19] magrittr_2.0.3            limma_3.58.1             
+ [21] plotly_4.10.4             rmarkdown_2.26           
+ [23] yaml_2.3.8                metapod_1.10.1           
+ [25] httpuv_1.6.15             Seurat_5.0.3             
+ [27] sctransform_0.4.1         spam_2.10-0              
+ [29] spatstat.sparse_3.0-3     sp_2.1-3                 
+ [31] reticulate_1.36.1         cowplot_1.1.3            
+ [33] pbapply_1.7-2             RColorBrewer_1.1-3       
+ [35] abind_1.4-5               zlibbioc_1.48.2          
+ [37] Rtsne_0.17                purrr_1.0.2              
+ [39] R.utils_2.12.3            RCurl_1.98-1.14          
+ [41] SingleR_2.4.1             GenomeInfoDbData_1.2.11  
+ [43] ggrepel_0.9.5             irlba_2.3.5.1            
+ [45] spatstat.utils_3.0-4      listenv_0.9.1            
+ [47] goftest_1.2-3             RSpectra_0.16-1          
+ [49] spatstat.random_3.2-3     dqrng_0.3.2              
+ [51] fitdistrplus_1.1-11       parallelly_1.37.1        
+ [53] DelayedMatrixStats_1.24.0 RcppRoll_0.3.0           
+ [55] leiden_0.4.3.1            codetools_0.2-20         
+ [57] DropletUtils_1.20.0       DelayedArray_0.28.0      
+ [59] tidyselect_1.2.1          farver_2.1.1             
+ [61] ScaledMatrix_1.10.0       viridis_0.6.5            
+ [63] spatstat.explore_3.2-7    GenomicAlignments_1.38.2 
+ [65] jsonlite_1.8.8            BiocNeighbors_1.20.2     
+ [67] progressr_0.14.0          ggridges_0.5.6           
+ [69] survival_3.5-8            tools_4.3.3              
+ [71] ica_1.0-3                 Rcpp_1.0.12              
+ [73] glue_1.7.0                gridExtra_2.3            
+ [75] SparseArray_1.2.4         xfun_0.43                
+ [77] dplyr_1.1.4               HDF5Array_1.30.1         
+ [79] withr_3.0.0               fastmap_1.1.1            
+ [81] rhdf5filters_1.14.1       bluster_1.12.0           
+ [83] fansi_1.0.6               digest_0.6.35            
+ [85] rsvd_1.0.5                R6_2.5.1                 
+ [87] mime_0.12                 colorspace_2.1-0         
+ [89] scattermore_1.2           tensor_1.5               
+ [91] spatstat.data_3.0-4       R.methodsS3_1.8.2        
+ [93] utf8_1.2.4                tidyr_1.3.1              
+ [95] generics_0.1.3            data.table_1.15.4        
+ [97] rtracklayer_1.62.0        httr_1.4.7               
+ [99] htmlwidgets_1.6.4         S4Arrays_1.2.1           
+[101] uwot_0.2.2                pkgconfig_2.0.3          
+[103] gtable_0.3.5              lmtest_0.9-40            
+[105] XVector_0.42.0            htmltools_0.5.8.1        
+[107] carData_3.0-5             dotCall64_1.1-1          
+[109] SeuratObject_5.0.1        scales_1.3.0             
+[111] png_0.1-8                 knitr_1.46               
+[113] rstudioapi_0.16.0         rjson_0.2.21             
+[115] Signac_1.13.0             reshape2_1.4.4           
+[117] nlme_3.1-164              zoo_1.8-12               
+[119] rhdf5_2.46.1              stringr_1.5.1            
+[121] KernSmooth_2.23-22        parallel_4.3.3           
+[123] miniUI_0.1.1.1            vipor_0.4.7              
+[125] restfulr_0.0.15           pillar_1.9.0             
+[127] grid_4.3.3                vctrs_0.6.5              
+[129] RANN_2.6.1                promises_1.3.0           
+[131] car_3.1-2                 BiocSingular_1.18.0      
+[133] beachmat_2.18.1           xtable_1.8-4             
+[135] cluster_2.1.6             beeswarm_0.4.0           
+[137] evaluate_0.23             Rsamtools_2.18.0         
+[139] cli_3.6.2                 locfit_1.5-9.9           
+[141] compiler_4.3.3            rlang_1.1.3              
+[143] crayon_1.5.2              future.apply_1.11.2      
+[145] ggsignif_0.6.4            labeling_0.4.3           
+[147] plyr_1.8.9                ggbeeswarm_0.7.2         
+[149] stringi_1.8.3             deldir_2.0-4             
+[151] viridisLite_0.4.2         BiocParallel_1.36.0      
+[153] Biostrings_2.70.3         munsell_0.5.1            
+[155] lazyeval_0.2.2            spatstat.geom_3.2-9      
+[157] Matrix_1.6-5              RcppHNSW_0.6.0           
+[159] patchwork_1.2.0           sparseMatrixStats_1.14.0 
+[161] future_1.33.2             Rhdf5lib_1.24.2          
+[163] statmod_1.5.0             shiny_1.8.1.1            
+[165] ROCR_1.0-11               igraph_2.0.3             
+[167] broom_1.0.5               fastmatch_1.1-4          
+[169] xgboost_1.7.7.1          </code></pre>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
