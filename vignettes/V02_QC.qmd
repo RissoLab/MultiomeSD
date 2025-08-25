@@ -1,0 +1,154 @@
+---
+title: "Quality Control"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options: 
+    chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
+```
+
+# Load libraries and helper functions
+
+This section loads the required R packages for single-cell analysis and sources custom filtering utilities.
+
+```{r libs}
+library(SingleCellExperiment)
+library(scran)
+library(ggpubr)
+library(scater)
+library(TENxMultiomeTools)
+source("~/MultiomeSD/R/filterCells.R")
+```
+
+## Load the dataset
+
+Here we load a list of `SingleCellExperiment` objects (samples), either filtered/annotated or unfiltered.
+
+```{r data}
+scelist <- readRDS("~/Downloads/multiome_data/data/scelist_filt_anno_dblts_tsne.rds")
+#Dropping ATAC for memory consumption
+scelist <- lapply(scelist, function(sce){ altExp(sce) <- NULL; sce})
+invisible(gc())
+# scelist <- readRDS("~/Downloads/multiome_data/data/scelist_unfiltered.RDS")
+```
+
+## Define cell types and compute QC metrics
+
+This section collects all subclusters across samples, builds helper vectors of names, and computes QC filtering metrics (RNA + ATAC) for each dataset.
+
+```{r cts}
+ct <- unique(unlist(lapply(scelist, function(sce) {unique(sce$subcluster)})))
+# not computing metrics during compilation for memory problems 
+# scelist <- lapply(scelist, computeSignacMetrics) # > needs ATAC
+scelist <- lapply(scelist, computeFilterCellsMetrics, metric="both", highQuant="95%")
+```
+
+
+# Number of cells by metrics
+
+This section summarizes the number of cells passing each quality-control metric (ATAC counts, RNA counts, features, nucleosome signal, TSS enrichment, Signac).
+
+```{r cell_metr, eval=TRUE}
+sf <- matrix(nrow=length(scelist), , ncol=7)
+for(i in 1:12)
+{
+    sce <- scelist[[i]]
+    tot <- dim(sce)[2]
+    natac <- sum(sce$nCount_ATAC_passed)
+    nrna <- sum(sce$nCount_RNA_passed)
+    nfea <- sum(sce$nFeature_RNA_passed)
+    nnucl <- sum(sce$nucleosome_passed)
+    ntss <- sum(sce$TSS_passed)
+    nsign <- sum(sce$in_signac)
+    sf[i,] <- c(tot, natac, nrna, nfea, nnucl, ntss, nsign)
+}
+rownames(sf) <- names(scelist)
+colnames(sf) <- c("Starting", "ATAC_s", "RNA_s", "Feature_s",  "Nucleosome_s", "TSS_s", "Signac")
+sfd <- as.data.frame(sf)
+knitr::kable(sfd)
+```
+
+# Number of cells by metrics and cell types
+
+Here we break down the same QC metrics, but stratified by **cell type** within each sample, to see how filtering affects individual subclusters.
+
+```{r cell_metr_ct, results="asis"}
+for (i in 1:12)
+{
+    sc <- scelist[[i]]
+    idxct <- which(unique(sc$subcluster) %in% ct)
+    sf <- matrix(nrow=length(idxct), ncol=7)
+    k <- 1
+    for (j in seq_along(ct))
+    {
+        idx <- which(sc$subcluster==ct[j])
+        if (length(idx)==0)
+        {
+            print(paste0(names(scelist)[i], " has not any cells for ", ct[j], " cell type\n"))
+            next
+        }
+        sce <- sc[,idx]
+        tot <- dim(sce)[2]
+        natac <- sum(sce$nCount_ATAC_passed)
+        nrna <- sum(sce$nCount_RNA_passed)
+        nfea <- sum(sce$nFeature_RNA_passed)
+        nnucl <- sum(sce$nucleosome_passed)
+        ntss <- sum(sce$TSS_passed)
+        nsign <- sum(sce$in_signac)
+        sf[k,] <- c(tot, natac, nrna, nfea, nnucl, ntss, nsign)
+        k <- k+1
+    }
+    rownames(sf) <- ct[idxct]
+    colnames(sf) <- c("Starting", "ATAC_s", "RNA_s", "Feature_s", "Nucleosome_s", "TSS_s", "Signac")
+    sfd <- as.data.frame(sf)
+    print(paste0("Sample ", names(scelist)[i], " Cell Type ", ct[j],"\n"))
+    print(knitr::kable(sfd))
+    cat("\n")
+}
+```
+
+## Convert logical metadata columns
+
+This section converts all logical (TRUE/FALSE) metadata columns into string labels (“1. TRUE” / “2. FALSE”) for easier tabulation and plotting.
+
+```{r logical}
+scelist <- lapply(scelist, function(sce) {
+    for(i in 1:dim(colData(sce))[2])
+    {
+        if( is.logical(colData(sce)[,i]) )
+        {
+            colData(sce)[,i] <- ifelse(colData(sce)[,i]==TRUE, "1. TRUE", "2. FALSE")
+        }
+    }
+    return(sce)
+})
+```
+
+# Filtered vs unfiltered cells
+
+This section generates diagnostic plots showing the distribution of cells **before and after filtering**, using either all QC filters or only the Signac filter.
+
+```{r plots, eval=TRUE}
+glist <- lapply(seq_along(scelist), function(i)
+{
+    sce <- scelist[[i]]
+    plotFilteredCells(sce, filterCellsBy="custom", customColName="in_signac", name=paste0(names(scelist)[i], " sign_filtered"))
+})
+
+lapply(seq_along(scelist), function(i)
+{
+    sce <- scelist[[i]]
+    print(plotFilteredCells(sce, filterCellsBy="all", name=paste0(names(scelist)[i], " unfiltered")))
+    print(plotFilteredCells(sce, filterCellsBy="custom", customColName="in_signac", name=paste0(names(scelist)[i], " signac_filtered")))
+})
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+

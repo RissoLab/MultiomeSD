@@ -4,6 +4,7 @@
 
 # from qwebsite
 CURRENT_BRANCH=$(git branch --show-current)
+rm ../tmp_site
 cp -r _site/* ../tmp_site
 touch ../tmp_site/.nojekyll
 

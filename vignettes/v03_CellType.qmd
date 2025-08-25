@@ -1,0 +1,173 @@
+---
+title: "Cell Type Annotation"
+author: "Elena Zuin"
+date: "`r Sys.Date()`"
+editor_options: 
+    chunk_output_type: console
+format:
+  html:
+    code-fold: true
+---
+
+# Introduction
+
+```{r, eval=FALSE}
+library(SingleCellExperiment)
+library(AllenInstituteBrainData)
+library(EnsDb.Mmusculus.v79)
+library(scuttle)
+library(SingleR)
+library(scatter)
+```
+
+To identify cell types, we utilized the SingleR annotation method, an automatic tool based on reference data. 
+
+# Reference preparation
+
+The Allen Whole Cortex & Hippocampus - 10x Genomics (v2021) dataset was used as the reference. T
+his dataset was imported using the *AllenInstituteBrainData* function from the `AllenInstituteBrainData` package.
+
+```{r, eval=FALSE}
+allen_ref <- AllenInstituteBrainData("Allen_Mouse_2021")
+rownames(allen_ref) <- rowData(allen_ref)$X
+```
+
+The cortical and unwanted subclasses were removed to focus specifically on the hippocampus brain region.
+
+```{r, eval=FALSE}
+allen_ref <- allen_ref[, !is.na(allen_ref$subclass_label) &
+                           allen_ref$subclass_label != ""]
+exclude <- c("V3d", "Meis2", "CR", "Car3", 
+             unique(allen_ref$subclass_label[grepl("^L[2-6]", allen_ref$subclass_label)]),
+             unique(allen_ref$subclass_label[grepl("^NP", allen_ref$subclass_label)]), 
+             unique(allen_ref$subclass_label[grepl("^CT", allen_ref$subclass_label)]))
+allen_ref <- allen_ref[, !allen_ref$subclass_label %in% exclude]
+```
+
+Gene symbols were mapped to Ensembl Gene IDs using `EnsDb.Mmusculus.v79`, ensuring consistent identifiers for downstream analyses.
+
+```{r, eval=FALSE}
+map <- AnnotationDbi::mapIds(EnsDb.Mmusculus.v79, keys = rownames(allen_ref),
+                             keytype  = "SYMBOL", column = "GENEID",
+                             multiVals = "first")
+rowData(allen_ref)$symbol <- rownames(allen_ref)
+rowData(allen_ref)$ens <- unname(map)
+allen_ref <- allen_ref[!is.na(rowData(allen_ref)$ens), ]
+rownames(allen_ref) <- rowData(allen_ref)$ens
+```
+
+Since the reference contains around 1 million cells, the dataset was aggregated across all cells belonging to the same subclass, producing one profile per subclass. Counts are log-normalized afterwards.
+
+```{r, eval=FALSE}
+allen_subclass <- aggregateAcrossCells(allen_ref, use.assay.type = "counts",
+                                       id = DataFrame(label = allen_ref$subclass_label))
+allen_subclass <- logNormCounts(allen.subclass)
+```
+
+Focusing only on CA1-ProS subclass cells, we further aggregate by cluster label to examine finer-grained organization within this hippocampal population.
+
+```{r, eval=FALSE}
+allen_ca1_pros <- allen_ref[, allen_ref$subclass_label == "CA1-ProS"]
+allen_ca1_pros_clust <- aggregateAcrossCells(allen_ca1_pros,use.assay.type = "counts",
+                                             id = DataFrame(label = allen_ca1_pros$cluster_label)
+)
+allen_ca1_pros_clust <- logNormCounts(allen_ca1_pros_clust)
+```
+
+The processed objects are saved for later reuse.
+
+```{r, eval=FALSE}
+save(allen_subclass, allen_ca1_pros_clust,
+     file = "allen_10xgenomics_hippo_processed.RData")
+```
+
+# Cell-type annotation with SingleR
+
+## Load query dataset
+
+Each query dataset was normalized, and Principal Component Analysis (PCA) and t-SNE were computed for each one.
+
+```{r, eval=FALSE}
+multiome <- readRDS("scelist_allexps.RDS")
+multiome <- lapply(multiome, function(x) logNormCounts(x))
+set.seed(422)
+multiome <- lapply(multiome, function(x) runPCA(x, ntop = length(rownames(x))))
+set.seed(422)
+multiome <- lapply(multiome, function(x) runTSNE(x, dimred = "PCA"))
+```
+
+## SingleR
+
+Cell annotation was computed using the *SingleR* function from the `SingleR` package.
+
+```{r, eval=FALSE}
+pred_subclass <- lapply(multiome, function(x) SingleR(x, ref = allen_subclass, labels = allen_subclass$subclass_label))
+multiome <- lapply(1:length(multiome), function(i) {
+  multiome[[i]]$subclass <- pred_subclass[[i]]$labels 
+  multiome[[i]]
+}
+```
+
+For CA1-ProS cells, we annotated the sub-population using the CA1-ProS reference, created previously.
+
+```{r, eval = FALSE}
+multiome_ca1_pros <- lapply(multiome, function(x) x[, x$subclass == "CA1-ProS"])
+set.seed(422)
+multiome_ca1_pros <- lapply(multiome_ca1_pros, function(x) runPCA(x, ntop = length(rownames(x))))
+set.seed(422)
+multiome_ca1_pros <- lapply(multiome_ca1_pros, function(x) runTSNE(x, dimred = "PCA"))
+
+pred_ca1_pros_subclust <- lapply(multiome_ca1_pros , function(x) SingleR(x, ref = allen_ca1_pros_clust, 
+                                                                         labels = allen_ca1_pros_clust$cluster_label))
+
+multiome_ca1_pros <- lapply(1:length(multiome_ca1_pros), function(i) {
+  multiome_ca1_pros[[i]]$cluster <- pred_ca1_pros_subclust[[i]]$labels 
+  multiome_ca1_pros[[i]]$cluster[which(grepl("-ve", multiome_ca1_pros[[i]]$cluster))] <- "CA1-ve"
+  multiome_ca1_pros[[i]]$cluster[which(grepl("-do", multiome_ca1_pros[[i]]$cluster))] <- "CA1-do"
+  multiome_ca1_pros[[i]]$cluster[which(grepl("-ProS", multiome_ca1_pros[[i]]$cluster))] <- "CA1-ProS"
+  multiome_ca1_pros[[i]]$cluster[which(grepl("_CA1", multiome_ca1_pros[[i]]$cluster))] <- "CA1"
+  multiome_ca1_pros[[i]]
+}
+```
+
+# Visualizing Cell Type Annotations
+
+```{r}
+scelist <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
+table(scelist$REP1_S3$labels)
+
+# prendi i conteggi delle labels per ogni campione
+label_tables <- lapply(scelist, function(sce) {
+  tbl <- table(sce$labels)
+  as.data.frame(tbl)
+})
+
+# aggiungi il nome del campione
+for (nm in names(label_tables)) {
+  label_tables[[nm]]$sample <- nm
+}
+
+# unisci tutto in un unico data.frame
+df <- do.call(rbind, label_tables)
+
+# porta i campioni come colonne, le labels come righe
+library(tidyr)
+library(dplyr)
+
+label_matrix <- df %>%
+  tidyr::pivot_wider(names_from = sample, values_from = Freq, values_fill = 0) %>%
+  arrange(Var1)
+
+# rinomina la colonna delle labels
+colnames(label_matrix)[1] <- "Label"
+
+knitr::kable(label_matrix)
+
+```
+
+# SessionInfo
+
+```{r}
+sessionInfo()
+```
+

@@ -15,6 +15,14 @@ website:
         href: index.html
       - text: "Articles"
         menu:
+        - text: "Data Loading"
+          href: vignettes/v01_Data_loading.html
+        - text: "Quality Control"
+          href: vignettes/v02_QC.html
+        - text: "Cell Type Annotation"
+          href: vignettes/v03_CellType.html
+        - text: "Doublets Identification"
+          href: vignettes/v04_Doublets.html
         - text: "DEGs Wild Type"
           href: vignettes/v05_DE.html
         - text: "DEGs Wild Type CA1-do"

@@ -1,0 +1,333 @@
+---
+title: "Doublets Identification"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options: 
+    chunk_output_type: console
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, cache=TRUE)
+```
+
+# Load required libraries
+
+This chunk loads the necessary Bioconductor packages:
+- `SingleCellExperiment`: data structure for single-cell assays
+- `TENxMultiomeTools`: helpers for 10x Genomics multiome data
+- `scater`, `scuttle`: normalization, QC, and visualization tools
+
+```{r}
+library(SingleCellExperiment)
+library(TENxMultiomeTools)
+library(scater)
+library(scuttle)
+library(ggplot2)
+```
+
+# Data loading
+
+## Load preprocessed RNA-only dataset
+
+This chunk loads a preprocessed list of `SingleCellExperiment` objects
+from disk. The ATAC modality has been removed, and Signac filtering and
+PCA/t-SNE have already been applied.
+
+```{r, cache=FALSE}
+scelist <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC.RDS")
+```
+
+# Preprocess loaded data
+
+## Metadata cleanup and annotation
+
+This chunk (currently not executed) shows how:
+- Sample names are assigned to each object
+- Redundant metadata is removed
+- Conditions and genotypes are annotated based on `sample.id`
+- Prediction scores are merged from an external table (`pred`)
+
+```{r, eval=FALSE}
+names(scelist) <- lapply(scelist, function(sce){unique(sce$sample.id)})
+scelist <- lapply(scelist, function(sce)
+{
+    colData(sce) <- colData(sce)[, -which(colnames(colData(sce)) %in% 
+                                    c("SingleR", "Azimuth", "Azimuth_filteredCells", "SingleR_filteredCells"))]
+    colData(sce) <- colData(sce)[, -13] ## 13 is a duplicated barcode col
+    sce$condition <- ifelse( length(grep("SD", sce$sample.id))!=0, "SD", "CTRL")
+    sce$genotype <- ifelse( length(grep("S3", sce$sample.id))!=0, "S3", "WT")
+    
+    sce$replicate <- strsplit(x=sce$sample.id[1], "_")[[1]][1]
+    sce
+})
+
+scelist <- lapply(scelist, function(sce) {sce[,sce$in_signac]})
+scelist <- lapply(scelist, function(sce)
+{
+    cidx <- grep(paste0(unique(sce$sample.id),"$"), rownames(pred))
+    predsce <- pred[cidx,]
+    rownames(predsce) <- gsub(paste0("_", unique(sce$sample.id)), "", rownames(predsce))
+    idx <- match(colnames(sce), rownames(predsce))
+    colData(sce) <- cbind(colData(sce), predsce[idx,])
+    colnames(colData(sce)) <- gsub("scores", "SRscores", colnames(colData(sce)))
+    sce
+})
+```
+
+## Compute doublets
+
+This chunk performs log-normalization and detects doublets using the
+Griffiths method for each dataset (not currently evaluated).
+
+# computing doublets
+
+```{r, eval=FALSE}
+library(scuttle)
+scelist <- lapply(scelist, logNormCounts)
+
+scelist <- lapply(scelist, function(sce)
+{
+    computeDoublets(sce, method="griffiths")
+})
+```
+
+## Dimensionality reduction (PCA and t-SNE)
+
+This chunk runs PCA and then t-SNE on the expression data, projecting
+cells into a low-dimensional space for visualization (disabled).
+
+# T-SNE 
+
+```{r, eval=FALSE}
+scelist <- lapply(scelist, runPCA)
+scelist <- lapply(scelist, runTSNE, dimred="PCA")
+```
+
+## Visualize t-SNE colored by cell type labels
+
+This chunk generates t-SNE plots for each dataset, coloring cells by
+their assigned cell type label.
+
+```{r tsne}
+tsnes <- lapply(scelist, function(sce)
+{
+    gg <- plotTSNE(sce, color_by="labels") + 
+        ggtitle(paste0(sce$replicate, " ", sce$genotype, " ", sce$condition))
+    gg 
+})
+# tsnes
+```
+
+# CA1-do
+
+## Extract and visualize CA1-do cells
+
+This chunk filters each dataset to keep only cells annotated as "CA1-do", then:
+- Plots their t-SNE embeddings colored by label
+- Adds the best score from SingleR predictions (`SRBestScore`)
+- Visualizes doublet calls and prediction confidence using a violin plot
+
+```{r ca1do}
+scelistdo <- lapply(scelist, function(sce) {sce[,sce$labels=="CA1-do"]})
+tsnesdo <- lapply(scelistdo, function(sce)
+{
+    gg <- plotTSNE(sce, color_by="labels") + 
+        ggtitle(paste0(sce$replicate, " ", sce$genotype, " ", sce$condition))
+    gg 
+})
+
+scelistdo <- lapply(scelistdo, function(sce)
+{
+    sce$SRBestScore <- sce$SRscores[,1]
+    sce
+})
+
+vlns <- lapply(scelistdo, function(sce)
+{
+    gg <- plotColData(sce, x="dbl.calls", y="delta.next", color_by="dbl.scores") + 
+        geom_hline(yintercept=0.03)+
+        ggtitle(paste0(sce$replicate, " ", sce$genotype, " ", sce$condition))
+    gg 
+})
+
+idxs3 <- grep("_S3$", names(vlns))
+idxs3sd <- grep("_S3SD$", names(vlns))
+idxsd <- grep("_SD$", names(vlns))
+idxwt <- grep("_WT$", names(vlns))
+idxordlist <- c(idxs3, idxs3sd, idxsd, idxwt)
+ggpubr::ggarrange(plotlist=vlns[idxordlist], ncol=3)
+```
+
+# Filtering doublets + Low SingleR scores
+
+## CA1-do only
+
+## Filter CA1-do cells to remove doublets and low-confidence annotations
+
+This chunk keeps only singlets (non-doublets) and cells with SingleR 
+`delta.next > 0.03`.
+It then visualizes filtered CA1-do cells using t-SNE.
+
+```{r ca1dof}
+scelistdof <- lapply(scelistdo, function(sce)
+{
+    sce <- sce[,sce$dbl.calls=="singlet"]
+    sce[,sce$delta.next>0.03]
+})
+
+tsnesdof <- lapply(scelistdof, function(sce)
+{
+    gg <- plotTSNE(sce, color_by="labels") + 
+        ggtitle(paste0(sce$replicate, " ", sce$genotype, " ", sce$condition, " filtered"))
+    gg 
+})
+```
+
+## All other Cell Types 
+
+As done with CA1-do, this chunk filters all datasets:
+- Removes doublets (`dbl.calls == "singlet"`)
+- Keeps cells with confident label predictions (`delta.next > 0.03`)
+
+It then visualizes the results using t-SNE plots.
+
+```{r allctf}
+scelistf <- lapply(scelist, function(sce)
+{
+    sce <- sce[,sce$dbl.calls=="singlet"]
+    sce[,sce$delta.next>0.03]
+})
+
+tsnesf <- lapply(scelistf, function(sce)
+{
+    gg <- plotTSNE(sce, color_by="labels") + 
+        ggtitle(paste0(sce$replicate, " ", sce$genotype, " ", sce$condition, " filtered"))
+    gg 
+})
+```
+
+## Combine and compare t-SNE plots
+
+This chunk arranges and displays four t-SNE plots per sample:
+1. Original
+2. Filtered all cells
+3. CA1-do only
+4. Filtered CA1-do
+
+```{r plots}
+library(ggpubr)
+tsnes <- tsnes[idxordlist]
+tsnesf <- tsnesf[idxordlist]
+tsnesdo <- tsnesdo[idxordlist]
+tsnesdof <- tsnesdof[idxordlist]
+lapply(seq_along(scelist[idxordlist]), function(i)
+{
+    ggl <- list(tsnes[[i]], tsnesf[[i]], tsnesdo[[i]], tsnesdof[[i]])
+    ggarrange(plotlist=ggl, ncol=2)
+})
+```
+
+# Summary Table
+
+## Generate summary table of cell type counts
+
+This chunk builds a summary table that compares the number of cells per label
+before and after filtering, across all samples. It:
+- Constructs a matrix of cell type counts per sample
+- Matches labels across filtered and unfiltered data
+- Displays the tables using `DT::datatable()` for interactive visualization
+
+```{r dt, cache=FALSE}
+
+nms <- unlist(lapply(scelist, function(sce)
+{
+    unique(paste0(sce$replicate,  "_", sce$genotype, "_", sce$condition ))
+}))
+
+names(nms) <- NULL
+lbls <- sort(unique(unlist(lapply(seq_along(scelist[idxordlist]), function(i)
+{
+    unique(scelist[[i]]$labels)
+}))))
+
+scelist <- scelist[idxordlist]
+scelistf <- scelistf[idxordlist]
+scelistdo <- scelistdo[idxordlist]
+scelistdof <- scelistdof[idxordlist]
+nms <- nms[idxordlist]
+
+df <- data.frame(labels=lbls)
+for(i in seq_along(scelist))
+{
+    # print(i)
+    sn <- nms[i]
+    tbls <- table(scelist[[i]]$labels)
+    nc <- rep(0, dim(df)[1])
+    names(nc) <- df[,1]
+    nc[match(names(tbls), names(nc))] <- tbls
+    nmdf <- colnames(df)
+    df <- cbind.data.frame(df, nc)
+    tblsf <- table(scelistf[[i]]$labels)
+    nc <- rep(NA, dim(df)[1])
+    names(nc) <- df[,1]
+    nc[match(names(tblsf), names(nc))] <- tblsf
+    df <- cbind.data.frame(df, nc)
+    colnames(df) <- c(nmdf, sn, paste0(sn, "_filt"))
+}
+# df
+df <- df[,-1]
+dflist <- list()
+j=1
+for (i in 1:dim(df)[2])
+{
+    if ((i %% 4) == 0)
+    {
+        dflist[[j]] <- df[,c((i-3):i)]
+        j=j+1
+    }
+}
+DT::datatable(dflist[[1]], class = 'cell-border stripe', options=list("lengthMenu"=c(25,50,100)))
+DT::datatable(dflist[[2]], class = 'cell-border stripe', options=list("lengthMenu"=c(25,50,100)))
+DT::datatable(dflist[[3]], class = 'cell-border stripe', options=list("lengthMenu"=c(25,50,100)))
+DT::datatable(dflist[[4]], class = 'cell-border stripe', options=list("lengthMenu"=c(25,50,100)))
+DT::datatable(dflist[[5]], class = 'cell-border stripe', options=list("lengthMenu"=c(25,50,100)))
+DT::datatable(dflist[[6]], class = 'cell-border stripe', options=list("lengthMenu"=c(25,50,100)))
+```
+
+## Save filtered cell barcodes and align ATAC data accordingly
+
+This chunk (currently disabled) does the following:
+- Extracts barcodes from filtered RNA data
+- Matches these to corresponding ATAC datasets
+- Subsets the ATAC data to include only matching barcodes
+- Saves both filtered RNA and ATAC datasets to disk
+
+```{r, eval=FALSE}
+bc <- lapply(scelistf, function(sce){
+    colnames(sce)
+})
+
+saveRDS(scelistf, file="~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noATAC_doublrm.RDS")
+
+
+scelistatac <- readRDS("~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noRNA.RDS")
+
+idx <- match(names(bc), names(scelistatac))
+scelistatac<- scelistatac[idx]
+scelistatacf<-lapply(seq_along(scelistatac), function(i)
+{
+    scelistatac[[i]][,bc[[i]]]
+})
+saveRDS(scelistatacf, file="~/Downloads/multiome_data/data/scelist_SR_dbl_signacfilt_dimred_noRNA_doublrm.RDS")
+```
+
+
+# Session Info
+
+```{r, tidy=TRUE}
+sessionInfo()
+```
+
+
+
+

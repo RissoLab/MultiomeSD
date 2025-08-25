@@ -1,0 +1,87 @@
+---
+title: "Data Loading"
+author: "Dario Righelli"
+date: "`r Sys.Date()`"
+editor_options: 
+    chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, cache=FALSE)
+```
+
+# Raw data preprocessing
+
+To process raw 10x BCL files produced by the sequencer, we take aid of
+the 10x [cellranger-arc
+software](https://www.10xgenomics.com/support/software/cell-ranger-arc/latest)
+Firstly, we used the **makefastq** command to generate fastq files for
+each sample GEX/ATAC and then with the **count** command by aid of the
+**libraries** files, we combined GEX and ATAC for each sample to obtain
+a unique output folder. This results in a unique output folder for each
+sample.
+
+Details of the implemented MAKEFILE(s) are present in the [main github
+repository](https://github.com/RissoLab/MultiomeSD) of this website. In
+particular, the files are present in the
+[inst/preprocessing](https://github.com/RissoLab/MultiomeSD/tree/qwebsite/inst/preprocessing)
+folder, where they are organized by replicate. Refer to the MAKEFILE
+present in each of these folders to replicate the results.
+
+# Load required libraries
+
+This chunk loads the necessary Bioconductor packages: -
+`SingleCellExperiment`: data structure for single-cell assays -
+`TENxMultiomeTools`: helpers for 10x Genomics multiome data - `scater`,
+`scuttle`: normalization, QC, and visualization tools
+
+```{r}
+library(SingleCellExperiment)
+library(TENxMultiomeTools)
+```
+
+# Data loading
+
+After processing the FASTQ files with Cell Ranger ARC, we are able to
+load each replicate as a separate SingleCellExperiment object.
+
+Here we show the code to use to load the data into R by using the
+`TENxMultiomeTools` package.
+
+```{r, eval=FALSE}
+# After placing on the right path where all the replicates have been processed 
+# and stored 
+dirs <- list.dirs(".", full.names=TRUE)
+repfolders <- dirs[grep("REP[^/]*?/outs$", dirs)]
+scelist <- lapply(repfolders, read10xMultiome, type="HDF5")
+names(scelist) <- unlist(lapply(strsplit(repfolders, split="/"), function(x){x[3]}))
+```
+
+This produces a list of sce objects with two main experiments, one, as
+default, named RNA, and an `altExp` named ATAC.
+
+# Data Splitting
+
+To speed up further computations, and to lighten the load on memory here
+each sce is split in two different objects one with only RNA and one
+with only ATAC.
+
+```{r, eval=FALSE}
+scelistnoatac <- lapply(scelist, function(sce){
+    altExp(sce) <- NULL
+    sce
+})
+saveRDS(scelistnoatac, file="~/Downloads/multiome_data/data/scelist_noATAC.RDS")
+scelistnorna <- lapply(scelist, function(sce){
+    sce <- swapAltExp(sce, name="ATAC")
+    altExp(sce) <- NULL
+    sce
+})
+saveRDS(scelistnorna, file="~/Downloads/multiome_data/data/scelist_noRNA.RDS")
+```
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
