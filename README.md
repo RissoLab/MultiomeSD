@@ -11,7 +11,9 @@ This repository is organized in two main section,
 2.  The code section at this [link](https://github.com/RissoLab/MultiomeSD), where it is possible to find all the *code* used to generate the articles found in the Articles section.
     In some cases, because some of the steps are time demanding the code is reported, but not live executed.
 
-In particular: - The `Vignettes` folder contains all the designed code for the data processing.
+In particular: 
+
+-   The `Vignettes` folder contains all the designed code for the data processing.
 
 -   The `R` folder contains additional support R code needed to generate some plots and to process some data structures.
 
@@ -25,14 +27,26 @@ In particular: - The `Vignettes` folder contains all the designed code for the d
 Dominika Vojtasova1,2,\*, Dario Righelli3,a,\*, Christoph Thieme1,§, Alexander Kukalev1,§, Dominik Szabó1,2, Michael Cooney4, Liam Speakman4, Elizabeth Medina5, Kaitlyn Ford5, Caitlin Ottaway5, Kristan Singletary5, Izabela Harabula1,2, Ibai Irastorza-Azcarate1, Elena Zuin6, Lonnie Welch4,#, Davide Risso3,#, Lucia Peixoto5,#, Ana Pombo1,2,7,8,#
 
 1 Max-Delbrück-Center for Molecular Medicine, Berlin Institute for Medical Systems Biology, Epigenetic Regulation and Chromatin Architecture Group, Berlin, Germany.
+
 2 Humboldt University of Berlin, Berlin, Germany.
+
 3 Department of Statistical Sciences, University of Padova, Padova, Italy.
-4 School of Electrical Engineering and Computer Science, Ohio University, Athens, OH, USA 5 Department of Translational Medicine and Physiology, Sleep and Performance Research Center, Elson S. Floyd College of Medicine, Washington State University, Spokane, WA, USA.
+
+4 School of Electrical Engineering and Computer Science, Ohio University, Athens, OH, USA 
+
+5 Department of Translational Medicine and Physiology, Sleep and Performance Research Center, Elson S. Floyd College of Medicine, Washington State University, Spokane, WA, USA.
+
 6 Department of Biology, University of Padova, Padova, Italy.
+
 7 Department of Biology, Johns Hopkins University, Baltimore, MD, USA.
+
 8 Department of Molecular Biology and Genetics, Johns Hopkins University School of Medicine, Baltimore, MD, USA
 
-Present address: a Dario Righelli: Department of Electrical Engineering and Information Technology, University of Naples “Federico II”, Naples, Italy b Kaitlyn Ford: Center for Developmental Biology and Regenerative Medicine, Seattle Children’s Research Institute, USA
+Present address: 
+
+a Dario Righelli: Department of Electrical Engineering and Information Technology, University of Naples “Federico II”, Naples, Italy 
+
+b Kaitlyn Ford: Center for Developmental Biology and Regenerative Medicine, Seattle Children’s Research Institute, USA
 
 \* equal first authors, § equal third authors, \# co-corresponding
 
@@ -75,10 +89,15 @@ A set of specifically developed packages (on github) is needed and provided for 
 Main steps for running the docker:
 
 1.  Download the Dockerfile present at this [link](https://github.com/RissoLab/MultiomeSD/Dockerfile).
+
 2.  In a terminal, place yourself in the same folder where the Dockerfile is present.
+
 3.  Compile it with the `docker build -t multiome_sleep`. Once completed, check the list of dockers with the `docker images` command.
+
 4.  Run the docker with `docker run multiome_sleep`.
+
 5.  Once running, navigate to http://localhost:8787/ in your browser and login with username `rstudio` and password `bioc`.
+
 
 # Data Availability
 
